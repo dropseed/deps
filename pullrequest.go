@@ -128,6 +128,82 @@ func createGitHubPullRequest(pr pullrequest) {
     }
 }
 
+func createGitLabPullRequest(pr pullrequest) {
+    apiToken := os.Getenv("GITLAB_API_TOKEN")
+    projectApiUrl := os.Getenv("GITLAB_API_URL")
+
+    fmt.Printf("Preparing to open GitLab merge request for %v\n", projectApiUrl)
+
+    client := &http.Client{}
+
+    pullrequestMap := make(map[string]interface{})
+    pullrequestMap["title"] = pr.title
+    pullrequestMap["source_branch"] = pr.branch
+    pullrequestMap["target_branch"] = pr.baseBranch
+    pullrequestMap["description"] = pr.body
+
+    if assigneeIdEnv := os.Getenv("SETTING_GITLAB_ASSIGNEE_ID"); assigneeIdEnv != "" {
+        var err interface{}
+        pullrequestMap["assignee_id"], err = strconv.ParseInt(assigneeIdEnv, 10, 32)
+        if err != nil {
+            panic(err)
+        }
+    }
+
+    if labelsEnv := os.Getenv("SETTING_GITLAB_LABELS"); labelsEnv != "" {
+        var labels *[]string
+        if err := json.Unmarshal([]byte(labelsEnv), &labels); err != nil {
+            panic(err)
+        }
+        pullrequestMap["labels"] = strings.Join(*labels, ",")
+    }
+
+    // TODO is it really supposed to be milestone ID instead of IID? How are you supposed to know that?!
+    // if milestoneIdEnv := os.Getenv("SETTING_GITLAB_MILESTONE_ID"); milestoneIdEnv != "" {
+    //     var err interface{}
+    //     pullrequestMap["milestone_id"], err = strconv.ParseInt(milestoneIdEnv, 10, 32)
+    //     if err != nil {
+    //         panic(err)
+    //     }
+    // }
+
+    if targetProjectIdEnv := os.Getenv("SETTING_GITLAB_TARGET_PROJECT_ID"); targetProjectIdEnv != "" {
+        var err interface{}
+        pullrequestMap["target_project_id"], err = strconv.ParseInt(targetProjectIdEnv, 10, 32)
+        if err != nil {
+            panic(err)
+        }
+    }
+
+    if removeSourceBranchEnv := os.Getenv("SETTING_GITLAB_REMOVE_SOURCE_BRANCH"); removeSourceBranchEnv != "" {
+        var removeSourceBranch *bool
+        if err := json.Unmarshal([]byte(removeSourceBranchEnv), &removeSourceBranch); err != nil {
+            panic(err)
+        }
+        pullrequestMap["remove_source_branch"] = *removeSourceBranch
+    }
+
+    fmt.Printf("%+v\n", pullrequestMap)
+    pullrequestData, _ := json.Marshal(pullrequestMap)
+
+    req, err := http.NewRequest("POST", projectApiUrl + "/merge_requests", bytes.NewBuffer(pullrequestData))
+    req.Header.Add("PRIVATE-TOKEN", apiToken)
+    req.Header.Add("User-Agent", "dependencies.io pullrequest")
+    req.Header.Set("Content-Type", "application/json")
+
+    resp, err := client.Do(req)
+    if err != nil {
+        panic(err)
+    }
+
+    if resp.StatusCode != 201 {
+        fmt.Printf("Failed to create merge request: %+v\n", resp)
+        os.Exit(1)
+    }
+
+    fmt.Printf("Successfully created GitLab merge request for %v\n", projectApiUrl)
+}
+
 func main() {
 
     branch := flag.String("branch", "", "branch that pull request will be created from")
@@ -164,7 +240,7 @@ func main() {
         case "github":
             createGitHubPullRequest(pr)
         case "gitlab":
-            fmt.Printf("gitlab\n")
+            createGitLabPullRequest(pr)
         default:
             fmt.Printf("Unknown GIT_HOST \"%v\"\n", pr.gitHost)
             os.Exit(1)
