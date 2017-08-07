@@ -22,6 +22,29 @@ Then use `pullrequest`!
 /usr/src/actor/pullrequest/pullrequest --branch="branch-name" --title="PR title" --body="PR body"
 ```
 
+### dependencies.yml
+
+Any actor using this will have these settings available, so they should be added to the README.
+
+```yaml
+settings:
+  # github options
+  github_labels:  # list of label names
+  - bug
+  github_assignees:  # list of usernames
+  - davegaeddert
+  github_milestone: 3  # milestone number
+
+  # gitlab options
+  gitlab_assignee_id: 1  # assignee user ID
+  gitlab_labels:  # labels for MR as a list of strings
+  - dependencies
+  - update
+  gitlab_milestone_id: 1  # the ID of a milestone
+  gitlab_target_project_id: 1  # The target project (numeric id)
+  gitlab_remove_source_branch: true  # flag indicating if a merge request should remove the source branch when merging
+```
+
 ## Environment variables
 
 ### Always required
@@ -41,6 +64,21 @@ Then use `pullrequest`!
 - `SETTING_GITHUB_LABELS` - JSON encoded list of strings
 - `SETTING_GITHUB_ASSIGNEES` - JSON encoded list of strings
 - `SETTING_GITHUB_MILESTONE` - int of milestone number
+
+### GitLab
+
+#### Required
+
+- `GITLAB_API_URL` - url to the project in the GitLab API
+- `GITLAB_API_TOKEN`
+
+#### Optional
+
+- `SETTING_GITLAB_ASSIGNEE_ID` - int
+- `SETTING_GITLAB_LABELS` - JSON encoded list of strings
+- `SETTING_GITLAB_MILESTONE_ID` - work in progress
+- `SETTING_GITLAB_TARGET_PROJECT_ID` - int
+- `SETTING_GITLAB_REMOVE_SOURCE_BRANCH` - JSON encoded bool
 
 ## Development
 
