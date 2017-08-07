@@ -16,7 +16,7 @@ ADD https://github.com/dependencies-io/pullrequest/releases/download/0.1.0/pullr
 
 Do your `git commit` and `git push`, so that the branch exists on the repo.
 
-Then use `pullrequest`, and be sure to properly escape your strings (ex. `shlex.quote` in [python](https://docs.python.org/3/library/shlex.html#shlex.quote)).
+Then use `pullrequest`!
 
 ```sh
 /usr/src/actor/pullrequest/pullrequest --branch="branch-name" --title="PR title" --body="PR body"
