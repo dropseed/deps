@@ -11,7 +11,13 @@ This was built for being run within the [dependencies.io](https://www.dependenci
 Add to your Dockerfile.
 
 ```sh
-ADD https://github.com/dependencies-io/pullrequest/releases/download/0.1.0/pullrequest_0.1.0_linux_amd64.tar.gz /usr/src/actor/pullrequest
+# add the pullrequest utility to easily create pull requests on different git hosts
+WORKDIR /usr/src/actor
+ENV PULLREQUEST_VERSION=0.2.1
+RUN wget https://github.com/dependencies-io/pullrequest/releases/download/${PULLREQUEST_VERSION}/pullrequest_${PULLREQUEST_VERSION}_linux_amd64.tar.gz && \
+    mkdir pullrequest && \
+    tar -zxvf pullrequest_${PULLREQUEST_VERSION}_linux_amd64.tar.gz -C pullrequest && \
+    ln -s /usr/src/actor/pullrequest/pullrequest /usr/local/bin/pullrequest
 ```
 
 Do your `git commit` and `git push`, so that the branch exists on the repo.
