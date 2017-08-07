@@ -4,7 +4,7 @@ A simple Go application that can send pull requests to the different Git hosts.
 Can be easily installed inside Docker containers of any kind, so that they don't
 have to implement this functionality themselves.
 
-This was built for being run within the [dependencies.io](https://www.dependencies.io) platform, though it could probably used however. The key though is the environment variables, which match up with what [dependencies.io](https://www.dependencies.io) uses.
+This was built for being run within the [dependencies.io](https://www.dependencies.io) platform, though it could probably be used however. The key though is the environment variables, which match up with what [dependencies.io](https://www.dependencies.io) uses.
 
 ## Usage in a dependencies.io actor
 
@@ -25,7 +25,7 @@ Do your `git commit` and `git push`, so that the branch exists on the repo.
 Then use `pullrequest`!
 
 ```sh
-/usr/src/actor/pullrequest/pullrequest --branch="branch-name" --title="PR title" --body="PR body"
+pullrequest --branch="branch-name" --title="PR title" --body="PR body"
 ```
 
 ### dependencies.yml
