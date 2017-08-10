@@ -1,4 +1,4 @@
-# pullrequests
+# pullrequest [![GitHub release](https://img.shields.io/github/release/dependencies-io/pullrequest.svg)](https://github.com/dependencies-io/pullrequest/releases) [![Build Status](https://travis-ci.org/dependencies-io/pullrequest.svg?branch=master)](https://travis-ci.org/dependencies-io/pullrequest) [![license](https://img.shields.io/github/license/dependencies-io/pullrequest.svg)](https://github.com/dependencies-io/pullrequest/blob/master/LICENSE)
 
 A simple Go application that can send pull requests to the different Git hosts.
 Can be easily installed inside Docker containers of any kind, so that they don't
