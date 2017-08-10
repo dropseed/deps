@@ -18,7 +18,7 @@ type pullrequest struct {
     title string
     body string
     gitHost string
-    baseBranch string
+    defaultBaseBranch string
 }
 
 func createGitHubPullRequest(pr pullrequest) {
@@ -30,10 +30,15 @@ func createGitHubPullRequest(pr pullrequest) {
 
     client := &http.Client{}
 
+    var base string
+    if base = os.Getenv("SETTING_GITHUB_BASE_BRANCH"); base == "" {
+        base = pr.defaultBaseBranch
+    }
+
     pullrequestMap := map[string]string{
         "title": pr.title,
         "head": pr.branch,
-        "base": pr.baseBranch,
+        "base": base,
         "body": pr.body,
     }
     fmt.Printf("%+v\n", pullrequestMap)
@@ -136,10 +141,15 @@ func createGitLabPullRequest(pr pullrequest) {
 
     client := &http.Client{}
 
+    var base string
+    if base = os.Getenv("SETTING_GITLAB_TARGET_BRANCH"); base == "" {
+        base = pr.defaultBaseBranch
+    }
+
     pullrequestMap := make(map[string]interface{})
     pullrequestMap["title"] = pr.title
     pullrequestMap["source_branch"] = pr.branch
-    pullrequestMap["target_branch"] = pr.baseBranch
+    pullrequestMap["target_branch"] = base
     pullrequestMap["description"] = pr.body
 
     if assigneeIdEnv := os.Getenv("SETTING_GITLAB_ASSIGNEE_ID"); assigneeIdEnv != "" {
@@ -231,7 +241,7 @@ func main() {
         title: *title,
         body: *body,
         gitHost: os.Getenv("GIT_HOST"),
-        baseBranch: os.Getenv("GIT_BRANCH"),
+        defaultBaseBranch: os.Getenv("GIT_BRANCH"),
     }
 
     fmt.Printf("Creating pull request for %v\n", pr.branch)

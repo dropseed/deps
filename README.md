@@ -40,6 +40,7 @@ settings:
   github_assignees:  # list of usernames
   - davegaeddert
   github_milestone: 3  # milestone number
+  github_base_branch: develop  # branch to make PR against (if something other than your default branch)
 
   # gitlab options
   gitlab_assignee_id: 1  # assignee user ID
@@ -49,6 +50,7 @@ settings:
   gitlab_milestone_id: 1  # the ID of a milestone
   gitlab_target_project_id: 1  # The target project (numeric id)
   gitlab_remove_source_branch: true  # flag indicating if a merge request should remove the source branch when merging
+  gitlab_target_branch: develop  # branch to make PR against (if something other than your default branch)
 ```
 
 ## Environment variables
