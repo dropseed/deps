@@ -34,6 +34,8 @@ Any actor using this will have these settings available, so they should be added
 
 ```yaml
 settings:
+  pullrequest_notes: Notes that will be inserted at the top of the PR body.
+
   # github options
   github_labels:  # list of label names
   - bug
@@ -59,6 +61,10 @@ settings:
 
 - `GIT_HOST` - "github" or "gitlab"
 - `GIT_BRANCH` - the default branch on the repo (usually "master")
+
+### Always optional
+
+- `SETTING_PULLREQUEST_NOTES` - user-supplied content to insert at the top of the PR body
 
 ### GitHub
 
