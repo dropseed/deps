@@ -235,6 +235,11 @@ func main() {
 		os.Exit(1)
 	}
 
+	// look for additional user content to add to the body
+	if pullrequestNotes := os.Getenv("SETTING_PULLREQUEST_NOTES"); pullrequestNotes != "" {
+		*body = strings.TrimSpace(pullrequestNotes) + "\n\n---\n\n" + *body
+	}
+
 	pr := pullrequest{
 		branch:            *branch,
 		title:             *title,
