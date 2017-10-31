@@ -263,6 +263,12 @@ func main() {
 		*body = strings.TrimSpace(pullrequestNotes) + "\n\n---\n\n" + *body
 	}
 
+	// trim the pr body string to a max of this size,
+	// should rarely happen but this way API call should still be success
+	if len(*body) > 65535 {
+		*body = (*body)[:65535]
+	}
+
 	pr := pullrequest{
 		branch:            *branch,
 		title:             *title,
