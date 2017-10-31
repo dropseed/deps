@@ -21,9 +21,35 @@ type pullrequest struct {
 }
 
 func createGitHubPullRequest(pr pullrequest) {
+	dependenciesEnv := os.Getenv("DEPENDENCIES_ENV")
+	isProduction := dependenciesEnv == "production"
 	apiToken := os.Getenv("GITHUB_API_TOKEN")
 	repoFullName := os.Getenv("GITHUB_REPO_FULL_NAME")
 	pullrequestsUrl := fmt.Sprintf("https://api.github.com/repos/%v/pulls", repoFullName)
+
+	// check the optional settings now, before actually creating the PR (which we'll have to update)
+	var labels []string
+	if labelsEnv := os.Getenv("SETTING_GITHUB_LABELS"); labelsEnv != "" {
+		if err := json.Unmarshal([]byte(labelsEnv), &labels); err != nil {
+			panic(err)
+		}
+	}
+
+	var assignees []string
+	if assigneesEnv := os.Getenv("SETTING_GITHUB_ASSIGNEES"); assigneesEnv != "" {
+		if err := json.Unmarshal([]byte(assigneesEnv), &assignees); err != nil {
+			panic(err)
+		}
+	}
+
+	var milestone int64
+	if milestoneEnv := os.Getenv("SETTING_GITHUB_MILESTONE"); milestoneEnv != "" {
+		var err error = nil
+		milestone, err = strconv.ParseInt(milestoneEnv, 10, 32)
+		if err != nil {
+			panic(err)
+		}
+	}
 
 	fmt.Printf("Preparing to open GitHub pull request for %v\n", repoFullName)
 
@@ -44,9 +70,17 @@ func createGitHubPullRequest(pr pullrequest) {
 	pullrequestData, _ := json.Marshal(pullrequestMap)
 
 	req, err := http.NewRequest("POST", pullrequestsUrl, bytes.NewBuffer(pullrequestData))
+	if err != nil {
+		panic(err)
+	}
 	req.Header.Add("Authorization", "token "+apiToken)
 	req.Header.Add("User-Agent", "dependencies.io pullrequest")
 	req.Header.Set("Content-Type", "application/json")
+
+	if !isProduction {
+		fmt.Printf("Skipping GitHub API call due to \"%v\" env\n", dependenciesEnv)
+		return
+	}
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -75,28 +109,6 @@ func createGitHubPullRequest(pr pullrequest) {
 	htmlUrl, _ := data["html_url"].(string)
 	fmt.Printf("Successfully created %v\n", htmlUrl)
 
-	var labels []string
-	if labelsEnv := os.Getenv("SETTING_GITHUB_LABELS"); labelsEnv != "" {
-		if err := json.Unmarshal([]byte(labelsEnv), &labels); err != nil {
-			panic(err)
-		}
-	}
-
-	var assignees []string
-	if assigneesEnv := os.Getenv("SETTING_GITHUB_ASSIGNEES"); assigneesEnv != "" {
-		if err := json.Unmarshal([]byte(assigneesEnv), &assignees); err != nil {
-			panic(err)
-		}
-	}
-
-	var milestone int64
-	if milestoneEnv := os.Getenv("SETTING_GITHUB_MILESTONE"); milestoneEnv != "" {
-		milestone, err = strconv.ParseInt(milestoneEnv, 10, 32)
-		if err != nil {
-			panic(err)
-		}
-	}
-
 	if len(labels) > 0 || len(assignees) > 0 || milestone > 0 {
 		issueMap := make(map[string]interface{})
 
@@ -114,6 +126,9 @@ func createGitHubPullRequest(pr pullrequest) {
 		issueData, _ := json.Marshal(issueMap)
 
 		req, err := http.NewRequest("PATCH", issueUrl, bytes.NewBuffer(issueData))
+		if err != nil {
+			panic(err)
+		}
 		req.Header.Add("Authorization", "token "+apiToken)
 		req.Header.Add("User-Agent", "dependencies.io pullrequest")
 		req.Header.Set("Content-Type", "application/json")
@@ -133,6 +148,8 @@ func createGitHubPullRequest(pr pullrequest) {
 }
 
 func createGitLabPullRequest(pr pullrequest) {
+	dependenciesEnv := os.Getenv("DEPENDENCIES_ENV")
+	isProduction := dependenciesEnv == "production"
 	apiToken := os.Getenv("GITLAB_API_TOKEN")
 	projectApiUrl := os.Getenv("GITLAB_API_URL")
 
@@ -196,21 +213,27 @@ func createGitLabPullRequest(pr pullrequest) {
 	pullrequestData, _ := json.Marshal(pullrequestMap)
 
 	req, err := http.NewRequest("POST", projectApiUrl+"/merge_requests", bytes.NewBuffer(pullrequestData))
+	if err != nil {
+		panic(err)
+	}
 	req.Header.Add("PRIVATE-TOKEN", apiToken)
 	req.Header.Add("User-Agent", "dependencies.io pullrequest")
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := client.Do(req)
-	if err != nil {
-		panic(err)
-	}
+	if isProduction {
+		resp, err := client.Do(req)
+		if err != nil {
+			panic(err)
+		}
 
-	if resp.StatusCode != 201 {
-		fmt.Printf("Failed to create merge request: %+v\n", resp)
-		os.Exit(1)
+		if resp.StatusCode != 201 {
+			fmt.Printf("Failed to create merge request: %+v\n", resp)
+			os.Exit(1)
+		}
+		fmt.Printf("Successfully created GitLab merge request for %v\n", projectApiUrl)
+	} else {
+		fmt.Printf("Skipping GitLab API call due to \"%v\" env\n", dependenciesEnv)
 	}
-
-	fmt.Printf("Successfully created GitLab merge request for %v\n", projectApiUrl)
 }
 
 func main() {
@@ -250,6 +273,9 @@ func main() {
 
 	fmt.Printf("Creating pull request for %v\n", pr.branch)
 
+	dependenciesEnv := os.Getenv("DEPENDENCIES_ENV")
+	isProduction := dependenciesEnv == "production"
+
 	switch strings.ToLower(pr.gitHost) {
 	case "github":
 		createGitHubPullRequest(pr)
@@ -257,6 +283,12 @@ func main() {
 		createGitLabPullRequest(pr)
 	default:
 		fmt.Printf("Unknown GIT_HOST \"%v\"\n", pr.gitHost)
-		os.Exit(1)
+		if isProduction {
+			os.Exit(1)
+		}
+	}
+
+	if !isProduction {
+		fmt.Printf("pullrequest exiting successfullly in \"%v\" environment\n", dependenciesEnv)
 	}
 }

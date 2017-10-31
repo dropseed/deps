@@ -61,6 +61,7 @@ settings:
 
 - `GIT_HOST` - "github" or "gitlab"
 - `GIT_BRANCH` - the default branch on the repo (usually "master")
+- `DEPENDENCIES_ENV` - should be "production" for PRs to actually be created
 
 ### Always optional
 
