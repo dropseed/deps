@@ -1,6 +1,6 @@
 /vendor
 .env*
-pullrequest
+/pullrequest
 
 # Binaries for programs and plugins
 *.exe
