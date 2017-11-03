@@ -1,0 +1,34 @@
+## Overview
+
+The following dependencies have been updated:
+
+- pullrequest in `/` from `0.1.0` to `0.3.0`
+- requests in `requirements.txt` from `0.1.0` to `0.3.0`
+
+## Details
+
+[Dependencies.io](https://www.dependencies.io) has updated pullrequest (a go dependency in `/`) from `0.1.0` to `0.3.0`.
+
+<details>
+<summary>0.3.0</summary>
+Third release
+</details>
+
+<details>
+<summary>0.2.0</summary>
+Second release
+</details>
+
+---
+
+[Dependencies.io](https://www.dependencies.io) has updated requests (a pip dependency in `requirements.txt`) from `0.1.0` to `0.3.0`.
+
+<details>
+<summary>0.3.0</summary>
+Third release
+</details>
+
+<details>
+<summary>0.2.0</summary>
+Second release
+</details>

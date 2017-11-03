@@ -1,0 +1,11 @@
+[Dependencies.io](https://www.dependencies.io) has updated pullrequest (a go dependency in `/`) from `0.1.0` to `0.3.0`.
+
+<details>
+<summary>0.3.0</summary>
+Third release
+</details>
+
+<details>
+<summary>0.2.0</summary>
+Second release
+</details>

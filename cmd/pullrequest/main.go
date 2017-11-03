@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"strings"
@@ -16,40 +15,37 @@ const maxBodyLength = 65535
 
 func main() {
 
-	branch := flag.String("branch", "", "branch that pull request will be created from")
-	title := flag.String("title", "", "pull request title")
-	body := flag.String("body", "", "pull request body")
-	flag.Parse()
+	configFlags := parseFlags()
 
-	if *branch == "" {
+	if configFlags.branch == "" {
 		fmt.Printf("\"branch\" is required")
 		os.Exit(1)
 	}
 
-	if *title == "" {
-		fmt.Printf("\"title\" is required")
-		os.Exit(1)
+	title, err := configFlags.titleFromConfigFlags()
+	if err != nil {
+		panic(err)
 	}
 
-	if *body == "" {
-		fmt.Printf("\"body\" is required")
-		os.Exit(1)
+	body, err := configFlags.bodyFromConfigFlags()
+	if err != nil {
+		panic(err)
 	}
 
 	// look for additional user content to add to the body
 	if pullrequestNotes := os.Getenv("SETTING_PULLREQUEST_NOTES"); pullrequestNotes != "" {
-		*body = strings.TrimSpace(pullrequestNotes) + "\n\n---\n\n" + *body
+		body = strings.TrimSpace(pullrequestNotes) + "\n\n---\n\n" + body
 	}
 
 	// trim the pr body string to a max of this size,
 	// should rarely happen but this way API call should still be success
-	if len(*body) > maxBodyLength {
-		*body = (*body)[:maxBodyLength]
+	if len(body) > maxBodyLength {
+		body = body[:maxBodyLength]
 	}
 
 	config := config.NewConfigFromEnv()
 
-	prBase := pullrequest.NewPullrequestFromEnv(*branch, *title, *body, config)
+	prBase := pullrequest.NewPullrequestFromEnv(configFlags.branch, title, body, config)
 
 	switch gitHost := os.Getenv("GIT_HOST"); strings.ToLower(gitHost) {
 	case "github":
