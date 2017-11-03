@@ -2,10 +2,14 @@
 
 <details>
 <summary>0.3.0</summary>
+
 Third release
+
 </details>
 
 <details>
 <summary>0.2.0</summary>
+
 Second release
+
 </details>

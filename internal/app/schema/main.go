@@ -126,7 +126,7 @@ func getContentForDependency(dep interface{}) (string, error) {
 		if !ok {
 			vContent = "_No content found. Please open an issue at https://github.com/dependencies-io/support if you think this content could have been found._"
 		}
-		content += fmt.Sprintf("\n\n<details>\n<summary>%v</summary>\n%v\n</details>", version, vContent)
+		content += fmt.Sprintf("\n\n<details>\n<summary>%v</summary>\n\n%v\n\n</details>", version, vContent)
 	}
 
 	return subject + content + "\n\n---\n\n", nil
