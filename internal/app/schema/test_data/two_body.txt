@@ -25,7 +25,7 @@ Second release
 
 <details>
 <summary>0.3.0</summary>
-Third release
+_No content found. Please open an issue at https://github.com/dependencies-io/support if you think this content could have been found._
 </details>
 
 <details>

@@ -121,7 +121,11 @@ func getContentForDependency(dep interface{}) (string, error) {
 
 	for _, v := range available.([]interface{}) {
 		version := v.(map[string]interface{})["version"].(string)
-		vContent := v.(map[string]interface{})["content"].(string)
+
+		vContent, ok := v.(map[string]interface{})["content"].(string)
+		if !ok {
+			vContent = "_No content found. Please open an issue at https://github.com/dependencies-io/support if you think this content could have been found._"
+		}
 		content += fmt.Sprintf("\n\n<details>\n<summary>%v</summary>\n%v\n</details>", version, vContent)
 	}
 
