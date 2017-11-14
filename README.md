@@ -95,12 +95,6 @@ settings:
 - `SETTING_GITLAB_TARGET_PROJECT_ID` - int
 - `SETTING_GITLAB_REMOVE_SOURCE_BRANCH` - JSON encoded bool
 
-## Development
-
-```sh
-go build && env $(cat .env | xargs) ./pullrequest --branch="redux-3.7.2-11.1.0" --title=test --body="Testing it out"
-```
-
 ---
 
 [![dependencies.io](https://www.dependencies.io/permanent/github-readme-logotype.png)](https://www.dependencies.io)
