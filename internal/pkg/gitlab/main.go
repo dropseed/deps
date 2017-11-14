@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/dependencies-io/pullrequest/internal/app/env"
 	"github.com/dependencies-io/pullrequest/internal/app/pullrequest"
 )
 
@@ -98,7 +99,7 @@ func (pr MergeRequest) Create() error {
 	req.Header.Add("User-Agent", "dependencies.io pullrequest")
 	req.Header.Set("Content-Type", "application/json")
 
-	if pr.Config.IsProduction() {
+	if env.IsProduction() {
 		resp, err := client.Do(req)
 		if err != nil {
 			return err
@@ -109,7 +110,7 @@ func (pr MergeRequest) Create() error {
 		}
 		fmt.Printf("Successfully created GitLab merge request for %v\n", pr.ProjectAPIURL)
 	} else {
-		fmt.Printf("Skipping GitLab API call due to \"%v\" env\n", pr.Config.Env)
+		fmt.Printf("Skipping GitLab API call due to \"%v\" env\n", env.GetCurrentEnv())
 	}
 
 	return nil

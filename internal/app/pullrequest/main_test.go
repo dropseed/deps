@@ -8,11 +8,13 @@ import (
 )
 
 func TestNewPullrequestFromEnv(t *testing.T) {
-	config := config.NewConfigFromEnv()
+	config := config.Config{}
+	config.LoadFlags()
+	config.LoadEnvSettings()
 
 	os.Setenv("GIT_BRANCH", "tester")
 
-	pr := NewPullrequestFromEnv("branch-name", "pr title", "pr body", config)
+	pr := NewPullrequestFromEnv("branch-name", "pr title", "pr body", &config)
 
 	if pr.DefaultBaseBranch != "tester" {
 		t.Error("DefaultBaseBranch value incorrect")
@@ -30,7 +32,7 @@ func TestNewPullrequestFromEnv(t *testing.T) {
 		t.Error("Body value incorrect")
 	}
 
-	if pr.Config != config {
+	if pr.Config != &config {
 		t.Error("Config value incorrect")
 	}
 }

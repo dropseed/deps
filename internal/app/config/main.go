@@ -1,21 +1,44 @@
 package config
 
-import "os"
-import "strings"
+import (
+	"errors"
+)
 
 // Config stores program-wide setttings
 type Config struct {
-	Env string
+	EnvSettings *EnvSettings
+	Flags       *Flags
 }
 
-// NewConfigFromEnv creates a new Config using env variables
-func NewConfigFromEnv() *Config {
-	return &Config{
-		Env: os.Getenv("DEPENDENCIES_ENV"),
+// LoadEnvSettings parses the flags and stores them on Config
+func (config *Config) LoadEnvSettings() error {
+	e := NewEnvSettingsFromEnv()
+	config.EnvSettings = e
+	return nil
+}
+
+// LoadFlags parses the flags and stores them on Config
+func (config *Config) LoadFlags() error {
+	f := ParseFlags()
+	config.Flags = f
+	return nil
+}
+
+// Validate will return any errors in the Config or its Flags
+func (config *Config) Validate() error {
+	if config.Flags.Branch == "" {
+		return errors.New("the \"branch\" flag is required")
 	}
-}
 
-// IsProduction checks if this is a production env
-func (config Config) IsProduction() bool {
-	return strings.ToLower(config.Env) == "production"
+	_, err := config.TitleFromConfig()
+	if err != nil {
+		return err
+	}
+
+	_, err = config.BodyFromConfig()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

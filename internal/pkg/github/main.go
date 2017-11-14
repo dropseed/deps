@@ -9,6 +9,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/dependencies-io/pullrequest/internal/app/env"
 	"github.com/dependencies-io/pullrequest/internal/app/pullrequest"
 )
 
@@ -62,8 +63,8 @@ func (pr PullRequest) createPR() (map[string]interface{}, error) {
 	req.Header.Add("User-Agent", "dependencies.io pullrequest")
 	req.Header.Set("Content-Type", "application/json")
 
-	if !pr.Config.IsProduction() {
-		fmt.Printf("Skipping GitHub API call due to \"%v\" env\n", pr.Config.Env)
+	if !env.IsProduction() {
+		fmt.Printf("Skipping GitHub API call due to \"%v\" env\n", env.GetCurrentEnv())
 		return nil, nil
 	}
 

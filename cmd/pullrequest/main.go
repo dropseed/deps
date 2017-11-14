@@ -6,46 +6,36 @@ import (
 	"strings"
 
 	"github.com/dependencies-io/pullrequest/internal/app/config"
+	"github.com/dependencies-io/pullrequest/internal/app/env"
 	"github.com/dependencies-io/pullrequest/internal/app/pullrequest"
 	"github.com/dependencies-io/pullrequest/internal/pkg/github"
 	"github.com/dependencies-io/pullrequest/internal/pkg/gitlab"
 )
 
-const maxBodyLength = 65535
-
 func main() {
 
-	configFlags := parseFlags()
-
-	if configFlags.branch == "" {
-		fmt.Printf("\"branch\" is required")
-		os.Exit(1)
+	config := config.Config{}
+	config.LoadEnvSettings()
+	config.LoadFlags()
+	configErr := config.Validate()
+	if configErr != nil {
+		panic(configErr)
 	}
 
-	title, err := configFlags.titleFromConfigFlags()
+	title, err := config.TitleFromConfig()
 	if err != nil {
 		panic(err)
 	}
 
-	body, err := configFlags.bodyFromConfigFlags()
+	body, err := config.BodyFromConfig()
 	if err != nil {
 		panic(err)
 	}
 
-	// look for additional user content to add to the body
-	if pullrequestNotes := os.Getenv("SETTING_PULLREQUEST_NOTES"); pullrequestNotes != "" {
-		body = strings.TrimSpace(pullrequestNotes) + "\n\n---\n\n" + body
-	}
+	branch := config.Flags.Branch
 
-	// trim the pr body string to a max of this size,
-	// should rarely happen but this way API call should still be success
-	if len(body) > maxBodyLength {
-		body = body[:maxBodyLength]
-	}
-
-	config := config.NewConfigFromEnv()
-
-	prBase := pullrequest.NewPullrequestFromEnv(configFlags.branch, title, body, config)
+	// The PR gets the final copy of the basic data sent to it, plus the config for additional options
+	prBase := pullrequest.NewPullrequestFromEnv(branch, title, body, &config)
 
 	switch gitHost := os.Getenv("GIT_HOST"); strings.ToLower(gitHost) {
 	case "github":
@@ -62,12 +52,12 @@ func main() {
 		}
 	default:
 		fmt.Printf("Unknown GIT_HOST \"%v\"\n", gitHost)
-		if config.IsProduction() {
+		if env.IsProduction() {
 			os.Exit(1)
 		}
 	}
 
-	if !config.IsProduction() {
-		fmt.Printf("pullrequest exiting successfullly in \"%v\" environment\n", config.Env)
+	if !env.IsProduction() {
+		fmt.Printf("pullrequest exiting successfullly in \"%v\" environment\n", env.GetCurrentEnv())
 	}
 }

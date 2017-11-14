@@ -9,8 +9,9 @@ import (
 )
 
 func getMR() (*MergeRequest, *pullrequest.Pullrequest) {
-	config := config.NewConfigFromEnv()
-	prBase := pullrequest.NewPullrequestFromEnv("branch", "title", "body", config)
+	config := config.Config{}
+	config.LoadEnvSettings()
+	prBase := pullrequest.NewPullrequestFromEnv("branch", "title", "body", &config)
 	return NewMergeRequestFromEnv(prBase), prBase
 }
 

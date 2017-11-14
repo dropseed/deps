@@ -1,12 +1,35 @@
 package config
 
 import "testing"
-import "os"
 
-func TestNewConfigFromEnv(t *testing.T) {
-	os.Setenv("DEPENDENCIES_ENV", "production")
-	config := NewConfigFromEnv()
-	if !config.IsProduction() {
+func TestNotLoaded(t *testing.T) {
+	config := Config{}
+	if config.EnvSettings != nil {
+		t.Fail()
+	}
+	if config.Flags != nil {
+		t.Fail()
+	}
+}
+
+func TestLoadEnvSettings(t *testing.T) {
+	config := Config{}
+	config.LoadEnvSettings()
+	if config.EnvSettings == nil {
+		t.Fail()
+	}
+	if config.Flags != nil {
+		t.Fail()
+	}
+}
+
+func TestLoadFlags(t *testing.T) {
+	config := Config{}
+	config.LoadFlags()
+	if config.EnvSettings != nil {
+		t.Fail()
+	}
+	if config.Flags == nil {
 		t.Fail()
 	}
 }
