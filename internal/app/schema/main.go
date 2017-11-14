@@ -102,7 +102,7 @@ func getSummaryForDependency(dep interface{}) (string, error) {
 	installed, _ := dep.(map[string]interface{})["installed"].(map[string]interface{})["version"]
 	available, _ := dep.(map[string]interface{})["available"]
 	highest, _ := available.([]interface{})[0].(map[string]interface{})["version"].(string)
-	return fmt.Sprintf("%v in `%v` from `%v` to `%v`", name, path, installed, highest), nil
+	return fmt.Sprintf("`%v` in `%v` from \"%v\" to \"%v\"", name, path, installed, highest), nil
 }
 
 func getContentForDependency(dep interface{}) (string, error) {
@@ -115,7 +115,7 @@ func getContentForDependency(dep interface{}) (string, error) {
 	installed, _ := dep.(map[string]interface{})["installed"].(map[string]interface{})["version"]
 	available, _ := dep.(map[string]interface{})["available"]
 	highest, _ := available.([]interface{})[0].(map[string]interface{})["version"].(string)
-	subject := fmt.Sprintf("[Dependencies.io](https://www.dependencies.io) has updated %v (a %v dependency in `%v`) from `%v` to `%v`.", name, source, path, installed, highest)
+	subject := fmt.Sprintf("[Dependencies.io](https://www.dependencies.io) has updated `%v` (a %v dependency in `%v`) from \"%v\" to \"%v\".", name, source, path, installed, highest)
 
 	content := ""
 
