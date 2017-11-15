@@ -36,6 +36,9 @@ Any actor using this will have these settings available, so they should be added
 settings:
   pullrequest_notes: Notes that will be inserted at the top of the PR body.
 
+  # automatically close outdated open PRs (works with GitHub only)
+  related_pr_behavior: close
+
   # github options
   github_labels:  # list of label names
   - bug
@@ -66,6 +69,7 @@ settings:
 ### Always optional
 
 - `SETTING_PULLREQUEST_NOTES` - user-supplied content to insert at the top of the PR body
+- `SETTING_RELATED_PR_BEHAVIOR` - can be "close" to automatically close outdated open PRs
 
 ### GitHub
 

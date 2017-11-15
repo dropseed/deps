@@ -6,6 +6,7 @@ import "github.com/dependencies-io/pullrequest/internal/app/config"
 // Adapter implements the basic Pullrequest functions
 type Adapter interface {
 	Create()
+	DoRelated()
 }
 
 // Pullrequest stores the basic data

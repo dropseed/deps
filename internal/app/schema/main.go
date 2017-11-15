@@ -60,6 +60,21 @@ func (s *Schema) GenerateTitleFromSchema() (string, error) {
 	return fmt.Sprintf("Update %v dependencies from %v", len(dependencies), strings.Join(sourceNames, ", ")), nil
 }
 
+// GenerateRelatedPRTitleSearchFromSchema generates a title search query string from the dependencies schema
+func (s *Schema) GenerateRelatedPRTitleSearchFromSchema() (string, error) {
+	dependencies, _ := s.data["dependencies"].([]interface{})
+
+	if len(dependencies) != 1 {
+		return "", errors.New("currently only works when there is exactly 1 dependency")
+	}
+
+	dep := dependencies[0].(map[string]interface{})
+	name, _ := dep["name"].(string)
+	path, _ := dep["path"].(string)
+	installed, _ := dep["installed"].(map[string]interface{})["version"].(string)
+	return fmt.Sprintf("Update %v in %v from %v to ", name, path, installed), nil
+}
+
 // GenerateBodyFromSchema generates a body string from the dependencies schema
 func (s *Schema) GenerateBodyFromSchema() (string, error) {
 	dependencies, _ := s.data["dependencies"].([]interface{})

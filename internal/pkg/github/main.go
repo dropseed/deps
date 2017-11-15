@@ -3,11 +3,13 @@ package github
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/dependencies-io/pullrequest/internal/app/env"
 	"github.com/dependencies-io/pullrequest/internal/app/pullrequest"
@@ -17,20 +19,28 @@ import (
 type PullRequest struct {
 	// directly use the properties of base Pullrequest
 	*pullrequest.Pullrequest
-	RepoFullName string
-	APIToken     string
+	RepoOwnerName string
+	RepoName      string
+	RepoFullName  string
+	APIToken      string
+	Number        int
+	CreatedAt     string
 }
 
 // NewPullRequestFromEnv creates a PullRequest using env variables
 func NewPullRequestFromEnv(prBase *pullrequest.Pullrequest) *PullRequest {
+	fullName := os.Getenv("GITHUB_REPO_FULL_NAME")
+	parts := strings.Split(fullName, "/")
 	return &PullRequest{
-		Pullrequest:  prBase,
-		RepoFullName: os.Getenv("GITHUB_REPO_FULL_NAME"),
-		APIToken:     os.Getenv("GITHUB_API_TOKEN"),
+		Pullrequest:   prBase,
+		RepoOwnerName: parts[0],
+		RepoName:      parts[1],
+		RepoFullName:  fullName,
+		APIToken:      os.Getenv("GITHUB_API_TOKEN"),
 	}
 }
 
-func (pr PullRequest) getCreateJSONData() []byte {
+func (pr *PullRequest) getCreateJSONData() []byte {
 	var base string
 	if base = os.Getenv("SETTING_GITHUB_BASE_BRANCH"); base == "" {
 		base = pr.DefaultBaseBranch
@@ -47,7 +57,13 @@ func (pr PullRequest) getCreateJSONData() []byte {
 	return pullrequestData
 }
 
-func (pr PullRequest) createPR() (map[string]interface{}, error) {
+func (pr *PullRequest) addHeadersToRequest(req *http.Request) {
+	req.Header.Add("Authorization", "token "+pr.APIToken)
+	req.Header.Add("User-Agent", "dependencies.io pullrequest")
+	req.Header.Set("Content-Type", "application/json")
+}
+
+func (pr *PullRequest) createPR() (map[string]interface{}, error) {
 	// open the actual PR, first of two API calls
 
 	pullrequestData := pr.getCreateJSONData()
@@ -59,14 +75,8 @@ func (pr PullRequest) createPR() (map[string]interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Add("Authorization", "token "+pr.APIToken)
-	req.Header.Add("User-Agent", "dependencies.io pullrequest")
-	req.Header.Set("Content-Type", "application/json")
 
-	if !env.IsProduction() {
-		fmt.Printf("Skipping GitHub API call due to \"%v\" env\n", env.GetCurrentEnv())
-		return nil, nil
-	}
+	pr.addHeadersToRequest(req)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -92,7 +102,7 @@ func (pr PullRequest) createPR() (map[string]interface{}, error) {
 }
 
 // Create performs the creation of the PR on GitHub
-func (pr PullRequest) Create() error {
+func (pr *PullRequest) Create() error {
 	// check the optional settings now, before actually creating the PR (which we'll have to update)
 	var labels []string
 	if labelsEnv := os.Getenv("SETTING_GITHUB_LABELS"); labelsEnv != "" {
@@ -118,10 +128,19 @@ func (pr PullRequest) Create() error {
 	}
 
 	fmt.Printf("Preparing to open GitHub pull request for %v\n", pr.RepoFullName)
+
+	if !env.IsProduction() {
+		fmt.Printf("Skipping GitHub API call due to \"%v\" env\n", env.GetCurrentEnv())
+		return nil
+	}
+
 	data, err := pr.createPR()
 	if err != nil {
 		return err
 	}
+
+	pr.Number = int(data["number"].(float64))
+	pr.CreatedAt = data["created_at"].(string)
 
 	// pr has been created at this point, now have to add meta fields in
 	// another request
@@ -149,9 +168,8 @@ func (pr PullRequest) Create() error {
 		if err != nil {
 			return err
 		}
-		req.Header.Add("Authorization", "token "+pr.APIToken)
-		req.Header.Add("User-Agent", "dependencies.io pullrequest")
-		req.Header.Set("Content-Type", "application/json")
+
+		pr.addHeadersToRequest(req)
 
 		client := &http.Client{}
 		resp, err := client.Do(req)
@@ -164,6 +182,44 @@ func (pr PullRequest) Create() error {
 		}
 
 		fmt.Printf("Successfully updated PR fields on %v\n", htmlURL)
+	}
+
+	return nil
+}
+
+// DoRelated performs the related PR behavior set by the user
+func (pr *PullRequest) DoRelated() error {
+	// related pr behavior is valid
+	relatedPRBehavior := pr.Pullrequest.Config.EnvSettings.RelatedPRBehavior
+	if relatedPRBehavior == "" {
+		return nil
+	}
+
+	if relatedPRBehavior != "close" {
+		return errors.New("\"close\" is the only supported GitHub related PR behavior")
+	}
+
+	issue, err := pr.getRelatedPR()
+	if err != nil {
+		return err
+	}
+	if issue == nil {
+		fmt.Printf("No related PR found.")
+		return nil
+	}
+
+	if relatedPRBehavior == "close" {
+		err := pr.closePR(issue.GetNumber())
+		if err != nil {
+			return err
+		}
+
+		comment := fmt.Sprintf("This PR has been automatically closed in favor of #%v.", pr.Number)
+		err = pr.commentOnIssue(issue.GetNumber(), comment)
+		if err != nil {
+			return err
+		}
+
 	}
 
 	return nil

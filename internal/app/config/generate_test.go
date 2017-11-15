@@ -91,3 +91,54 @@ func TestSchemaTitleAndBody(t *testing.T) {
 		t.Error("generated body does not match")
 	}
 }
+
+func TestRelatedPRCloseGivenTitle(t *testing.T) {
+	config := Config{
+		EnvSettings: &EnvSettings{
+			RelatedPRBehavior: "close",
+		},
+		Flags: &Flags{
+			Branch:               "test",
+			Title:                "test title",
+			Body:                 "test body",
+			RelatedPRTitleSearch: "previous title",
+		},
+	}
+	if title, _ := config.RelatedPRTitleSearchFromConfig(); title != "previous title" {
+		t.Error("title does not match")
+	}
+}
+
+func TestRelatedPRCloseGivenSchema(t *testing.T) {
+	schemaContent, _ := ioutil.ReadFile("../schema/test_data/single_dependency.json")
+	config := Config{
+		EnvSettings: &EnvSettings{
+			RelatedPRBehavior: "close",
+		},
+		Flags: &Flags{
+			Branch:             "test",
+			Title:              "test title",
+			Body:               "test body",
+			DependenciesSchema: string(schemaContent),
+		},
+	}
+	if title, _ := config.RelatedPRTitleSearchFromConfig(); title != "Update pullrequest in / from 0.1.0 to " {
+		t.Error("title does not match")
+	}
+}
+
+func TestRelatedPRBadSettings(t *testing.T) {
+	config := Config{
+		EnvSettings: &EnvSettings{
+			RelatedPRBehavior: "close",
+		},
+		Flags: &Flags{
+			Branch: "test",
+			Title:  "test title",
+			Body:   "test body",
+		},
+	}
+	if title, err := config.RelatedPRTitleSearchFromConfig(); title != "" && err == nil {
+		t.Fail()
+	}
+}

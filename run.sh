@@ -1,2 +1,2 @@
 #!/bin/sh
-go build ./cmd/pullrequest && env $(cat .env.$1 | xargs) ./pullrequest --branch="redux-3.7.2-11.1.0" --title=test --body="Testing it out"
+go build ./cmd/pullrequest && env $(cat .env.$1 | xargs) ./pullrequest --branch="react-16.0.0-11.0.0" --title="Deps tester" --body="Testing it out" --related-pr-title-search "Deps tester"

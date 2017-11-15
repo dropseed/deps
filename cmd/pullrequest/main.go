@@ -44,6 +44,10 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+		err = pr.DoRelated()
+		if err != nil {
+			panic(err)
+		}
 	case "gitlab":
 		pr := gitlab.NewMergeRequestFromEnv(prBase)
 		err := pr.Create()

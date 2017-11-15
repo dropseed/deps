@@ -61,6 +61,49 @@ func TestGenerateTitleFromSchemaNoDependencies(t *testing.T) {
 	}
 }
 
+func generateRelatedPRTitleSearchFromFilename(filename string) (string, error) {
+	content, err := ioutil.ReadFile(filename)
+	if err != nil {
+		panic(err)
+	}
+
+	schema, err := NewSchemaFromString(content)
+	if err != nil {
+		return "", err
+	}
+
+	title, err := schema.GenerateRelatedPRTitleSearchFromSchema()
+	if err != nil {
+		return "", err
+	}
+
+	return title, nil
+}
+
+func TestGenerateRelatedPRTitleSearchFromSchemaWithSingleDependency(t *testing.T) {
+	title, err := generateRelatedPRTitleSearchFromFilename("./test_data/single_dependency.json")
+	if err != nil {
+		t.Error(err)
+	}
+	if title != "Update pullrequest in / from 0.1.0 to " {
+		t.Error("Related PR title search does not match expected: ", title)
+	}
+}
+
+func TestGenerateRelatedPRTitleSearchFromSchemaWithTwoDependencies(t *testing.T) {
+	title, err := generateRelatedPRTitleSearchFromFilename("./test_data/two_dependencies.json")
+	if err == nil || title != "" {
+		t.Fail()
+	}
+}
+
+func TestGenerateRelatedPRTitleSearchFromSchemaNoDependencies(t *testing.T) {
+	title, err := generateRelatedPRTitleSearchFromFilename("./test_data/no_dependencies.json")
+	if err == nil || title != "" {
+		t.Fail()
+	}
+}
+
 func generateBodyFromFilename(filename string) (string, error) {
 	content, err := ioutil.ReadFile(filename)
 	if err != nil {

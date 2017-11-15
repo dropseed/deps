@@ -3,6 +3,7 @@ package gitlab
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -31,7 +32,7 @@ func NewMergeRequestFromEnv(prBase *pullrequest.Pullrequest) *MergeRequest {
 }
 
 // Create will create the merge request on GitLab
-func (pr MergeRequest) Create() error {
+func (pr *MergeRequest) Create() error {
 	fmt.Printf("Preparing to open GitLab merge request for %v\n", pr.ProjectAPIURL)
 
 	client := &http.Client{}
@@ -114,4 +115,9 @@ func (pr MergeRequest) Create() error {
 	}
 
 	return nil
+}
+
+// DoRelated for GitLab is not yet implemented
+func (pr *MergeRequest) DoRelated() error {
+	return errors.New("related PR behavior is not yet supported for GitLab")
 }
