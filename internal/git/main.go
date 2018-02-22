@@ -59,7 +59,11 @@ func AddCommit(message string, paths []string) error {
 }
 
 // Push a given branch to the origin
-func Push(branchName string) error {
+func PushJobBranch() error {
+	branchName, err := GetJobBranchName()
+	if err != nil {
+		return err
+	}
 	if !env.IsProduction() {
 		fmt.Printf("Not pushing git branch in '%s' env\n", env.GetCurrentEnv())
 		return nil

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/dependencies-io/pullrequest/internal/git"
 	"github.com/dependencies-io/pullrequest/internal/hooks"
 	"github.com/dependencies-io/pullrequest/internal/pullrequest/adapter"
 	"github.com/google/subcommands"
@@ -56,6 +57,10 @@ func (p *PullrequestCmd) Execute(_ context.Context, f *flag.FlagSet, _ ...interf
 		return printErrAndExitFailure(err)
 	}
 	if err = hooks.Run("before_pullrequest"); err != nil {
+		return printErrAndExitFailure(err)
+	}
+
+	if err = git.PushJobBranch(); err != nil {
 		return printErrAndExitFailure(err)
 	}
 
