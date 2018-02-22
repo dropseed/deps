@@ -1,0 +1,16 @@
+## Overview
+
+The following dependencies have been updated:
+
+- `yarn.lock` was updated
+
+## Details
+
+The following changes were made in the `yarn.lock` update:
+
+| Type | Updated | Added | Removed |
+|---|---|---|---|
+| Direct | 5 | - | - |
+| Transitive | 180 | 9 | 2 |
+
+View the git diff for more details about exactly what changed.

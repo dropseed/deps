@@ -1,0 +1,51 @@
+{
+    "manifests": {
+        "requirements.txt": {
+            "current": {
+                "dependencies": {
+                    "pullrequest": {
+                        "source": "go",
+                        "constraint": "0.1.0",
+                        "available": []
+                    },
+                    "requests": {
+                        "source": "pip",
+                        "constraint": "0.1.0",
+                        "available": []
+                    }
+                }
+            },
+            "updated": {
+                "dependencies": {
+                    "pullrequest": {
+                        "source": "go",
+                        "constraint": "0.3.0",
+                        "available": [
+                            {
+                                "name": "0.3.0",
+                                "content": "Third release"
+                            },
+                            {
+                                "name": "0.2.0",
+                                "content": "Second release"
+                            }
+                        ]
+                    },
+                    "requests": {
+                        "source": "pip",
+                        "constraint": "0.3.0",
+                        "available": [
+                            {
+                                "name": "0.3.0"
+                            },
+                            {
+                                "name": "0.2.0",
+                                "content": "Second release"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}

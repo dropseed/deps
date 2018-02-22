@@ -12,9 +12,9 @@ builds:
   - "386"
   goarm:
   - "6"
-  main: ./cmd/pullrequest
+  main: ./cmd/deps
   ldflags: -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
-  binary: pullrequest
+  binary: deps
   env:
   - CGO_ENABLED=0
 archive:

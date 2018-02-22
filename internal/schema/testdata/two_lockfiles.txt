@@ -1,0 +1,28 @@
+## Overview
+
+The following dependencies have been updated:
+
+- `composer.lock` was updated
+- `yarn.lock` was updated
+
+## Details
+
+The following changes were made in the `composer.lock` update:
+
+| Type | Updated | Added | Removed |
+|---|---|---|---|
+| Direct | - | - | - |
+| Transitive | 2 | - | - |
+
+View the git diff for more details about exactly what changed.
+
+---
+
+The following changes were made in the `yarn.lock` update:
+
+| Type | Updated | Added | Removed |
+|---|---|---|---|
+| Direct | 5 | - | - |
+| Transitive | 180 | 9 | 2 |
+
+View the git diff for more details about exactly what changed.
