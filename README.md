@@ -1,40 +1,74 @@
-# pullrequest [![GitHub release](https://img.shields.io/github/release/dependencies-io/deps.svg)](https://github.com/dependencies-io/deps/releases) [![Build Status](https://travis-ci.org/dependencies-io/deps.svg?branch=master)](https://travis-ci.org/dependencies-io/deps) [![license](https://img.shields.io/github/license/dependencies-io/deps.svg)](https://github.com/dependencies-io/deps/blob/master/LICENSE)
+# deps [![GitHub release](https://img.shields.io/github/release/dependencies-io/deps.svg)](https://github.com/dependencies-io/deps/releases) [![Build Status](https://travis-ci.org/dependencies-io/deps.svg?branch=master)](https://travis-ci.org/dependencies-io/deps)
 
-A Go application for sending pull requests to the different Git hosts.
+A Go application intended to be used inside of
+[dependencies.io](https://www.dependencies.io) components, to extract some of
+their shared functionality and make it easier to build and maintain the
+components themselves.
 
-Designed to be used in [dependencies.io](https://www.dependencies.io) containers.
+Designed to be used in Docker containers running on the dependencies.io infrastructure.
 
-## Usage in a dependencies.io actor
+## Usage in a dependencies.io component
 
 Add to your Dockerfile.
 
 ```dockerfile
 # add the pullrequest utility to create pull requests on different git hosts
 WORKDIR /usr/src/app
-ENV PULLREQUEST_VERSION=0.2.1
-RUN wget https://github.com/dependencies-io/deps/releases/download/${PULLREQUEST_VERSION}/pullrequest_${PULLREQUEST_VERSION}_linux_amd64.tar.gz && \
-    mkdir pullrequest && \
-    tar -zxvf pullrequest_${PULLREQUEST_VERSION}_linux_amd64.tar.gz -C pullrequest && \
-    ln -s /usr/src/app/pullrequest/pullrequest /usr/local/bin/pullrequest
+ENV DEPS_VERSION=0.2.1
+RUN wget https://github.com/dependencies-io/deps/releases/download/${DEPS_VERSION}/deps_${DEPS_VERSION}_linux_amd64.tar.gz && \
+    mkdir deps && \
+    tar -zxvf deps_${DEPS_VERSION}_linux_amd64.tar.gz -C deps && \
+    ln -s /usr/src/app/deps/deps /usr/local/bin/deps
 ```
 
-Now, in your code you can shell out to `pullrequest` (after you've `git commit`-ed and
-`git push`-ed your changes, so that the branch exists on the remote).
+### Available commands
 
-Pullrequest can then use the respective APIs and user settings to open a PR for
-the newly created branch.
+#### For collectors
 
-Most often this will utilize [dependencies-schema](https://github.com/dependencies-io/schema) to automatically generate the PR title and body content.
+`deps collect <JSON file path>` - will report the contents of the JSON file back to dependencies.io
 
-```sh
-pullrequest --branch="branch-name" --dependencies-json="{\"dependencies\":\"here\"}"
-```
+#### For actors
 
-Optionally, you can just supply your own.
+`deps branch` - creates and checks out a new branch for this update, using the
+`JOB_ID` as a unique identifier
 
-```sh
-pullrequest --branch="branch-name" --title="PR title" --body="PR body"
-```
+`deps commit -m "message" <paths>` - adds and commits files to git, similar to
+using `git` manually but automatically runs commit-related hooks (see below)
+
+`deps pullrequest <JSON file path>` - creates a pull request (or merge request)
+on the host for the repo, using the contents of the JSON file for generating PR
+content
+
+### Hooks
+
+Hooks provide dependencies.io users a way of injecting their own commands and
+scripts into the update process, making updates more flexible.
+
+Hooks can be set by the user in the `settings` section of their config (see below).
+
+#### For collects
+
+*None*
+
+#### For actors
+
+`before_branch` - runs in `deps branch`, before the branch is actually created
+
+`after_branch` - runs in `deps branch`, after the branch has been created
+
+`before_update` - runs in `deps branch`, since that is usually the first step in
+creating an update for a dependency
+
+`before_commit` - runs in `deps commit`, before the commit is made
+
+`after_commit` - runs in `deps commit`, after the commit is made
+
+`after_update` - runs in `deps pullrequest`, before the pull request is created
+since that is usually the last operation in an update
+
+`before_pullrequest` - runs in `deps pullrequest`, before the pull request is created
+
+`after_pullrequest` - runs in `deps pullrequest`, after the pull request has been created
 
 ### dependencies.yml
 
@@ -42,6 +76,10 @@ Any [dependencies-io](https://www.dependencies.io) component using this will hav
 
 ```yaml
 settings:
+  branch_prefix: our-prefix/
+
+  commit_message_prefix: "(chore) "
+
   pullrequest_notes: Notes that will be inserted at the top of the PR body.
 
   # automatically close outdated open PRs (works with GitHub only)
@@ -64,6 +102,14 @@ settings:
   gitlab_target_project_id: 1  # The target project (numeric id)
   gitlab_remove_source_branch: true  # flag indicating if a merge request should remove the source branch when merging
   gitlab_target_branch: develop  # branch to make PR against (if something other than your default branch)
+
+  # hooks - always a list of commands
+  before_update:
+  - ./scripts/bootstrap
+
+  before_commit:
+  - ./scripts/generate_file
+  - git add examplefile
 ```
 
 ## Environment variables
@@ -78,6 +124,7 @@ settings:
 
 - `SETTING_PULLREQUEST_NOTES` - user-supplied content to insert at the top of the PR body
 - `SETTING_RELATED_PR_BEHAVIOR` - can be "close" to automatically close outdated open PRs
+- `SETTING_{{HOOK_NAME}}` - JSON encoded list of commands
 
 ### GitHub
 
