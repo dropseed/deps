@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/dependencies-io/pullrequest/internal/pullrequest"
+	"github.com/dependencies-io/deps/internal/pullrequest"
 )
 
 func getMR(dependenciesJSONPath string) (*MergeRequest, *pullrequest.Pullrequest) {

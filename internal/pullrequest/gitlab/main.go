@@ -11,8 +11,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/dependencies-io/pullrequest/internal/env"
-	"github.com/dependencies-io/pullrequest/internal/pullrequest"
+	"github.com/dependencies-io/deps/internal/env"
+	"github.com/dependencies-io/deps/internal/pullrequest"
 )
 
 // MergeRequest stores additional GitLab specific data

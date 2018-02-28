@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/dependencies-io/pullrequest/internal/git"
-	"github.com/dependencies-io/pullrequest/internal/hooks"
-	"github.com/dependencies-io/pullrequest/internal/pullrequest/adapter"
+	"github.com/dependencies-io/deps/internal/git"
+	"github.com/dependencies-io/deps/internal/hooks"
+	"github.com/dependencies-io/deps/internal/pullrequest/adapter"
 	"github.com/google/subcommands"
 )
 

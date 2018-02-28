@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dependencies-io/pullrequest/internal/env"
+	"github.com/dependencies-io/deps/internal/env"
 )
 
 // Dependency contains fields and functions common to lockfiles and manifests

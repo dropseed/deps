@@ -8,7 +8,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/dependencies-io/pullrequest/internal/env"
+	"github.com/dependencies-io/deps/internal/env"
 )
 
 const maxBodyLength = 65535

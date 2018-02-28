@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os/exec"
 
-	"github.com/dependencies-io/pullrequest/internal/env"
+	"github.com/dependencies-io/deps/internal/env"
 )
 
 // Run a specified hook by name

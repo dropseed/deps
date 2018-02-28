@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/dependencies-io/pullrequest/internal/schema"
+	"github.com/dependencies-io/deps/internal/schema"
 )
 
 func getOutputForDependenciesJSONPath(path string) (string, error) {

@@ -4,8 +4,8 @@ import (
 	"context"
 	"flag"
 
-	"github.com/dependencies-io/pullrequest/internal/git"
-	"github.com/dependencies-io/pullrequest/internal/hooks"
+	"github.com/dependencies-io/deps/internal/git"
+	"github.com/dependencies-io/deps/internal/hooks"
 	"github.com/google/subcommands"
 )
 

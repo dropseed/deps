@@ -1,4 +1,4 @@
-# pullrequest [![GitHub release](https://img.shields.io/github/release/dependencies-io/pullrequest.svg)](https://github.com/dependencies-io/pullrequest/releases) [![Build Status](https://travis-ci.org/dependencies-io/pullrequest.svg?branch=master)](https://travis-ci.org/dependencies-io/pullrequest) [![license](https://img.shields.io/github/license/dependencies-io/pullrequest.svg)](https://github.com/dependencies-io/pullrequest/blob/master/LICENSE)
+# pullrequest [![GitHub release](https://img.shields.io/github/release/dependencies-io/deps.svg)](https://github.com/dependencies-io/deps/releases) [![Build Status](https://travis-ci.org/dependencies-io/deps.svg?branch=master)](https://travis-ci.org/dependencies-io/deps) [![license](https://img.shields.io/github/license/dependencies-io/deps.svg)](https://github.com/dependencies-io/deps/blob/master/LICENSE)
 
 A Go application for sending pull requests to the different Git hosts.
 
@@ -12,7 +12,7 @@ Add to your Dockerfile.
 # add the pullrequest utility to create pull requests on different git hosts
 WORKDIR /usr/src/app
 ENV PULLREQUEST_VERSION=0.2.1
-RUN wget https://github.com/dependencies-io/pullrequest/releases/download/${PULLREQUEST_VERSION}/pullrequest_${PULLREQUEST_VERSION}_linux_amd64.tar.gz && \
+RUN wget https://github.com/dependencies-io/deps/releases/download/${PULLREQUEST_VERSION}/pullrequest_${PULLREQUEST_VERSION}_linux_amd64.tar.gz && \
     mkdir pullrequest && \
     tar -zxvf pullrequest_${PULLREQUEST_VERSION}_linux_amd64.tar.gz -C pullrequest && \
     ln -s /usr/src/app/pullrequest/pullrequest /usr/local/bin/pullrequest

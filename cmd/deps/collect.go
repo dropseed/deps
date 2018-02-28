@@ -5,7 +5,7 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/dependencies-io/pullrequest/internal/collect"
+	"github.com/dependencies-io/deps/internal/collect"
 	"github.com/google/subcommands"
 )
 

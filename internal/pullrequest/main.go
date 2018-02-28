@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/dependencies-io/pullrequest/internal/git"
-	"github.com/dependencies-io/pullrequest/internal/schema"
+	"github.com/dependencies-io/deps/internal/git"
+	"github.com/dependencies-io/deps/internal/schema"
 )
 
 // Pullrequest stores the basic data
