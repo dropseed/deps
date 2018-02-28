@@ -185,7 +185,7 @@ func (s *Dependencies) GenerateBody() (string, error) {
 		contentParts = append(contentParts, parts...)
 	}
 
-	summaryHeader := "## Overview\n\nThe following dependencies have been updated:\n\n"
+	summaryHeader := "## Overview\n\nThe following dependencies have been updated by [dependencies.io](https://www.dependencies.io/):\n\n"
 	bodyHeader := "\n\n## Details\n\n"
 
 	notes := env.GetSetting("pullrequest_notes", "")

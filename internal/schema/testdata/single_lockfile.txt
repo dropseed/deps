@@ -1,16 +1,33 @@
 ## Overview
 
-The following dependencies have been updated:
+The following dependencies have been updated by [dependencies.io](https://www.dependencies.io/):
 
-- `yarn.lock` was updated
+- `yarn.lock` was updated (including 5 updated direct dependencies)
 
 ## Details
 
-The following changes were made in the `yarn.lock` update:
+#### yarn.lock
 
-| Type | Updated | Added | Removed |
-|---|---|---|---|
-| Direct | 5 | - | - |
-| Transitive | 180 | 9 | 2 |
+180 transitive dependencies were updated, 9 were added, and 2 removed. View the git diff for more details about exactly what changed.
 
-View the git diff for more details about exactly what changed.
+The following 5 direct dependencies were updated:
+
+**prop-types**
+
+<small>*We didn't find any content for 15.6.0. Feel free to open an issue at https://github.com/dependencies-io/support to suggest any improvements.*</small>
+
+**react**
+
+<small>*We didn't find any content for 15.6.2. Feel free to open an issue at https://github.com/dependencies-io/support to suggest any improvements.*</small>
+
+**react-dom**
+
+<small>*We didn't find any content for 15.6.2. Feel free to open an issue at https://github.com/dependencies-io/support to suggest any improvements.*</small>
+
+**react-redux**
+
+<small>*We didn't find any content for 5.0.6. Feel free to open an issue at https://github.com/dependencies-io/support to suggest any improvements.*</small>
+
+**redux**
+
+<small>*We didn't find any content for 3.7.2. Feel free to open an issue at https://github.com/dependencies-io/support to suggest any improvements.*</small>

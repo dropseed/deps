@@ -3,7 +3,6 @@ package schema
 import (
 	"fmt"
 	"sort"
-	"strconv"
 	"strings"
 )
 
@@ -19,7 +18,7 @@ type LockfileVersion struct {
 
 // Dependency stores data for a manifest or lockfile dependency (some fields will be empty)
 type LockfileDependency struct {
-	Source       string  `json:"source"`
+	*Dependency
 	Installed    Version `json:"installed"`
 	IsTransitive bool    `json:"is_transitive,omitempty"`
 	Constraint   string  `json:"constraint,omitempty"`
@@ -36,34 +35,12 @@ func (dep *LockfileDependency) GetDependencyTypeString() string {
 
 // LockfileChanges stores data about what changes were made to a lockfile
 type LockfileChanges struct {
-	Updated int
-	Added   int
-	Removed int
+	Updated []string
+	Added   []string
+	Removed []string
 }
 
-func (lc *LockfileChanges) getTableLine(depType string) string {
-	updatedString, addedString, removedString := "-", "-", "-"
-
-	if lc.Updated > 0 {
-		updatedString = strconv.Itoa(lc.Updated)
-	}
-	if lc.Added > 0 {
-		addedString = strconv.Itoa(lc.Added)
-	}
-	if lc.Removed > 0 {
-		removedString = strconv.Itoa(lc.Removed)
-	}
-
-	return fmt.Sprintf("| %v | %v | %v | %v |", strings.Title(depType), updatedString, addedString, removedString)
-}
-
-// GetSummaryLine returns a summary line for a bulleted markdown list
-func (lockfile *Lockfile) GetSummaryLine(lockfilePath string) (string, error) {
-	return fmt.Sprintf("- `%v` was updated", lockfilePath), nil
-}
-
-// GetBodyContent compiles the long-form content for changes to the lockfile
-func (lockfile *Lockfile) GetBodyContent(lockfilePath string) (string, error) {
+func (lockfile *Lockfile) changesByType() map[string]*LockfileChanges {
 	changesByType := map[string]*LockfileChanges{}
 
 	for name, dep := range lockfile.Current.Dependencies {
@@ -76,10 +53,10 @@ func (lockfile *Lockfile) GetBodyContent(lockfilePath string) (string, error) {
 		changesForType := changesByType[depType]
 
 		if updatedDep, found := lockfile.Updated.Dependencies[name]; !found {
-			changesForType.Removed++
+			changesForType.Removed = append(changesForType.Removed, name)
 		} else {
 			if dep.Installed.Name != updatedDep.Installed.Name {
-				changesForType.Updated++
+				changesForType.Updated = append(changesForType.Updated, name)
 			}
 		}
 	}
@@ -94,27 +71,46 @@ func (lockfile *Lockfile) GetBodyContent(lockfilePath string) (string, error) {
 			}
 			changesForType := changesByType[depType]
 
-			changesForType.Added++
+			changesForType.Added = append(changesForType.Added, name)
 		}
 	}
 
-	beforeTable := fmt.Sprintf("The following changes were made in the `%v` update:\n\n", lockfilePath)
-	afterTable := "\n\nView the git diff for more details about exactly what changed."
+	return changesByType
+}
 
-	tableHeader := "| Type | Updated | Added | Removed |\n|---|---|---|---|\n"
-	lines := []string{}
-
-	keys := []string{}
-	for k := range changesByType {
-		keys = append(keys, k)
+// GetSummaryLine returns a summary line for a bulleted markdown list
+func (lockfile *Lockfile) GetSummaryLine(lockfilePath string) (string, error) {
+	changesByType := lockfile.changesByType()
+	additional := ""
+	if direct, found := changesByType["direct"]; found && len(direct.Updated) > 0 {
+		additional = fmt.Sprintf(" (including %d updated direct dependencies)", len(direct.Updated))
 	}
-	sort.Strings(keys)
+	return fmt.Sprintf("- `%v` was updated%v", lockfilePath, additional), nil
+}
 
-	for _, depType := range keys {
-		changes := changesByType[depType]
-		lines = append(lines, changes.getTableLine(depType))
+// GetBodyContent compiles the long-form content for changes to the lockfile
+func (lockfile *Lockfile) GetBodyContent(lockfilePath string) (string, error) {
+	changesByType := lockfile.changesByType()
+
+	contentParts := []string{}
+
+	contentParts = append(contentParts, "#### "+lockfilePath)
+
+	if transitive, found := changesByType["transitive"]; found {
+		contentParts = append(contentParts, fmt.Sprintf("%d transitive dependencies were updated, %d were added, and %d removed. View the git diff for more details about exactly what changed.", len(transitive.Updated), len(transitive.Added), len(transitive.Removed)))
 	}
-	tableBody := strings.Join(lines, "\n")
 
-	return beforeTable + tableHeader + tableBody + afterTable, nil
+	if direct, found := changesByType["direct"]; found && len(direct.Updated) > 0 {
+		contentParts = append(contentParts, fmt.Sprintf("The following %d direct dependencies were updated:", len(direct.Updated)))
+
+		sort.Strings(direct.Updated) // sort first to get predictable order
+		for _, name := range direct.Updated {
+			dep := lockfile.Updated.Dependencies[name]
+			versions := []Version{dep.Installed}
+			versionContent := dep.GetMarkdownContentForVersions(name, versions)
+			contentParts = append(contentParts, fmt.Sprintf("**%s**\n\n%s", name, versionContent))
+		}
+	}
+
+	return strings.Join(contentParts, "\n\n"), nil
 }

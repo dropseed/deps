@@ -1,108 +1,60 @@
 ## Overview
 
-The following dependencies have been updated:
+The following dependencies have been updated by [dependencies.io](https://www.dependencies.io/):
 
-- `yarn.lock` was updated
+- `yarn.lock` was updated (including 5 updated direct dependencies)
 - `react` in `package.json` from "^15.5.4" to "^16.2.0"
 - `react-dom` in `package.json` from "^15.5.4" to "^16.2.0"
 - `react-scripts` in `package.json` from "^0.9.5" to "^1.0.17"
 
 ## Details
 
-The following changes were made in the `yarn.lock` update:
+#### yarn.lock
 
-| Type | Updated | Added | Removed |
-|---|---|---|---|
-| Direct | 5 | - | - |
-| Transitive | 180 | 9 | 2 |
+180 transitive dependencies were updated, 9 were added, and 2 removed. View the git diff for more details about exactly what changed.
 
-View the git diff for more details about exactly what changed.
+The following 5 direct dependencies were updated:
 
----
+**prop-types**
 
-[Dependencies.io](https://www.dependencies.io) has updated `react` (a npm dependency in `package.json`) from "^15.5.4" to "^16.2.0".
+<small>*We didn't find any content for 15.6.0. Feel free to open an issue at https://github.com/dependencies-io/support to suggest any improvements.*</small>
 
-<details>
-<summary>16.1.0</summary>
+**react**
 
-_No content found. Please open an issue at https://github.com/dependencies-io/support if you think this content could have been found._
+<small>*We didn't find any content for 15.6.2. Feel free to open an issue at https://github.com/dependencies-io/support to suggest any improvements.*</small>
 
-</details>
+**react-dom**
 
-<details>
-<summary>16.1.1</summary>
+<small>*We didn't find any content for 15.6.2. Feel free to open an issue at https://github.com/dependencies-io/support to suggest any improvements.*</small>
 
-_No content found. Please open an issue at https://github.com/dependencies-io/support if you think this content could have been found._
+**react-redux**
 
-</details>
+<small>*We didn't find any content for 5.0.6. Feel free to open an issue at https://github.com/dependencies-io/support to suggest any improvements.*</small>
 
-<details>
-<summary>16.2.0</summary>
+**redux**
 
-_No content found. Please open an issue at https://github.com/dependencies-io/support if you think this content could have been found._
-
-</details>
+<small>*We didn't find any content for 3.7.2. Feel free to open an issue at https://github.com/dependencies-io/support to suggest any improvements.*</small>
 
 ---
 
-[Dependencies.io](https://www.dependencies.io) has updated `react-dom` (a npm dependency in `package.json`) from "^15.5.4" to "^16.2.0".
+#### react
 
-<details>
-<summary>16.1.0</summary>
+This dependency is located in `package.json` and was updated from "^15.5.4" to "^16.2.0".
 
-_No content found. Please open an issue at https://github.com/dependencies-io/support if you think this content could have been found._
-
-</details>
-
-<details>
-<summary>16.1.1</summary>
-
-_No content found. Please open an issue at https://github.com/dependencies-io/support if you think this content could have been found._
-
-</details>
-
-<details>
-<summary>16.2.0</summary>
-
-_No content found. Please open an issue at https://github.com/dependencies-io/support if you think this content could have been found._
-
-</details>
+<small>*We didn't find any content for 16.1.0, 16.1.1, or 16.2.0. Feel free to open an issue at https://github.com/dependencies-io/support to suggest any improvements.*</small>
 
 ---
 
-[Dependencies.io](https://www.dependencies.io) has updated `react-scripts` (a npm dependency in `package.json`) from "^0.9.5" to "^1.0.17".
+#### react-dom
 
-<details>
-<summary>1.0.13</summary>
+This dependency is located in `package.json` and was updated from "^15.5.4" to "^16.2.0".
 
-_No content found. Please open an issue at https://github.com/dependencies-io/support if you think this content could have been found._
+<small>*We didn't find any content for 16.1.0, 16.1.1, or 16.2.0. Feel free to open an issue at https://github.com/dependencies-io/support to suggest any improvements.*</small>
 
-</details>
+---
 
-<details>
-<summary>1.0.14</summary>
+#### react-scripts
 
-_No content found. Please open an issue at https://github.com/dependencies-io/support if you think this content could have been found._
+This dependency is located in `package.json` and was updated from "^0.9.5" to "^1.0.17".
 
-</details>
-
-<details>
-<summary>1.0.15</summary>
-
-_No content found. Please open an issue at https://github.com/dependencies-io/support if you think this content could have been found._
-
-</details>
-
-<details>
-<summary>1.0.16</summary>
-
-_No content found. Please open an issue at https://github.com/dependencies-io/support if you think this content could have been found._
-
-</details>
-
-<details>
-<summary>1.0.17</summary>
-
-_No content found. Please open an issue at https://github.com/dependencies-io/support if you think this content could have been found._
-
-</details>
+<small>*We didn't find any content for 1.0.13, 1.0.14, 1.0.15, 1.0.16, or 1.0.17. Feel free to open an issue at https://github.com/dependencies-io/support to suggest any improvements.*</small>
