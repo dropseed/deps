@@ -118,6 +118,7 @@ settings:
 
 - `GIT_HOST` - "github" or "gitlab" ("test" for testing/development)
 - `GIT_BRANCH` - the default branch on the repo (usually "master")
+- `JOB_ID` - a unique identifier for this "job", in production it is a UUID4
 - `DEPENDENCIES_ENV` - should be "production" for PRs to actually be created
 
 ### Always optional
