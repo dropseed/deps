@@ -37,7 +37,7 @@ func (manifest *Manifest) GetBodyContentForDependencyName(name, manifestPath str
 	updatedDependency := manifest.Updated.Dependencies[name]
 
 	subject := fmt.Sprintf(
-		"#### %s\n\nThis dependency is located in `%s` and was updated from \"%s\" to \"%s\".",
+		"### %s\n\nThis dependency is located in `%s` and was updated from \"%s\" to \"%s\".",
 		name,
 		manifestPath,
 		currentDependency.Constraint,

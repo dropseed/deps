@@ -94,7 +94,7 @@ func (lockfile *Lockfile) GetBodyContent(lockfilePath string) (string, error) {
 
 	contentParts := []string{}
 
-	contentParts = append(contentParts, "#### "+lockfilePath)
+	contentParts = append(contentParts, "### "+lockfilePath)
 
 	if transitive, found := changesByType["transitive"]; found {
 		contentParts = append(contentParts, fmt.Sprintf("%d transitive dependencies were updated, %d were added, and %d removed. View the git diff for more details about exactly what changed.", len(transitive.Updated), len(transitive.Added), len(transitive.Removed)))
@@ -105,10 +105,11 @@ func (lockfile *Lockfile) GetBodyContent(lockfilePath string) (string, error) {
 
 		sort.Strings(direct.Updated) // sort first to get predictable order
 		for _, name := range direct.Updated {
+			currentDep := lockfile.Current.Dependencies[name]
 			dep := lockfile.Updated.Dependencies[name]
 			versions := []Version{dep.Installed}
 			versionContent := dep.GetMarkdownContentForVersions(name, versions)
-			contentParts = append(contentParts, fmt.Sprintf("**%s**\n\n%s", name, versionContent))
+			contentParts = append(contentParts, fmt.Sprintf("**%s was updated from %s to %s**\n\n%s", name, currentDep.Installed.Name, dep.Installed.Name, versionContent))
 		}
 	}
 

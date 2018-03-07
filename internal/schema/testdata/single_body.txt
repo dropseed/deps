@@ -6,7 +6,7 @@ The following dependencies have been updated by [dependencies.io](https://www.de
 
 ## Details
 
-#### pullrequest
+### pullrequest
 
 This dependency is located in `/` and was updated from "0.1.0" to "0.3.0".
 
