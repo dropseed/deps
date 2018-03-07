@@ -12,22 +12,22 @@ The following dependencies have been updated by [dependencies.io](https://www.de
 
 The following 5 direct dependencies were updated:
 
-**prop-types was updated from 15.5.10 to 15.6.0**
+#### `prop-types` was updated from 15.5.10 to 15.6.0
 
 <small>*We didn't find any content for 15.6.0. Feel free to open an issue at https://github.com/dependencies-io/support to suggest any improvements.*</small>
 
-**react was updated from 15.6.0 to 15.6.2**
+#### `react` was updated from 15.6.0 to 15.6.2
 
 <small>*We didn't find any content for 15.6.2. Feel free to open an issue at https://github.com/dependencies-io/support to suggest any improvements.*</small>
 
-**react-dom was updated from 15.6.0 to 15.6.2**
+#### `react-dom` was updated from 15.6.0 to 15.6.2
 
 <small>*We didn't find any content for 15.6.2. Feel free to open an issue at https://github.com/dependencies-io/support to suggest any improvements.*</small>
 
-**react-redux was updated from 5.0.5 to 5.0.6**
+#### `react-redux` was updated from 5.0.5 to 5.0.6
 
 <small>*We didn't find any content for 5.0.6. Feel free to open an issue at https://github.com/dependencies-io/support to suggest any improvements.*</small>
 
-**redux was updated from 3.6.0 to 3.7.2**
+#### `redux` was updated from 3.6.0 to 3.7.2
 
 <small>*We didn't find any content for 3.7.2. Feel free to open an issue at https://github.com/dependencies-io/support to suggest any improvements.*</small>

@@ -109,7 +109,7 @@ func (lockfile *Lockfile) GetBodyContent(lockfilePath string) (string, error) {
 			dep := lockfile.Updated.Dependencies[name]
 			versions := []Version{dep.Installed}
 			versionContent := dep.GetMarkdownContentForVersions(name, versions)
-			contentParts = append(contentParts, fmt.Sprintf("**%s was updated from %s to %s**\n\n%s", name, currentDep.Installed.Name, dep.Installed.Name, versionContent))
+			contentParts = append(contentParts, fmt.Sprintf("#### `%s` was updated from %s to %s\n\n%s", name, currentDep.Installed.Name, dep.Installed.Name, versionContent))
 		}
 	}
 
