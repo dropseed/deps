@@ -44,6 +44,8 @@ func (pr *PullRequest) getRelatedPR() (*github.Issue, error) {
 		return nil, err
 	}
 
+	// This search is not exact... "Update yarn.lock" will also match "Update docs/yarn.lock",
+	// so we have to do additional filtering afterwards
 	query := fmt.Sprintf(
 		"\"%v\" in:title author:%v is:pr is:open repo:%v created:<%v",
 		strings.Replace(relatedPRTitleSearch, "\"", "\\\"", -1),
@@ -57,13 +59,20 @@ func (pr *PullRequest) getRelatedPR() (*github.Issue, error) {
 		return nil, err
 	}
 
-	if total := issuesResult.GetTotal(); total > 1 {
+	filteredIssues := []github.Issue{}
+	for _, issue := range issuesResult.Issues {
+		if strings.HasPrefix(issue.GetTitle(), relatedPRTitleSearch) {
+			filteredIssues = append(filteredIssues, issue)
+		}
+	}
+
+	if total := len(filteredIssues); total > 1 {
 		return nil, fmt.Errorf("%v issues were found so we quit just to be safe", total)
 	} else if total < 1 {
 		return nil, nil
 	}
 
-	return &issuesResult.Issues[0], nil
+	return &filteredIssues[0], nil
 }
 
 func (pr *PullRequest) closePR(number int) error {
