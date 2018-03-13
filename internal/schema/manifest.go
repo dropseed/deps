@@ -7,8 +7,9 @@ import (
 // Manifest contains manifest data
 type Manifest struct {
 	// TODO path string
-	Current *ManifestVersion `json:"current"`
-	Updated *ManifestVersion `json:"updated,omitempty"`
+	Current      *ManifestVersion `json:"current"`
+	Updated      *ManifestVersion `json:"updated,omitempty"`
+	LockfilePath string           `json:"lockfile_path,omitempty"`
 }
 
 // ManifestVersion constains data for a manifest at a specific point in time
