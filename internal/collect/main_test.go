@@ -11,3 +11,10 @@ func TestGetOutput(t *testing.T) {
 		t.Error(s)
 	}
 }
+
+func TestGetOutputInvalidInput(t *testing.T) {
+	s, err := getOutputForDependenciesJSONPath("../schema/testdata/invalid.json")
+	if err == nil || s != "" {
+		t.Fail()
+	}
+}

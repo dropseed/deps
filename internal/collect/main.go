@@ -8,6 +8,11 @@ import (
 )
 
 func getOutputForDependenciesJSONPath(path string) (string, error) {
+	err := schema.ValidateDependenciesJSONPath(path)
+	if err != nil {
+		return "", err
+	}
+
 	deps, err := schema.NewDependenciesFromJSONPath(path)
 	if err != nil {
 		return "", err
