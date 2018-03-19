@@ -3,7 +3,6 @@ package gitlab
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -140,5 +139,6 @@ func (pr *MergeRequest) Create() error {
 
 // DoRelated for GitLab is not yet implemented
 func (pr *MergeRequest) DoRelated() error {
-	return errors.New("related PR behavior is not yet supported for GitLab")
+	fmt.Printf("related PR behavior is not yet supported for GitLab")
+	return nil
 }
