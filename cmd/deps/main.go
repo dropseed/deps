@@ -25,6 +25,7 @@ func main() {
 	subcommands.Register(&CommitCmd{}, "")
 	subcommands.Register(&PullrequestCmd{}, "")
 	subcommands.Register(&CollectCmd{}, "")
+	subcommands.Register(&HookCmd{}, "")
 
 	flag.Parse()
 	ctx := context.Background()
