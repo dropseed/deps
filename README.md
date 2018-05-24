@@ -27,6 +27,8 @@ RUN wget https://github.com/dependencies-io/deps/releases/download/${DEPS_VERSIO
 
 `deps collect <JSON file path>` - will report the contents of the JSON file back to dependencies.io
 
+`deps hook <hook name>` - run a named hook
+
 #### For actors
 
 `deps branch` - creates and checks out a new branch for this update, using the
@@ -39,6 +41,8 @@ using `git` manually but automatically runs commit-related hooks (see below)
 on the host for the repo, using the contents of the JSON file for generating PR
 content
 
+`deps hook <hook name>` - run a named hook
+
 ### Hooks
 
 Hooks provide dependencies.io users a way of injecting their own commands and
@@ -46,9 +50,9 @@ scripts into the update process, making updates more flexible.
 
 Hooks can be set by the user in the `settings` section of their config (see below).
 
-#### For collects
+#### For collectors
 
-*None*
+`before_update` - each collector should implement this (via `deps hook before_update`) before collection happens, so that any bootstrapping steps are run before dependencies are collected similarly to how they would be run before a pull request is made
 
 #### For actors
 
