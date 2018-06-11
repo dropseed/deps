@@ -45,21 +45,26 @@ func NewPullrequestFromDependenciesJSONPathAndEnv(dependenciesJSONPath string) (
 	}, nil
 }
 
-func (pr *PullRequest) getCreateJSONData() []byte {
+func (pr *PullRequest) getCreateJSONData() ([]byte, error) {
 	var base string
 	if base = env.GetSetting("GITHUB_BASE_BRANCH", ""); base == "" {
 		base = pr.DefaultBaseBranch
+	}
+
+	body, err := dereferenceGitHubIssueLinks(pr.Body)
+	if err != nil {
+		return nil, err
 	}
 
 	pullrequestMap := map[string]string{
 		"title": pr.Title,
 		"head":  pr.Branch,
 		"base":  base,
-		"body":  pr.Body,
+		"body":  body,
 	}
 	fmt.Printf("%+v\n", pullrequestMap)
 	pullrequestData, _ := json.Marshal(pullrequestMap)
-	return pullrequestData
+	return pullrequestData, nil
 }
 
 func (pr *PullRequest) addHeadersToRequest(req *http.Request) {
@@ -71,7 +76,10 @@ func (pr *PullRequest) addHeadersToRequest(req *http.Request) {
 func (pr *PullRequest) createPR() (map[string]interface{}, error) {
 	// open the actual PR, first of two API calls
 
-	pullrequestData := pr.getCreateJSONData()
+	pullrequestData, err := pr.getCreateJSONData()
+	if err != nil {
+		return nil, err
+	}
 	pullrequestsURL := fmt.Sprintf("https://api.github.com/repos/%v/pulls", pr.RepoFullName)
 
 	client := &http.Client{}
