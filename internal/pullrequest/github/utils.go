@@ -3,7 +3,7 @@ package github
 import "regexp"
 
 func dereferenceGitHubIssueLinks(body string) (string, error) {
-	r, err := regexp.Compile("https://github.com/([^/]+/[^/]+/(issue|pull)/\\d+)")
+	r, err := regexp.Compile("https://github.com/([^/]+/[^/]+/(issues|pull)/\\d+)")
 	if err != nil {
 		return "", err
 	}
