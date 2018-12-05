@@ -1,4 +1,5 @@
 language: go
-
+install:
+  - dep ensure -vendor-only
 after_success:
   - test -n "$TRAVIS_TAG" && curl -sL https://git.io/goreleaser | bash
