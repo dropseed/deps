@@ -1,5 +1,6 @@
 language: go
 install:
+  - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
   - dep ensure -vendor-only
 after_success:
   - test -n "$TRAVIS_TAG" && curl -sL https://git.io/goreleaser | bash
