@@ -16,10 +16,3 @@ This dependency is located in `/` and was updated from "0.1.0" to "0.3.0".
 Third release
 
 </details>
-
-<details>
-<summary>0.2.0</summary>
-
-Second release
-
-</details>

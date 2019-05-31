@@ -9,7 +9,7 @@ func TestNoopDereference(t *testing.T) {
 		t.Error(err)
 	}
 	if body != cleaned {
-		t.Fail()
+		t.FailNow()
 	}
 }
 

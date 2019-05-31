@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"errors"
 	"fmt"
 	"sort"
 	"strings"
@@ -12,16 +13,16 @@ type Lockfile struct {
 }
 
 type LockfileVersion struct {
-	Fingerprint  string                        `json:"fingerprint"`
-	Dependencies map[string]LockfileDependency `json:"dependencies"`
+	Dependencies map[string]*LockfileDependency `json:"dependencies"`
+	Fingerprint  string                         `json:"fingerprint"`
 }
 
 // Dependency stores data for a manifest or lockfile dependency (some fields will be empty)
 type LockfileDependency struct {
+	// Constraint   string   `json:"constraint,omitempty"`
+	Version      *Version `json:"version"`
+	IsTransitive bool     `json:"is_transitive,omitempty"`
 	*Dependency
-	Installed    Version `json:"installed"`
-	IsTransitive bool    `json:"is_transitive,omitempty"`
-	Constraint   string  `json:"constraint,omitempty"`
 }
 
 // GetDependencyTypeString returns a string representation of the dependencies relationship to the repo
@@ -40,6 +41,49 @@ type LockfileChanges struct {
 	Removed []string
 }
 
+func (lockfile *Lockfile) Validate() error {
+	if lockfile.Current != nil {
+		if err := lockfile.Current.Validate(); err != nil {
+			return err
+		}
+	} else {
+		return errors.New("lockfile.current is required")
+	}
+
+	if lockfile.Updated != nil {
+		if err := lockfile.Updated.Validate(); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (lv *LockfileVersion) Validate() error {
+	if lv.Fingerprint == "" {
+		return errors.New("lockfile fingerprint is required")
+	}
+
+	for _, dependency := range lv.Dependencies {
+		if err := dependency.Validate(); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (ld *LockfileDependency) Validate() error {
+	if ld.Version != nil {
+		if err := ld.Version.Validate(); err != nil {
+			return err
+		}
+	} else {
+		return errors.New("lockfile dependency.version is required")
+	}
+	return nil
+}
+
 func (lockfile *Lockfile) changesByType() map[string]*LockfileChanges {
 	changesByType := map[string]*LockfileChanges{}
 
@@ -55,7 +99,7 @@ func (lockfile *Lockfile) changesByType() map[string]*LockfileChanges {
 		if updatedDep, found := lockfile.Updated.Dependencies[name]; !found {
 			changesForType.Removed = append(changesForType.Removed, name)
 		} else {
-			if dep.Installed.Name != updatedDep.Installed.Name {
+			if dep.Version.Name != updatedDep.Version.Name {
 				changesForType.Updated = append(changesForType.Updated, name)
 			}
 		}
@@ -107,9 +151,8 @@ func (lockfile *Lockfile) GetBodyContent(lockfilePath string) (string, error) {
 		for _, name := range direct.Updated {
 			currentDep := lockfile.Current.Dependencies[name]
 			dep := lockfile.Updated.Dependencies[name]
-			versions := []Version{dep.Installed}
-			versionContent := dep.GetMarkdownContentForVersions(name, versions)
-			contentParts = append(contentParts, fmt.Sprintf("#### `%s` was updated from %s to %s\n\n%s", name, currentDep.Installed.Name, dep.Installed.Name, versionContent))
+			versionContent := dep.GetMarkdownContentForVersion(name, dep.Version)
+			contentParts = append(contentParts, fmt.Sprintf("#### `%s` was updated from %s to %s\n\n%s", name, currentDep.Version.Name, dep.Version.Name, versionContent))
 		}
 	}
 

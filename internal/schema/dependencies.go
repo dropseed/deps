@@ -1,6 +1,8 @@
 package schema
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -9,13 +11,14 @@ import (
 	"strings"
 
 	"github.com/dependencies-io/deps/internal/env"
+	"github.com/dependencies-io/deps/internal/git"
 )
 
 const maxBodyLength = 65535
 
 type Dependencies struct {
-	Lockfiles map[string]Lockfile `json:"lockfiles,omitempty"`
-	Manifests map[string]Manifest `json:"manifests,omitempty"`
+	Lockfiles map[string]*Lockfile `json:"lockfiles,omitempty"`
+	Manifests map[string]*Manifest `json:"manifests,omitempty"`
 }
 
 // NewDependenciesFromJSONPath loads Dependencies from a JSON file path
@@ -33,7 +36,26 @@ func NewDependenciesFromJSONContent(content []byte) (*Dependencies, error) {
 	if err := json.Unmarshal(content, &deps); err != nil {
 		return nil, err
 	}
+
+	if err := deps.Validate(); err != nil {
+		return nil, err
+	}
+
 	return &deps, nil
+}
+
+func (s *Dependencies) Validate() error {
+	for _, lockfile := range s.Lockfiles {
+		if err := lockfile.Validate(); err != nil {
+			return err
+		}
+	}
+	for _, manifest := range s.Manifests {
+		if err := manifest.Validate(); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // GenerateTitle generates a title string from the dependencies schema
@@ -202,7 +224,7 @@ func (s *Dependencies) GenerateBody() (string, error) {
 	return final, nil
 }
 
-func getSummaryLinesForLockfiles(lockfiles map[string]Lockfile) ([]string, error) {
+func getSummaryLinesForLockfiles(lockfiles map[string]*Lockfile) ([]string, error) {
 	summaries := make([]string, 0, len(lockfiles))
 
 	// iterate using the sorted keys instead of unpredictable map
@@ -223,7 +245,7 @@ func getSummaryLinesForLockfiles(lockfiles map[string]Lockfile) ([]string, error
 	return summaries, nil
 }
 
-func getBodyPartsForLockfiles(lockfiles map[string]Lockfile) ([]string, error) {
+func getBodyPartsForLockfiles(lockfiles map[string]*Lockfile) ([]string, error) {
 	parts := make([]string, 0, len(lockfiles))
 
 	// iterate using the sorted keys instead of unpredictable map
@@ -244,7 +266,7 @@ func getBodyPartsForLockfiles(lockfiles map[string]Lockfile) ([]string, error) {
 	return parts, nil
 }
 
-func getSummaryLinesForManifests(manifests map[string]Manifest) ([]string, error) {
+func getSummaryLinesForManifests(manifests map[string]*Manifest) ([]string, error) {
 	summaries := make([]string, 0, len(manifests))
 
 	// iterate using the sorted keys instead of unpredictable map
@@ -256,7 +278,11 @@ func getSummaryLinesForManifests(manifests map[string]Manifest) ([]string, error
 
 	for _, manifestPath := range keys {
 		manifest := manifests[manifestPath]
-
+		// summary, err := manifest.GetSummaryLine(manifestPath)
+		// if err != nil {
+		// 	return nil, err
+		// }
+		// summaries = append(summaries, summary)
 		// iterate using the sorted keys instead of unpredictable map
 		keys := []string{}
 		for name := range manifest.Updated.Dependencies {
@@ -275,7 +301,7 @@ func getSummaryLinesForManifests(manifests map[string]Manifest) ([]string, error
 	return summaries, nil
 }
 
-func getBodyPartsForManifests(manifests map[string]Manifest) ([]string, error) {
+func getBodyPartsForManifests(manifests map[string]*Manifest) ([]string, error) {
 	parts := []string{}
 
 	// iterate using the sorted keys instead of unpredictable map
@@ -305,4 +331,24 @@ func getBodyPartsForManifests(manifests map[string]Manifest) ([]string, error) {
 	}
 
 	return parts, nil
+}
+
+func (dependencies *Dependencies) GetID() (string, error) {
+	out, err := json.Marshal(dependencies)
+	if err != nil {
+		return "", err
+	}
+	sum := md5.Sum(out)
+	str := hex.EncodeToString(sum[:])
+	short := str[:7]
+	return short, nil
+}
+
+func (dependencies *Dependencies) GetBranchName() (string, error) {
+	id, err := dependencies.GetID()
+	if err != nil {
+		return "", err
+	}
+
+	return git.GetBranchName(id), nil
 }

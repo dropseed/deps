@@ -3,6 +3,7 @@ package hooks
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"os/exec"
 
 	"github.com/dependencies-io/deps/internal/env"
@@ -28,8 +29,12 @@ func Run(name string) error {
 	for index, hook := range hooks {
 		fmt.Printf("Running '%s' %d/%d\n", name, index+1, totalHooks)
 		fmt.Printf("-> %s\n", hook)
-		cmdOutput, err := exec.Command("sh", "-c", hook).CombinedOutput()
-		fmt.Println(string(cmdOutput))
+
+		cmd := exec.Command("sh", "-c", hook)
+		cmd.Env = os.Environ()
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		err := cmd.Run()
 		if err != nil {
 			return err
 		}

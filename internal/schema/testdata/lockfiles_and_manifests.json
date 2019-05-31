@@ -26928,17 +26928,23 @@
       "current": {
         "dependencies": {
           "react": {
-            "available": [],
+            "latest": {
+              "name": "^15.5.4"
+            },
             "constraint": "^15.5.4",
             "source": "npm"
           },
           "react-dom": {
-            "available": [],
+            "latest": {
+              "name": "^15.5.4"
+            },
             "constraint": "^15.5.4",
             "source": "npm"
           },
           "react-scripts": {
-            "available": [],
+            "latest": {
+              "name": "^0.9.5"
+            },
             "constraint": "^0.9.5",
             "source": "npm"
           }
@@ -26947,53 +26953,23 @@
       "updated": {
         "dependencies": {
           "react": {
-            "available": [
-              {
-                "name": "16.1.0"
-              },
-              {
-                "name": "16.1.1"
-              },
-              {
-                "name": "16.2.0"
-              }
-            ],
+            "latest": {
+              "name": "16.2.0"
+            },
             "constraint": "^16.2.0",
             "source": "npm"
           },
           "react-dom": {
-            "available": [
-              {
-                "name": "16.1.0"
-              },
-              {
-                "name": "16.1.1"
-              },
-              {
-                "name": "16.2.0"
-              }
-            ],
+            "latest": {
+              "name": "16.2.0"
+            },
             "constraint": "^16.2.0",
             "source": "npm"
           },
           "react-scripts": {
-            "available": [
-              {
-                "name": "1.0.13"
-              },
-              {
-                "name": "1.0.14"
-              },
-              {
-                "name": "1.0.15"
-              },
-              {
-                "name": "1.0.16"
-              },
-              {
-                "name": "1.0.17"
-              }
-            ],
+            "latest": {
+              "name": "1.0.17"
+            },
             "constraint": "^1.0.17",
             "source": "npm"
           }

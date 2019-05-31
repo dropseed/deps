@@ -105,34 +105,29 @@ func (pr *MergeRequest) Create() error {
 	req.Header.Add("User-Agent", "dependencies.io pullrequest")
 	req.Header.Set("Content-Type", "application/json")
 
-	if env.IsProduction() {
-		resp, err := client.Do(req)
-		if err != nil {
-			return err
-		}
-
-		if resp.StatusCode != 201 {
-			return fmt.Errorf("failed to create merge request: %+v", resp)
-		}
-
-		fmt.Printf("Successfully created GitLab merge request for %v\n", pr.ProjectAPIURL)
-
-		body, err := ioutil.ReadAll(resp.Body)
-		resp.Body.Close()
-		if err != nil {
-			return err
-		}
-
-		var data map[string]interface{}
-		if err := json.Unmarshal(body, &data); err != nil {
-			return err
-		}
-		pr.Action.Name = fmt.Sprintf("MR !%v", int(data["iid"].(float64)))
-		pr.Action.Metadata["gitlab_merge_request"] = data
-	} else {
-		fmt.Printf("Skipping GitLab API call due to \"%v\" env\n", env.GetCurrentEnv())
-		pr.Action.Name = "MR !0"
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
 	}
+
+	if resp.StatusCode != 201 {
+		return fmt.Errorf("failed to create merge request: %+v", resp)
+	}
+
+	fmt.Printf("Successfully created GitLab merge request for %v\n", pr.ProjectAPIURL)
+
+	body, err := ioutil.ReadAll(resp.Body)
+	resp.Body.Close()
+	if err != nil {
+		return err
+	}
+
+	var data map[string]interface{}
+	if err := json.Unmarshal(body, &data); err != nil {
+		return err
+	}
+	pr.Action.Name = fmt.Sprintf("MR !%v", int(data["iid"].(float64)))
+	pr.Action.Metadata["gitlab_merge_request"] = data
 
 	return nil
 }

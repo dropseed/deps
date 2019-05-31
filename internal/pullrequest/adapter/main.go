@@ -44,5 +44,6 @@ func PullrequestAdapterFromDependenciesJSONPathAndHost(dependenciesJSONPath, hos
 
 	}
 
-	return nil, fmt.Errorf("git host '%s' not recognized", host)
+	fmt.Printf("No pull request adapter for git host '%s'\n", host)
+	return nil, nil
 }

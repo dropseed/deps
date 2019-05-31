@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/dependencies-io/deps/internal/env"
@@ -15,42 +14,15 @@ import (
 // Dependency contains fields and functions common to lockfiles and manifests
 type Dependency struct {
 	Source string `json:"source"`
+	Repo   string `json:"repo,omitempty"`
 }
 
-func (dependency *Dependency) GetMarkdownContentForVersions(dependencyName string, versions []Version) string {
-	contentParts := []string{}
-	versionsNotFound := []string{}
-
-	for _, v := range versions {
-		if vContent := dependency.getMarkdownContentForVersion(dependencyName, &v); vContent != "" {
-			contentParts = append(contentParts, vContent)
-		} else {
-			versionsNotFound = append(versionsNotFound, v.Name)
-		}
+func (dependency *Dependency) GetMarkdownContentForVersion(dependencyName string, version *Version) string {
+	if vContent := dependency.getMarkdownContentForVersion(dependencyName, version); vContent != "" {
+		return vContent
+	} else {
+		return fmt.Sprintf("<small>*We didn't find any content for %s. Feel free to open an issue at https://github.com/dependencies-io/support to suggest any improvements.*</small>", version.Name)
 	}
-
-	if len(versionsNotFound) > 0 {
-		versions := ""
-		if len(versionsNotFound) == 1 {
-			versions = versionsNotFound[0]
-		} else if len(versionsNotFound) == 2 {
-			versions = versionsNotFound[0] + " or " + versionsNotFound[1]
-		} else {
-			versionsNotFound[len(versionsNotFound)-1] = "or " + versionsNotFound[len(versionsNotFound)-1]
-			versions = strings.Join(versionsNotFound, ", ")
-		}
-
-		footnote := fmt.Sprintf("<small>*We didn't find any content for %s. Feel free to open an issue at https://github.com/dependencies-io/support to suggest any improvements.*</small>", versions)
-
-		if len(contentParts) > 0 {
-			// we need a manual break here to give spacing under the details sections
-			footnote = "<br />" + footnote
-		}
-
-		contentParts = append(contentParts, footnote)
-	}
-
-	return strings.Join(contentParts, "\n\n")
 }
 
 func (dependency *Dependency) getMarkdownContentForVersion(dependencyName string, version *Version) string {
@@ -67,7 +39,7 @@ func (dependency *Dependency) getContentForVersion(dependencyName string, versio
 		return version.Content
 	}
 
-	attemptRemote := env.IsProduction() && env.GetSetting("PULLREQUEST_VERSIONS_API_DISABLED", "") == ""
+	attemptRemote := env.GetSetting("PULLREQUEST_VERSIONS_API_DISABLED", "") == ""
 	if attemptRemote && dependency.Source != "" && dependencyName != "" && version.Name != "" {
 		apiURL := fmt.Sprintf("https://versions.dependencies.io/%s/%s/%s", dependency.Source, dependencyName, version.Name)
 		tr := &http.Transport{

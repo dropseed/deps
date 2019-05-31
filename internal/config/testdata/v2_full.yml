@@ -1,0 +1,32 @@
+version: 3
+dependencies:
+- type: js
+- path: requirements.txt
+  type: python
+
+  settings:
+    # collector and actor will both use these settings
+    ok: true
+
+  lockfile_updates:
+    enabled: false
+
+  manifest_updates:
+    enabled: true
+
+    # default
+    # filters:
+    # - name: ".*"
+    #   versions: Y.Y.Y
+
+    filters:
+      # these are evaluated in order, versions for a dependency are filtered
+      # by the first match (or updates are skipped entirely if no matches)
+      - name: "django-braces"
+        enabled: false
+      - name: "django-.*"
+        versions: Y.Y.Y
+      - name: "django"
+        versions: L.Y.Y
+      - name: ".*"
+        versions: Y.Y.Y

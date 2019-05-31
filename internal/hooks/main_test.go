@@ -17,7 +17,7 @@ func TestHooksInvalidJSON(t *testing.T) {
 	os.Setenv("SETTING_TEST_HOOK", "foo")
 	err := Run("test_hook")
 	if err == nil {
-		t.Fail()
+		t.FailNow()
 	}
 }
 
@@ -25,6 +25,6 @@ func TestHooksInvalidHook(t *testing.T) {
 	os.Setenv("SETTING_TEST_HOOK", "[\"ls -a -l\", \"heywhoashit\"]")
 	err := Run("test_hook")
 	if err == nil {
-		t.Fail()
+		t.FailNow()
 	}
 }

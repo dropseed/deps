@@ -39,8 +39,51 @@
 
 [[constraint]]
   branch = "master"
-  name = "github.com/google/subcommands"
+  name = "github.com/xeipuuv/gojsonschema"
+
+[[constraint]]
+  # https://github.com/go-yaml/yaml/pull/385
+  name = "github.com/algobardo/yaml"
+  # version = "2.2.1"
+  # revision = "b1eaca2b8b42cd107547f6b0cf1d1e14d160fda6"
+  branch = "v2"
+
+[[constraint]]
+  name = "github.com/fatih/color"
+  version = "1.7.0"
+
+[[constraint]]
+  name = "github.com/imdario/mergo"
+  version = "0.3.6"
 
 [[constraint]]
   branch = "master"
-  name = "github.com/xeipuuv/gojsonschema"
+  name = "github.com/jinzhu/copier"
+
+[[constraint]]
+  name = "github.com/google/uuid"
+  version = "1.0.0"
+
+[[constraint]]
+  name = "github.com/manifoldco/promptui"
+  version = "0.3.1"
+
+[[constraint]]
+  name = "github.com/mitchellh/mapstructure"
+  version = "1.1.2"
+
+[[constraint]]
+  name = "github.com/spf13/cobra"
+  version = "0.0.3"
+
+[[constraint]]
+  name = "github.com/go-cmd/cmd"
+  version = "1.0.4"
+
+[[constraint]]
+  name = "github.com/sergi/go-diff"
+  version = "1.0.0"
+
+[[constraint]]
+  branch = "master"
+  name = "golang.org/x/crypto"

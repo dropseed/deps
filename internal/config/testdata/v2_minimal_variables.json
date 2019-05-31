@@ -1,0 +1,23 @@
+{
+  "version": 3,
+  "dependencies": [
+    {
+      "type": "python",
+      "path": "requirements.txt",
+      "settings": {},
+      "lockfile_updates": {
+        "enabled": true
+      },
+      "manifest_updates": {
+        "enabled": true,
+        "filters": [
+          {
+            "name": ".*",
+            "enabled": true,
+            "versions": "Y.Y.Y"
+          }
+        ]
+      }
+    }
+  ]
+}

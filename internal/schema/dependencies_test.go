@@ -23,7 +23,7 @@ func generateTitleFromFilename(filename string) (string, error) {
 func TestMalformedJSON(t *testing.T) {
 	_, err := NewDependenciesFromJSONContent([]byte("{not a json}"))
 	if err == nil {
-		t.Fail()
+		t.FailNow()
 	}
 }
 
@@ -50,10 +50,10 @@ func TestGenerateTitleWithTwoDependencies(t *testing.T) {
 func TestGenerateTitleNoDependencies(t *testing.T) {
 	title, err := generateTitleFromFilename("./testdata/no_dependencies.json")
 	if title != "" {
-		t.Fail()
+		t.FailNow()
 	}
 	if err == nil {
-		t.Fail()
+		t.FailNow()
 	}
 }
 
@@ -114,14 +114,14 @@ func TestGenerateRelatedPRTitleSearchWithSingleDependency(t *testing.T) {
 func TestGenerateRelatedPRTitleSearchWithTwoDependencies(t *testing.T) {
 	title, err := generateRelatedPRTitleSearchFromFilename("./testdata/two_dependencies.json")
 	if err == nil || title != "" {
-		t.Fail()
+		t.FailNow()
 	}
 }
 
 func TestGenerateRelatedPRTitleSearchNoDependencies(t *testing.T) {
 	title, err := generateRelatedPRTitleSearchFromFilename("./testdata/no_dependencies.json")
 	if err == nil || title != "" {
-		t.Fail()
+		t.FailNow()
 	}
 }
 
@@ -148,7 +148,7 @@ func TestGenerateRelatedPRTitleWithTwoLockfiles(t *testing.T) {
 func TestGenerateRelatedPRTitleWithLockfilesAndManifests(t *testing.T) {
 	title, err := generateRelatedPRTitleSearchFromFilename("./testdata/lockfiles_and_manifests.json")
 	if err == nil || title != "" {
-		t.Fail()
+		t.FailNow()
 	}
 }
 
@@ -198,10 +198,10 @@ func TestGenerateBodyWithTwoDependencies(t *testing.T) {
 func TestGenerateBodyNoDependencies(t *testing.T) {
 	body, err := generateBodyFromFilename("./testdata/no_dependencies.json")
 	if body != "" {
-		t.Fail()
+		t.FailNow()
 	}
 	if err == nil {
-		t.Fail()
+		t.FailNow()
 	}
 }
 

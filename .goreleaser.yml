@@ -13,7 +13,7 @@ builds:
   goarm:
   - "6"
   main: ./cmd/deps
-  ldflags: -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+  ldflags: -s -w -X github.com/dependencies-io/deps/internal/version.version={{.Version}} -X github.com/dependencies-io/deps/internal/version.commit={{.Commit}} -X github.com/dependencies-io/deps/internal/version.date={{.Date}}
   binary: deps
   env:
   - CGO_ENABLED=0
@@ -22,13 +22,7 @@ archive:
   name_template: '{{ .Binary }}_{{.Version}}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{
     .Arm }}{{ end }}'
   files:
-  - licence*
-  - LICENCE*
-  - license*
   - LICENSE*
-  - readme*
   - README*
-  - changelog*
-  - CHANGELOG*
 snapshot:
   name_template: SNAPSHOT-{{ .Commit }}

@@ -142,12 +142,6 @@ func (pr *PullRequest) Create() error {
 
 	fmt.Printf("Preparing to open GitHub pull request for %v\n", pr.RepoFullName)
 
-	if !env.IsProduction() {
-		fmt.Printf("Skipping GitHub API call due to \"%v\" env\n", env.GetCurrentEnv())
-		pr.Action.Name = "PR #0"
-		return nil
-	}
-
 	data, err := pr.createPR()
 	if err != nil {
 		return err

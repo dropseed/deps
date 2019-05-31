@@ -1,33 +1,18 @@
 package main
 
 import (
-	"context"
-	"flag"
-	"fmt"
 	"os"
 
-	"github.com/google/subcommands"
+	"github.com/dependencies-io/deps/internal/output"
 )
 
-func printErrAndExitFailure(err error) subcommands.ExitStatus {
-	fmt.Println(err)
-	return subcommands.ExitFailure
+func printErrAndExitFailure(err error) {
+	output.Error(err.Error())
+	os.Exit(1)
 }
 
 func main() {
-	// bulitins
-	subcommands.Register(subcommands.HelpCommand(), "")
-	// subcommands.Register(subcommands.FlagsCommand(), "")
-	subcommands.Register(subcommands.CommandsCommand(), "")
-
-	// our commands
-	subcommands.Register(&BranchCmd{}, "")
-	subcommands.Register(&CommitCmd{}, "")
-	subcommands.Register(&PullrequestCmd{}, "")
-	subcommands.Register(&CollectCmd{}, "")
-	subcommands.Register(&HookCmd{}, "")
-
-	flag.Parse()
-	ctx := context.Background()
-	os.Exit(int(subcommands.Execute(ctx)))
+	if err := rootCmd.Execute(); err != nil {
+		printErrAndExitFailure(err)
+	}
 }

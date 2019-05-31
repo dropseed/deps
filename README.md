@@ -1,47 +1,47 @@
 # deps [![GitHub release](https://img.shields.io/github/release/dependencies-io/deps.svg)](https://github.com/dependencies-io/deps/releases) [![Build Status](https://travis-ci.org/dependencies-io/deps.svg?branch=master)](https://travis-ci.org/dependencies-io/deps)
 
-A Go application intended to be used inside of
-[dependencies.io](https://www.dependencies.io) components, to extract some of
-their shared functionality and make it easier to build and maintain the
-components themselves.
+A Go application that can be installed both inside dependencies.io components, and on
+your local machine.
 
-Designed to be used in Docker containers running on the dependencies.io infrastructure.
+## Installing on your machine
+
+```sh
+$ curl https://www.dependencies.io/install.sh | bash -s 2.5.0-beta.1
+```
+
+Or, you can download binaries manually from the [releases on
+GitHub](https://github.com/dependencies-io/deps/releases).
 
 ## Usage in a dependencies.io component
 
 Add to your Dockerfile.
 
 ```dockerfile
-# add the pullrequest utility to create pull requests on different git hosts
-WORKDIR /usr/src/app
-ENV DEPS_VERSION=0.2.1
-RUN wget https://github.com/dependencies-io/deps/releases/download/${DEPS_VERSION}/deps_${DEPS_VERSION}_linux_amd64.tar.gz && \
-    mkdir deps && \
-    tar -zxvf deps_${DEPS_VERSION}_linux_amd64.tar.gz -C deps && \
-    ln -s /usr/src/app/deps/deps /usr/local/bin/deps
+ENV DEPS_VERSION=2.5.0-beta
+RUN curl https://www.dependencies.io/install.sh | bash -s -- -b /usr/local/bin $DEPS_VERSION
 ```
 
 ### Available commands
 
 #### For collectors
 
-`deps collect <JSON file path>` - will report the contents of the JSON file back to dependencies.io
+`deps component collect <JSON file path>` - will report the contents of the JSON file back to dependencies.io
 
-`deps hook <hook name>` - run a named hook
+`deps component hook <hook name>` - run a named hook
 
 #### For actors
 
-`deps branch` - creates and checks out a new branch for this update, using the
+`deps component branch` - creates and checks out a new branch for this update, using the
 `JOB_ID` as a unique identifier
 
-`deps commit -m "message" <paths>` - adds and commits files to git, similar to
+`deps component commit -m "message" <paths>` - adds and commits files to git, similar to
 using `git` manually but automatically runs commit-related hooks (see below)
 
-`deps pullrequest <JSON file path>` - creates a pull request (or merge request)
+`deps component pullrequest <JSON file path>` - creates a pull request (or merge request)
 on the host for the repo, using the contents of the JSON file for generating PR
 content
 
-`deps hook <hook name>` - run a named hook
+`deps component hook <hook name>` - run a named hook
 
 ### Hooks
 
@@ -161,4 +161,8 @@ settings:
 
 ---
 
-[![dependencies.io](https://www.dependencies.io/permanent/github-readme-logotype.png)](https://www.dependencies.io)
+<p align="center">
+    <a href="https://www.dependencies.io">
+        <img src="https://www.dependencies.io/permanent/github-readme-logotype.png" />
+    </a>
+</p>

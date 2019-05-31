@@ -1,7 +1,6 @@
 package git
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -11,66 +10,52 @@ import (
 )
 
 // BranchForJob branches off of GIT_SHA
-func BranchForJob() (string, error) {
-	gitSha := os.Getenv("GIT_SHA")
-	if gitSha == "" {
-		return "", errors.New("GIT_SHA not found in env, required to branch")
-	}
-
-	branchName, err := GetJobBranchName()
-	if err != nil {
-		return "", err
-	}
-
-	checkoutShaOutput, err := exec.Command("git", "checkout", gitSha).CombinedOutput()
-	fmt.Println(string(checkoutShaOutput))
-	if err != nil {
-		return "", err
-	}
-
-	checkoutBranchOutput, err := exec.Command("git", "checkout", "-b", branchName).CombinedOutput()
-	fmt.Println(string(checkoutBranchOutput))
-	if err != nil {
-		return "", err
-	}
-
-	return branchName, nil
-}
-
-// AddCommit a set of paths
-func AddCommit(message string, paths []string) error {
-	args := append([]string{"add"}, paths...)
-	addOutput, err := exec.Command("git", args...).CombinedOutput()
-	fmt.Println(string(addOutput))
+func Branch(to, from string) error {
+	cmd := exec.Command("git", "checkout", "-b", to, from)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err := cmd.Run()
 	if err != nil {
 		return err
 	}
-
-	commitMessagePrefix := env.GetSetting("commit_message_prefix", "")
-	commitMessage := commitMessagePrefix + message
-
-	commitOutput, err := exec.Command("git", "commit", "-m", commitMessage).CombinedOutput()
-	fmt.Println(string(commitOutput))
-	if err != nil {
-		return err
-	}
-
 	return nil
 }
 
 // Push a given branch to the origin
-func PushJobBranch() error {
-	branchName, err := GetJobBranchName()
+func PushBranch(branchName string) error {
+	cmd := exec.Command("git", "push", "--set-upstream", "origin", branchName)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err := cmd.Run()
 	if err != nil {
 		return err
 	}
-	if !env.IsProduction() {
-		fmt.Printf("Not pushing git branch in '%s' env\n", env.GetCurrentEnv())
-		return nil
-	}
+	return nil
+}
 
-	pushOutput, err := exec.Command("git", "push", "--set-upstream", "origin", branchName).CombinedOutput()
-	fmt.Println(string(pushOutput))
+func GetBranchName(id string) string {
+	branchPrefix := env.GetSetting("branch_prefix", "")
+	branchSeparator := env.GetSetting("branch_separator", "/")
+
+	return fmt.Sprintf("%sdeps%s%s", branchPrefix, branchSeparator, id)
+}
+
+func GitHost() string {
+	// or can maybe tell from github actions env var too or gitlab pipeline, but both should have remote as well
+	if override := os.Getenv("DEPS_GIT_HOST"); override != "" {
+		return override
+	}
+	// check git-remote
+	// git remote get-url origin
+	return ""
+}
+
+func Clone(url, path string) error {
+	cmd := exec.Command("git", "clone", url, path)
+	cmd.Env = os.Environ()
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err := cmd.Run()
 	if err != nil {
 		return err
 	}
@@ -78,19 +63,67 @@ func PushJobBranch() error {
 	return nil
 }
 
-func GetJobBranchName() (string, error) {
-	jobID := os.Getenv("JOB_ID")
-	if jobID == "" {
-		return "", errors.New("JOB_ID not found in env, required to generate branch name")
+func BranchExists(branch string) bool {
+	cmd := exec.Command("git", "rev-parse", "--verify", branch)
+	err := cmd.Run()
+	// TODO need to check exit code or stderr? what about other failures
+	if err != nil {
+		return false
 	}
 
-	// expected to be a UUID4, and we'll simply get the first part of the string
-	// which isn't guaranteed to be unique, but within the open branches on 1
-	// repo, we'll take the chance so that it's easier to use/type for a user
-	shortenedJobIDParts := strings.SplitN(jobID, "-", 2)
-	shortenedJobID := shortenedJobIDParts[0]
+	return true
+}
 
-	branchPrefix := env.GetSetting("branch_prefix", "")
+func GetSHA() (string, error) {
+	cmd := exec.Command("git", "rev-parse", "--verify", "HEAD")
+	out, err := cmd.CombinedOutput()
 
-	return fmt.Sprintf("%sdeps/update-%s", branchPrefix, shortenedJobID), nil
+	if err != nil {
+		return "", err
+	}
+
+	return strings.TrimSpace(string(out)), nil
+}
+
+func AddCommit(message string) error {
+	add := exec.Command("git", "add", ".")
+	if err := add.Run(); err != nil {
+		return err
+	}
+
+	commit := exec.Command("git", "commit", "-m", message)
+	if err := commit.Run(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func CheckoutLast() error {
+	cmd := exec.Command("git", "checkout", "-")
+	if err := cmd.Run(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func Stash(message string) (bool, error) {
+	cmd := exec.Command("git", "stash", "push", "--include-untracked", "-m", message)
+	out, err := cmd.CombinedOutput()
+	println(out)
+	if err != nil {
+		return false, err
+	}
+	if strings.Contains(string(out), "No local changes to save") {
+		return false, nil
+	}
+	return true, nil
+}
+
+func StashPop() error {
+	cmd := exec.Command("git", "stash", "pop")
+	if err := cmd.Run(); err != nil {
+		return err
+	}
+	return nil
 }

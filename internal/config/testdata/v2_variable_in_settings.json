@@ -1,0 +1,28 @@
+{
+  "version": 3,
+  "dependencies": [
+    {
+      "type": "python",
+      "path": ".",
+      "settings": {
+        "github_labels": [
+          "deps",
+          "automerge"
+        ]
+      },
+      "lockfile_updates": {
+        "enabled": true
+      },
+      "manifest_updates": {
+        "enabled": true,
+        "filters": [
+          {
+            "name": ".*",
+            "enabled": true,
+            "versions": "Y.Y.Y"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "manifests": {
+    "requirements.txt": {
+      "current": {
+        "dependencies": {
+          "pullrequest": {
+            "available": [
+              {
+                "content": "Second release",
+                "name": "0.2.0"
+              },
+              {
+                "name": "0.3.0"
+              }
+            ],
+            "constraint": "0.1.0",
+            "source": "go"
+          },
+          "requests": {
+            "available": [
+              {
+                "content": "Second release",
+                "name": "2.0.0"
+              },
+              {
+                "name": "3.0.0"
+              }
+            ],
+            "constraint": "1.0.0",
+            "source": "pip"
+          }
+        }
+      }
+    }
+  }
+}

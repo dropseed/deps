@@ -1,0 +1,5 @@
+version: 3
+dependencies:
+- type: python
+  settings:
+    github_labels: $labels

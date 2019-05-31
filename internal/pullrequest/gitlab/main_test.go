@@ -39,7 +39,7 @@ func TestCreateTestEnv(t *testing.T) {
 	pr, _ := getMR("../../schema/testdata/single_dependency.json")
 	err := pr.Create()
 	if err != nil {
-		t.Fail()
+		t.FailNow()
 	}
 }
 
@@ -49,7 +49,7 @@ func TestCreateProductionEnv(t *testing.T) {
 	pr, _ := getMR("../../schema/testdata/single_dependency.json")
 	err := pr.Create()
 	if err == nil {
-		t.Fail()
+		t.FailNow()
 	}
 }
 

@@ -1,0 +1,13 @@
+cases:
+- name: basic
+  type: collector
+  dockerfile: Dockerfile
+  repo_contents: tests/collector/basic/repo
+  output_data_path: tests/collector/basic/expected_output_data.json
+  user_config:
+    path: /
+    settings:
+      example_string: foo
+      example_list:
+        - foo
+        - bar

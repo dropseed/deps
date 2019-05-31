@@ -1,0 +1,58 @@
+{
+  "version": 3,
+  "dependencies": [
+    {
+      "type": "js",
+      "path": ".",
+      "settings": {},
+      "lockfile_updates": {
+        "enabled": true
+      },
+      "manifest_updates": {
+        "enabled": true,
+        "filters": [
+          {
+            "name": ".*",
+            "enabled": true,
+            "versions": "Y.Y.Y"
+          }
+        ]
+      }
+    },
+    {
+      "type": "python",
+      "path": "requirements.txt",
+      "settings": {
+        "ok": true
+      },
+      "lockfile_updates": {
+        "enabled": false
+      },
+      "manifest_updates": {
+        "enabled": true,
+        "filters": [
+          {
+            "name": "django-braces",
+            "enabled": false,
+            "versions": "Y.Y.Y"
+          },
+          {
+            "name": "django-.*",
+            "enabled": true,
+            "versions": "Y.Y.Y"
+          },
+          {
+            "name": "django",
+            "enabled": true,
+            "versions": "L.Y.Y"
+          },
+          {
+            "name": ".*",
+            "enabled": true,
+            "versions": "Y.Y.Y"
+          }
+        ]
+      }
+    }
+  ]
+}

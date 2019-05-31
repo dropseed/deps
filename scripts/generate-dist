@@ -1,0 +1,2 @@
+#!/bin/sh -e
+goreleaser release --skip-publish --skip-validate --rm-dist

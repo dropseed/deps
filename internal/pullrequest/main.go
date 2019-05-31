@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/dependencies-io/deps/internal/git"
 	"github.com/dependencies-io/deps/internal/schema"
 )
 
@@ -22,12 +21,12 @@ type Pullrequest struct {
 
 // NewPullrequestFromEnv creates a Pullrequest using env variables
 func NewPullrequestFromJSONPathAndEnv(dependenciesJSONPath string) (*Pullrequest, error) {
-	branch, err := git.GetJobBranchName()
+	dependencies, err := schema.NewDependenciesFromJSONPath(dependenciesJSONPath)
 	if err != nil {
 		return nil, err
 	}
 
-	dependencies, err := schema.NewDependenciesFromJSONPath(dependenciesJSONPath)
+	branch, err := dependencies.GetBranchName()
 	if err != nil {
 		return nil, err
 	}
