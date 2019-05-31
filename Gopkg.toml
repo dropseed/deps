@@ -87,3 +87,7 @@
 [[constraint]]
   branch = "master"
   name = "golang.org/x/crypto"
+
+[[constraint]]
+  name = "github.com/getsentry/raven-go"
+  version = "0.2.0"

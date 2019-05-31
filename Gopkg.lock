@@ -10,6 +10,14 @@
   revision = "fd13018f8a5ab9df5e8c5f1630baaad2755b7820"
 
 [[projects]]
+  digest = "1:fed1f537c2f1269fe475a8556c393fe466641682d73ef8fd0491cd3aa1e47bad"
+  name = "github.com/certifi/gocertifi"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "deb3ae2ef2610fde3330947281941c562861188b"
+  version = "2018.01.18"
+
+[[projects]]
   branch = "master"
   digest = "1:454adc7f974228ff789428b6dc098638c57a64aa0718f0bd61e53d3cd39d7a75"
   name = "github.com/chzyer/readline"
@@ -26,12 +34,12 @@
   version = "v1.7.0"
 
 [[projects]]
-  digest = "1:c3957c9c9dc7beb125fdc93c920957d0305fe66dc48712a600f8790ce9354254"
-  name = "github.com/go-cmd/cmd"
+  digest = "1:d18f6f088d7d8365df47f49dfa24b6ff6701a941118ffda30c589d1bd954074b"
+  name = "github.com/getsentry/raven-go"
   packages = ["."]
   pruneopts = "UT"
-  revision = "db1a8287640cedff487674c2f4439805b58f42aa"
-  version = "v1.0.4"
+  revision = "f04e7487e9a6b9d9837d52743fb5f40576c56411"
+  version = "v0.2.0"
 
 [[projects]]
   branch = "master"
@@ -72,14 +80,6 @@
   pruneopts = "UT"
   revision = "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
   version = "v1.0"
-
-[[projects]]
-  branch = "master"
-  digest = "1:5c3444689562053b027ef3b96372e306adbe0d7d109b6cdd48d01eb80f8bab14"
-  name = "github.com/jinzhu/copier"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "7e38e58719c33e0d44d585c4ab477a30f8cb82dd"
 
 [[projects]]
   branch = "master"
@@ -137,6 +137,14 @@
   version = "v1.1.2"
 
 [[projects]]
+  digest = "1:cf31692c14422fa27c83a05292eb5cbe0fb2775972e8f1f8446a71549bd8980b"
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "ba968bfe8b2f7e042a574c888954fccecfa385b4"
+  version = "v0.8.1"
+
+[[projects]]
   digest = "1:d917313f309bda80d27274d53985bc65651f81a5b66b820749ac7f8ef061fd04"
   name = "github.com/sergi/go-diff"
   packages = ["diffmatchpatch"]
@@ -159,30 +167,6 @@
   pruneopts = "UT"
   revision = "298182f68c66c05229eb03ac171abe6e309ee79a"
   version = "v1.0.3"
-
-[[projects]]
-  branch = "master"
-  digest = "1:f4e5276a3b356f4692107047fd2890f2fe534f4feeb6b1fd2f6dfbd87f1ccf54"
-  name = "github.com/xeipuuv/gojsonpointer"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "4e3ac2762d5f479393488629ee9370b50873b3a6"
-
-[[projects]]
-  branch = "master"
-  digest = "1:dc6a6c28ca45d38cfce9f7cb61681ee38c5b99ec1425339bfc1e1a7ba769c807"
-  name = "github.com/xeipuuv/gojsonreference"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "bd5ef7bd5415a7ac448318e64f11a24cd21e594b"
-
-[[projects]]
-  branch = "master"
-  digest = "1:130f57a7d7613383e64b777958ed20bb27e529e31374abe3d362d37a4eb433fd"
-  name = "github.com/xeipuuv/gojsonschema"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "8bcffc811467a5f691810420385be6e66b35a317"
 
 [[projects]]
   branch = "master"
@@ -247,15 +231,13 @@
   input-imports = [
     "github.com/algobardo/yaml",
     "github.com/fatih/color",
-    "github.com/go-cmd/cmd",
+    "github.com/getsentry/raven-go",
     "github.com/google/go-github/github",
     "github.com/imdario/mergo",
-    "github.com/jinzhu/copier",
     "github.com/manifoldco/promptui",
     "github.com/mitchellh/mapstructure",
     "github.com/sergi/go-diff/diffmatchpatch",
     "github.com/spf13/cobra",
-    "github.com/xeipuuv/gojsonschema",
     "golang.org/x/crypto/ssh/terminal",
     "golang.org/x/oauth2",
   ]
