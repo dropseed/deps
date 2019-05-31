@@ -85,6 +85,8 @@ func NewRunnerFromRemote(s string) (*Runner, error) {
 	cloneDirName = strings.Replace(cloneDirName, ".git", "", -1)
 	clonePath := path.Join(depsCache, "components", cloneDirName)
 
+	output.Debug("Storing component in %s", clonePath)
+
 	// or clone into components specifically for this working repo?
 	// basename-hash of path in user home dir?
 
@@ -92,6 +94,8 @@ func NewRunnerFromRemote(s string) (*Runner, error) {
 		if err := git.Clone(url, clonePath); err != nil {
 			return nil, err
 		}
+	} else if err != nil {
+		return nil, err
 	}
 
 	// run git pull - need to be able to specify version somehow though

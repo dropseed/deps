@@ -33,5 +33,7 @@ func main() {
 	}, nil)
 
 	// If panicked and caught, we still need to fail the error code
+	// TODO print that we panicked? can we still get detail? what
+	// if sentry wasnt enabled...
 	os.Exit(1)
 }
