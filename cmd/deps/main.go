@@ -23,10 +23,15 @@ func printErrAndExitFailure(err error) {
 }
 
 func main() {
-	raven.CapturePanic(func() {
+	raven.CapturePanicAndWait(func() {
 		if err := rootCmd.Execute(); err != nil {
 			raven.CaptureErrorAndWait(err, nil)
 			printErrAndExitFailure(err)
+		} else {
+			os.Exit(0)
 		}
 	}, nil)
+
+	// If panicked and caught, we still need to fail the error code
+	os.Exit(1)
 }
