@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/dropseed/deps/internal/env"
+	"github.com/dropseed/deps/internal/output"
 )
 
 // BranchForJob branches off of GIT_SHA
@@ -87,11 +88,23 @@ func GetSHA() (string, error) {
 
 func AddCommit(message string) error {
 	add := exec.Command("git", "add", ".")
+
+	if output.Verbosity > 0 {
+		add.Stdout = os.Stdout
+		add.Stderr = os.Stderr
+	}
+
 	if err := add.Run(); err != nil {
 		return err
 	}
 
 	commit := exec.Command("git", "commit", "-m", message)
+
+	if output.Verbosity > 0 {
+		commit.Stdout = os.Stdout
+		commit.Stderr = os.Stderr
+	}
+
 	if err := commit.Run(); err != nil {
 		return err
 	}
@@ -101,6 +114,12 @@ func AddCommit(message string) error {
 
 func CheckoutLast() error {
 	cmd := exec.Command("git", "checkout", "-")
+
+	if output.Verbosity > 0 {
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+	}
+
 	if err := cmd.Run(); err != nil {
 		return err
 	}
@@ -122,6 +141,20 @@ func Stash(message string) (bool, error) {
 
 func StashPop() error {
 	cmd := exec.Command("git", "stash", "pop")
+	if err := cmd.Run(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func Pull() error {
+	cmd := exec.Command("git", "pull")
+
+	if output.Verbosity > 0 {
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+	}
+
 	if err := cmd.Run(); err != nil {
 		return err
 	}

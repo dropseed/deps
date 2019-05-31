@@ -68,6 +68,8 @@ func NewRunnerFromRemote(s string) (*Runner, error) {
 		url = "https://github.com/" + url
 	}
 
+	output.Debug("Using component from %s", url)
+
 	// get cache dir for the current dir
 	userCache, err := os.UserCacheDir()
 	if err != nil {
@@ -95,6 +97,9 @@ func NewRunnerFromRemote(s string) (*Runner, error) {
 	// run git pull - need to be able to specify version somehow though
 	// "version" optional on deps config? anything that can be git checkout in this case
 	// so maybe sharing these across repos isn't bad... checkout happens every time
+	if err := git.Pull(); err != nil {
+		return nil, err
+	}
 
 	return NewRunnerFromPath(clonePath)
 }
