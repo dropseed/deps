@@ -4,9 +4,9 @@ import (
 	"errors"
 	"os"
 
-	"github.com/dependencies-io/deps/internal/component"
-	"github.com/dependencies-io/deps/internal/config"
-	"github.com/dependencies-io/deps/internal/output"
+	"github.com/dropseed/deps/internal/component"
+	"github.com/dropseed/deps/internal/config"
+	"github.com/dropseed/deps/internal/output"
 )
 
 const COLLECTOR = "collector"

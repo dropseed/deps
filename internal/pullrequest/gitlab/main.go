@@ -10,8 +10,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/dependencies-io/deps/internal/env"
-	"github.com/dependencies-io/deps/internal/pullrequest"
+	"github.com/dropseed/deps/internal/env"
+	"github.com/dropseed/deps/internal/pullrequest"
 )
 
 // MergeRequest stores additional GitLab specific data

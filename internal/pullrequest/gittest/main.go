@@ -3,7 +3,7 @@ package gittest
 import (
 	"fmt"
 
-	"github.com/dependencies-io/deps/internal/pullrequest"
+	"github.com/dropseed/deps/internal/pullrequest"
 )
 
 // PullRequest stores additional GitLab specific data

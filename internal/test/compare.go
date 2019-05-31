@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dependencies-io/deps/internal/output"
-	"github.com/dependencies-io/deps/internal/schema"
+	"github.com/dropseed/deps/internal/output"
+	"github.com/dropseed/deps/internal/schema"
 	"github.com/sergi/go-diff/diffmatchpatch"
 )
 

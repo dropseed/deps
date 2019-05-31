@@ -7,7 +7,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/dependencies-io/deps/internal/output"
+	"github.com/dropseed/deps/internal/output"
 )
 
 var UpdateOutputData = false

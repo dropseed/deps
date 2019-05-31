@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dependencies-io/deps/internal/pullrequest/github"
-	"github.com/dependencies-io/deps/internal/pullrequest/gitlab"
-	"github.com/dependencies-io/deps/internal/pullrequest/gittest"
+	"github.com/dropseed/deps/internal/pullrequest/github"
+	"github.com/dropseed/deps/internal/pullrequest/gitlab"
+	"github.com/dropseed/deps/internal/pullrequest/gittest"
 )
 
 // PullrequestAdapter implements the basic Pullrequest functions

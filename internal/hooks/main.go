@@ -6,7 +6,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/dependencies-io/deps/internal/env"
+	"github.com/dropseed/deps/internal/env"
 )
 
 // Run a specified hook by name

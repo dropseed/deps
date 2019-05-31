@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/dependencies-io/deps/internal/config"
-	"github.com/dependencies-io/deps/internal/schema"
+	"github.com/dropseed/deps/internal/config"
+	"github.com/dropseed/deps/internal/schema"
 )
 
 func getDepConfig() *config.Dependency {

@@ -1,2 +1,0 @@
-#!/bin/sh -e
-dep ensure -vendor-only

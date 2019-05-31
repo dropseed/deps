@@ -1,7 +1,7 @@
 project_name: deps
 release:
   github:
-    owner: dependencies-io
+    owner: dropseed
     name: deps
 builds:
 - goos:
@@ -13,7 +13,7 @@ builds:
   goarm:
   - "6"
   main: ./cmd/deps
-  ldflags: -s -w -X github.com/dependencies-io/deps/internal/version.version={{.Version}} -X github.com/dependencies-io/deps/internal/version.commit={{.Commit}} -X github.com/dependencies-io/deps/internal/version.date={{.Date}}
+  ldflags: -s -w -X github.com/dropseed/deps/internal/version.version={{.Version}} -X github.com/dropseed/deps/internal/version.commit={{.Commit}} -X github.com/dropseed/deps/internal/version.date={{.Date}}
   binary: deps
   env:
   - CGO_ENABLED=0

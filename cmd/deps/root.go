@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/dependencies-io/deps/internal/output"
-	"github.com/dependencies-io/deps/internal/version"
+	"github.com/dropseed/deps/internal/output"
+	"github.com/dropseed/deps/internal/version"
 	"github.com/spf13/cobra"
 )
 

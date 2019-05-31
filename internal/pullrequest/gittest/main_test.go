@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/dependencies-io/deps/internal/pullrequest"
+	"github.com/dropseed/deps/internal/pullrequest"
 )
 
 func getPR(dependenciesJSONPath string) (*PullRequest, *pullrequest.Pullrequest) {

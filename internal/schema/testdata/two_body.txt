@@ -24,4 +24,4 @@ Third release
 
 This dependency is located in `requirements.txt` and was updated from "0.1.0" to "0.3.0".
 
-<small>*We didn't find any content for 0.3.0. Feel free to open an issue at https://github.com/dependencies-io/support to suggest any improvements.*</small>
+<small>*We didn't find any content for 0.3.0. Feel free to open an issue at https://github.com/dropseed/support to suggest any improvements.*</small>

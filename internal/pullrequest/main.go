@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/dependencies-io/deps/internal/schema"
+	"github.com/dropseed/deps/internal/schema"
 )
 
 // Pullrequest stores the basic data

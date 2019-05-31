@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/dependencies-io/deps/internal/runner"
+	"github.com/dropseed/deps/internal/runner"
 	"github.com/spf13/cobra"
 )
 

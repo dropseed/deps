@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/dependencies-io/deps/internal/env"
+	"github.com/dropseed/deps/internal/env"
 )
 
 // BranchForJob branches off of GIT_SHA

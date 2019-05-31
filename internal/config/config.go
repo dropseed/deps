@@ -8,7 +8,7 @@ import (
 	"reflect"
 
 	yaml "github.com/algobardo/yaml"
-	"github.com/dependencies-io/deps/internal/output"
+	"github.com/dropseed/deps/internal/output"
 	"github.com/mitchellh/mapstructure"
 )
 

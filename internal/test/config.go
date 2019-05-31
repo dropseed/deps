@@ -13,8 +13,8 @@ import (
 	"strings"
 
 	"github.com/algobardo/yaml"
-	"github.com/dependencies-io/deps/internal/config"
-	"github.com/dependencies-io/deps/internal/schema"
+	"github.com/dropseed/deps/internal/config"
+	"github.com/dropseed/deps/internal/schema"
 )
 
 var directoryNamesToSkip = map[string]bool{

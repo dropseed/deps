@@ -11,8 +11,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/dependencies-io/deps/internal/env"
-	"github.com/dependencies-io/deps/internal/pullrequest"
+	"github.com/dropseed/deps/internal/env"
+	"github.com/dropseed/deps/internal/pullrequest"
 )
 
 // PullRequest stores additional GitHub specific data

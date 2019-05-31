@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/dependencies-io/deps/internal/output"
+	"github.com/dropseed/deps/internal/output"
 )
 
 func printErrAndExitFailure(err error) {

@@ -46,7 +46,7 @@ One of the best ways to see how components are built is to look at the ones that
 already exist! It is usually easier to start simple, and then add in
 language-specific features as needed. One of the simpler existing examples is
 our custom `git-repos` component
-[here](https://github.com/dependencies-io/git-repos).
+[here](https://github.com/dropseed/git-repos).
 
 ### Entrypoint
 

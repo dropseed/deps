@@ -3,11 +3,11 @@ package runner
 import (
 	"fmt"
 
-	"github.com/dependencies-io/deps/internal/component"
-	"github.com/dependencies-io/deps/internal/config"
-	"github.com/dependencies-io/deps/internal/git"
-	"github.com/dependencies-io/deps/internal/output"
-	"github.com/dependencies-io/deps/internal/schema"
+	"github.com/dropseed/deps/internal/component"
+	"github.com/dropseed/deps/internal/config"
+	"github.com/dropseed/deps/internal/git"
+	"github.com/dropseed/deps/internal/output"
+	"github.com/dropseed/deps/internal/schema"
 	"github.com/manifoldco/promptui"
 )
 

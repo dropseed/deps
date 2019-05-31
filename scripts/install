@@ -1,3 +1,2 @@
 #!/bin/sh -e
-go install ./cmd/deps
-echo "Installed deps"
+dep ensure -vendor-only

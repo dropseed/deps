@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/dependencies-io/deps/internal/test"
+	"github.com/dropseed/deps/internal/test"
 	"github.com/spf13/cobra"
 )
 

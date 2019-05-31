@@ -11,7 +11,7 @@ $ curl https://www.dependencies.io/install.sh | bash -s 2.5.0-beta.1
 ```
 
 Or, you can download binaries manually from the [releases on
-GitHub](https://github.com/dependencies-io/deps/releases).
+GitHub](https://github.com/dropseed/deps/releases).
 
 ## Writing tests
 

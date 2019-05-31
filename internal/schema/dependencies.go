@@ -10,8 +10,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/dependencies-io/deps/internal/env"
-	"github.com/dependencies-io/deps/internal/git"
+	"github.com/dropseed/deps/internal/env"
+	"github.com/dropseed/deps/internal/git"
 )
 
 const maxBodyLength = 65535

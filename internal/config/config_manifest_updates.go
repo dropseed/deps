@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/dependencies-io/deps/internal/schema"
-	"github.com/dependencies-io/deps/internal/versionfilter"
+	"github.com/dropseed/deps/internal/schema"
+	"github.com/dropseed/deps/internal/versionfilter"
 )
 
 type ManifestUpdates struct {

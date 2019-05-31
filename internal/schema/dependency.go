@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/dependencies-io/deps/internal/env"
+	"github.com/dropseed/deps/internal/env"
 )
 
 // Dependency contains fields and functions common to lockfiles and manifests
@@ -21,7 +21,7 @@ func (dependency *Dependency) GetMarkdownContentForVersion(dependencyName string
 	if vContent := dependency.getMarkdownContentForVersion(dependencyName, version); vContent != "" {
 		return vContent
 	} else {
-		return fmt.Sprintf("<small>*We didn't find any content for %s. Feel free to open an issue at https://github.com/dependencies-io/support to suggest any improvements.*</small>", version.Name)
+		return fmt.Sprintf("<small>*We didn't find any content for %s. Feel free to open an issue at https://github.com/dropseed/support to suggest any improvements.*</small>", version.Name)
 	}
 }
 

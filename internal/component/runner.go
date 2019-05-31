@@ -9,14 +9,14 @@ import (
 	"path"
 	"strings"
 
-	"github.com/dependencies-io/deps/internal/git"
-	"github.com/dependencies-io/deps/internal/pullrequest/adapter"
+	"github.com/dropseed/deps/internal/git"
+	"github.com/dropseed/deps/internal/pullrequest/adapter"
 
-	"github.com/dependencies-io/deps/internal/env"
-	"github.com/dependencies-io/deps/internal/schema"
+	"github.com/dropseed/deps/internal/env"
+	"github.com/dropseed/deps/internal/schema"
 
-	"github.com/dependencies-io/deps/internal/config"
-	"github.com/dependencies-io/deps/internal/output"
+	"github.com/dropseed/deps/internal/config"
+	"github.com/dropseed/deps/internal/output"
 )
 
 type Runner struct {

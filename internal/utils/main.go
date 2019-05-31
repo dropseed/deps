@@ -10,7 +10,7 @@ import (
 	"regexp"
 	"runtime"
 
-	"github.com/dependencies-io/deps/internal/output"
+	"github.com/dropseed/deps/internal/output"
 	"github.com/imdario/mergo"
 )
 
