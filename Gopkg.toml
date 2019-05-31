@@ -38,10 +38,6 @@
   unused-packages = true
 
 [[constraint]]
-  branch = "master"
-  name = "github.com/xeipuuv/gojsonschema"
-
-[[constraint]]
   # https://github.com/go-yaml/yaml/pull/385
   name = "github.com/algobardo/yaml"
   # version = "2.2.1"
@@ -57,14 +53,6 @@
   version = "0.3.6"
 
 [[constraint]]
-  branch = "master"
-  name = "github.com/jinzhu/copier"
-
-[[constraint]]
-  name = "github.com/google/uuid"
-  version = "1.0.0"
-
-[[constraint]]
   name = "github.com/manifoldco/promptui"
   version = "0.3.1"
 
@@ -75,10 +63,6 @@
 [[constraint]]
   name = "github.com/spf13/cobra"
   version = "0.0.3"
-
-[[constraint]]
-  name = "github.com/go-cmd/cmd"
-  version = "1.0.4"
 
 [[constraint]]
   name = "github.com/sergi/go-diff"
