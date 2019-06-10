@@ -77,7 +77,10 @@ func NewRunnerFromRemote(s string) (*Runner, error) {
 	}
 
 	depsCache := path.Join(userCache, DefaultCacheDirName)
-	if err := os.Mkdir(depsCache, 0777); !os.IsExist(err) || err != nil {
+	output.Debug("Making deps cache at %s", depsCache)
+	if err := os.Mkdir(depsCache, 0777); os.IsExist(err) {
+		output.Debug("Deps cache already exists")
+	} else {
 		return nil, err
 	}
 
