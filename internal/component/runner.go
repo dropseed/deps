@@ -78,9 +78,10 @@ func NewRunnerFromRemote(s string) (*Runner, error) {
 
 	depsCache := path.Join(userCache, DefaultCacheDirName)
 	output.Debug("Making deps cache at %s", depsCache)
-	if err := os.Mkdir(depsCache, 0777); os.IsExist(err) {
+	if err := os.Mkdir(depsCache, 0755); os.IsExist(err) {
 		output.Debug("Deps cache already exists")
 	} else {
+		output.Debug("Error making deps cache")
 		return nil, err
 	}
 
@@ -89,7 +90,7 @@ func NewRunnerFromRemote(s string) (*Runner, error) {
 	// perms be?
 
 	cloneDirName := path.Base(url)
-	cloneDirName = strings.Replace(cloneDirName, ".git", "", -1)
+	cloneDirName = strings.ReplaceAll(cloneDirName, ".git", "")
 	clonePath := path.Join(depsCache, "components", cloneDirName)
 
 	output.Debug("Storing component in %s", clonePath)
