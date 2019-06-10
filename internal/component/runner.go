@@ -79,7 +79,13 @@ func NewRunnerFromRemote(s string) (*Runner, error) {
 	depsCache := path.Join(userCache, DefaultCacheDirName)
 	if err := os.Mkdir(depsCache, 0777); !os.IsExist(err) {
 		return nil, err
+	} else if err != nil {
+		return nil, err
 	}
+
+	// does it not have permission to do 777 on travis?
+	// push another beta and test, but probably so -- what should the
+	// perms be?
 
 	cloneDirName := path.Base(url)
 	cloneDirName = strings.Replace(cloneDirName, ".git", "", -1)
