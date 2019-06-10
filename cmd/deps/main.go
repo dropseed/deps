@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/getsentry/raven-go"
@@ -23,7 +24,7 @@ func printErrAndExitFailure(err error) {
 }
 
 func main() {
-	raven.CapturePanicAndWait(func() {
+	panickedErr, _ := raven.CapturePanicAndWait(func() {
 		if err := rootCmd.Execute(); err != nil {
 			raven.CaptureErrorAndWait(err, nil)
 			printErrAndExitFailure(err)
@@ -32,8 +33,8 @@ func main() {
 		}
 	}, nil)
 
-	// If panicked and caught, we still need to fail the error code
-	// TODO print that we panicked? can we still get detail? what
-	// if sentry wasnt enabled...
-	os.Exit(1)
+	if panickedErr != nil {
+		output.Error(fmt.Sprintf("%v", panickedErr))
+		os.Exit(1)
+	}
 }
