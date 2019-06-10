@@ -80,7 +80,7 @@ func NewRunnerFromRemote(s string) (*Runner, error) {
 	output.Debug("Making deps cache at %s", depsCache)
 	if err := os.MkdirAll(depsCache, os.ModePerm); os.IsExist(err) {
 		output.Debug("Deps cache already exists")
-	} else {
+	} else if err != nil {
 		output.Debug("Error making deps cache")
 		return nil, err
 	}
