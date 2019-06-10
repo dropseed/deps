@@ -90,7 +90,7 @@ func NewRunnerFromRemote(s string) (*Runner, error) {
 	// perms be?
 
 	cloneDirName := path.Base(url)
-	cloneDirName = strings.ReplaceAll(cloneDirName, ".git", "")
+	cloneDirName = strings.Replace(cloneDirName, ".git", "", -1)
 	clonePath := path.Join(depsCache, "components", cloneDirName)
 
 	output.Debug("Storing component in %s", clonePath)
