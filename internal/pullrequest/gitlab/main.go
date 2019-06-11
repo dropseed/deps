@@ -36,6 +36,10 @@ func NewPullrequestFromDependenciesJSONPathAndEnv(dependenciesJSONPath string) (
 	}, nil
 }
 
+func (pr *MergeRequest) PreparePush() error {
+	return nil
+}
+
 // Create will create the merge request on GitLab
 func (pr *MergeRequest) Create() error {
 	fmt.Printf("Preparing to open GitLab merge request for %v\n", pr.ProjectAPIURL)

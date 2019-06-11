@@ -1,9 +1,6 @@
 package pullrequest
 
 import (
-	"encoding/json"
-	"errors"
-	"fmt"
 	"os"
 
 	"github.com/dropseed/deps/internal/schema"
@@ -51,46 +48,50 @@ func NewPullrequestFromJSONPathAndEnv(dependenciesJSONPath string) (*Pullrequest
 	}, nil
 }
 
-func (pr *Pullrequest) Create() error {
-	return nil
-}
+// func (pr *Pullrequest) PreparePush() error {
+// 	return nil
+// }
 
-func (pr *Pullrequest) DoRelated() error {
-	return nil
-}
+// func (pr *Pullrequest) Create() error {
+// 	return nil
+// }
 
-func (pr *Pullrequest) GetActionsJSON() (string, error) {
-	if pr.Action.Name == "" {
-		return "", errors.New("Action name must not be empty")
-	}
+// func (pr *Pullrequest) DoRelated() error {
+// 	return nil
+// }
 
-	output := map[string]interface{}{
-		pr.Action.Name: map[string]interface{}{
-			"metadata":     pr.Action.Metadata,
-			"dependencies": pr.Dependencies,
-		},
-	}
+// func (pr *Pullrequest) GetActionsJSON() (string, error) {
+// 	if pr.Action.Name == "" {
+// 		return "", errors.New("Action name must not be empty")
+// 	}
 
-	jsonOutput, err := json.Marshal(output)
-	if err != nil {
-		return "", err
-	}
+// 	output := map[string]interface{}{
+// 		pr.Action.Name: map[string]interface{}{
+// 			"metadata":     pr.Action.Metadata,
+// 			"dependencies": pr.Dependencies,
+// 		},
+// 	}
 
-	return fmt.Sprintf("<Actions>%v</Actions>", string(jsonOutput)), nil
-}
+// 	jsonOutput, err := json.Marshal(output)
+// 	if err != nil {
+// 		return "", err
+// 	}
 
-// OutputActions sends the Action to stdout
-func (pr *Pullrequest) OutputActions() error {
-	output, err := pr.GetActionsJSON()
-	if err != nil {
-		return err
-	}
+// 	return fmt.Sprintf("<Actions>%v</Actions>", string(jsonOutput)), nil
+// }
 
-	if output == "" {
-		return errors.New("no <Actions> to output")
-	}
+// // OutputActions sends the Action to stdout
+// func (pr *Pullrequest) OutputActions() error {
+// 	output, err := pr.GetActionsJSON()
+// 	if err != nil {
+// 		return err
+// 	}
 
-	fmt.Println(output)
+// 	if output == "" {
+// 		return errors.New("no <Actions> to output")
+// 	}
 
-	return nil
-}
+// 	fmt.Println(output)
+
+// 	return nil
+// }

@@ -44,6 +44,9 @@ func CI() error {
 		return err
 	}
 
+	// get Repo obj? required if running "CI" version
+	// and can validate before proceeding?
+
 	availableUpdates, err := getAvailableUpdates(cfg)
 	if err != nil {
 		return err

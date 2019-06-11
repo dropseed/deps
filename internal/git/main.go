@@ -11,15 +11,14 @@ import (
 )
 
 // BranchForJob branches off of GIT_SHA
-func Branch(to, from string) error {
+func Branch(to, from string) {
 	cmd := exec.Command("git", "checkout", "-b", to, from)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
 	if err != nil {
-		return err
+		panic(err)
 	}
-	return nil
 }
 
 // Push a given branch to the origin
@@ -47,25 +46,30 @@ func GitHost() string {
 		return override
 	}
 
-	cmd := exec.Command("git", "remote", "get-url", "origin")
-	remote, err := cmd.CombinedOutput()
-	if err != nil {
-		return ""
-	}
-
-	remoteS := string(remote)
+	remote := GitRemote()
 
 	// TODO regex, ssh urls, etc.
 
-	if strings.HasPrefix(remoteS, "https://github.com/") {
+	if strings.HasPrefix(remote, "https://github.com/") {
 		return "github"
 	}
 
-	if strings.HasPrefix(remoteS, "https://gitlab.com/") {
+	if strings.HasPrefix(remote, "https://gitlab.com/") {
 		return "gitlab"
 	}
 
 	return ""
+}
+
+func GitRemote() string {
+	cmd := exec.Command("git", "remote", "get-url", "origin")
+	remote, err := cmd.CombinedOutput()
+	if err != nil {
+		panic(err)
+	}
+	s := string(remote)
+	s = strings.TrimSpace(s)
+	return s
 }
 
 func Clone(url, path string) error {
@@ -92,15 +96,15 @@ func BranchExists(branch string) bool {
 	return true
 }
 
-func CurrentSHA() (string, error) {
+func CurrentSHA() string {
 	cmd := exec.Command("git", "rev-parse", "--verify", "HEAD")
 	out, err := cmd.CombinedOutput()
 
 	if err != nil {
-		return "", err
+		panic(err)
 	}
 
-	return strings.TrimSpace(string(out)), nil
+	return strings.TrimSpace(string(out))
 }
 
 func AddCommit(message string) error {

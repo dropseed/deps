@@ -23,3 +23,11 @@ func TestDereference(t *testing.T) {
 		t.Error(cleaned)
 	}
 }
+
+func TestRepoNameFromRemote(t *testing.T) {
+	remote := "https://github.com/dropseed/test.git/"
+	name := getRepoFullNameFromRemote(remote)
+	if name != "dropseed/test" {
+		t.Error(name)
+	}
+}

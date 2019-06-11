@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"runtime/debug"
 	"strings"
 
 	"github.com/dropseed/deps/internal/git"
@@ -191,10 +192,7 @@ func (r *Runner) Act(inputDependencies *schema.Dependencies, branch bool) error 
 
 	output.Event("Updating with %s", r.Given)
 
-	gitSha, err := git.CurrentSHA()
-	if err != nil {
-		return err
-	}
+	gitSha := git.CurrentSHA()
 
 	branchName, err := inputDependencies.GetBranchName()
 	if err != nil {
@@ -216,6 +214,29 @@ func (r *Runner) Act(inputDependencies *schema.Dependencies, branch bool) error 
 	} else {
 		output.Event("Running changes directly (no branches)")
 	}
+
+	// Try to revert this stuff if something goes wrong
+	defer func() {
+		if r := recover(); r != nil {
+			output.Error("Recovering from update error")
+
+			if err := git.CheckoutLast(); err != nil {
+				panic(err)
+			}
+
+			if stashed {
+				if err := git.StashPop(); err != nil {
+					panic(err)
+				}
+			}
+
+			// TODO delete branch?
+
+			debug.PrintStack()
+
+			panic(r)
+		}
+	}()
 
 	// Put the input in a file
 	inputJSON, err := json.MarshalIndent(inputDependencies, "", "  ")
@@ -271,7 +292,15 @@ func (r *Runner) Act(inputDependencies *schema.Dependencies, branch bool) error 
 			// TODO hooks or what do you do otherwise?
 
 			if err = git.PushBranch(branchName); err != nil {
-				return err
+				if strings.Contains(err.Error(), "Autentication failed") {
+					if err = pr.PreparePush(); err != nil {
+						return err
+					}
+
+					if err = git.PushBranch(branchName); err != nil {
+						return err
+					}
+				}
 			}
 			if err = pr.Create(); err != nil {
 				return err

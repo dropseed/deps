@@ -7,10 +7,13 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
+	"os/exec"
 	"strconv"
 	"strings"
 
 	"github.com/dropseed/deps/internal/env"
+	"github.com/dropseed/deps/internal/output"
 	"github.com/dropseed/deps/internal/pullrequest"
 )
 
@@ -33,12 +36,18 @@ func NewPullrequestFromDependenciesJSONPathAndEnv(dependenciesJSONPath string) (
 		return nil, err
 	}
 
-	fullName := getRepoFullName()
+	fullName, err := getRepoFullName()
+	if err != nil {
+		return nil, err
+	}
 	parts := strings.Split(fullName, "/")
+	owner := parts[0]
+	repo := parts[1]
+
 	return &PullRequest{
 		Pullrequest:   prBase,
-		RepoOwnerName: parts[0],
-		RepoName:      parts[1],
+		RepoOwnerName: owner,
+		RepoName:      repo,
 		RepoFullName:  fullName,
 		APIToken:      getAPIToken(),
 	}, nil
@@ -113,6 +122,18 @@ func (pr *PullRequest) createPR() (map[string]interface{}, error) {
 	}
 
 	return data, nil
+}
+
+func (pr *PullRequest) PreparePush() error {
+	output.Debug("Writing GitHub token to ~/.netrc")
+	echo := fmt.Sprintf("echo -e \"machine github.com\n  login x-access-token\n  password %s\" >> ~/.netrc", pr.APIToken)
+	cmd := exec.Command("sh", "-c", echo)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		return err
+	}
+	return nil
 }
 
 // Create performs the creation of the PR on GitHub

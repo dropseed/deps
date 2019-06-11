@@ -1,9 +1,12 @@
 package github
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"regexp"
+
+	"github.com/dropseed/deps/internal/git"
 )
 
 func dereferenceGitHubIssueLinks(body string) (string, error) {
@@ -15,27 +18,44 @@ func dereferenceGitHubIssueLinks(body string) (string, error) {
 	return sanitized, nil
 }
 
-func getRepoFullName() string {
+func getRepoFullName() (string, error) {
 
-	if s := os.Getenv("DEPS_GITHUB_REPO_FULL_NAME"); s != "" {
-		return s
+	// Custom override
+	if s := os.Getenv("DEPS_GITHUB_REPOSITORY"); s != "" {
+		return s, nil
+	}
+
+	// GitHub Actions
+	if s := os.Getenv("GITHUB_REPOSITORY"); s != "" {
+		return s, nil
 	}
 
 	if s := os.Getenv("TRAVIS_REPO_SLUG"); s != "" {
-		return s
+		return s, nil
 	}
 
 	if s := os.Getenv("CIRCLE_PROJECT_USERNAME"); s != "" {
-		return fmt.Sprintf("%s/%s", s, os.Getenv("CIRCLE_PROJECT_REPONAME"))
+		return fmt.Sprintf("%s/%s", s, os.Getenv("CIRCLE_PROJECT_REPONAME")), nil
 	}
 
-	// git remote
+	if s := getRepoFullNameFromRemote(git.GitRemote()); s != "" {
+		return s, nil
+	}
 
+	return "", errors.New("Unable to find GitHub repo full name")
+}
+
+func getRepoFullNameFromRemote(remote string) string {
+	pattern := regexp.MustCompile("([a-zA-Z0-9_-]+\\/[a-zA-Z0-9_-]+)(\\.git)?\\/?$")
+	matches := pattern.FindStringSubmatch(remote)
+	if len(matches) > 0 {
+		return matches[1]
+	}
 	return ""
 }
 
 func getAPIToken() string {
-	if s := os.Getenv("DEPS_GITHUB_API_TOKEN"); s != "" {
+	if s := os.Getenv("DEPS_GITHUB_TOKEN"); s != "" {
 		return s
 	}
 
@@ -44,5 +64,5 @@ func getAPIToken() string {
 		return s
 	}
 
-	return ""
+	panic("Unable to find GitHub API token")
 }

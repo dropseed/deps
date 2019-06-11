@@ -24,6 +24,10 @@ func NewPullrequestFromDependenciesJSONPathAndEnv(dependenciesJSONPath string) (
 	}, nil
 }
 
+func (pr *PullRequest) PreparePush() error {
+	return nil
+}
+
 // Create will mock the create op
 func (pr *PullRequest) Create() error {
 	fmt.Println("Doing mock create PR behavior...success!")
