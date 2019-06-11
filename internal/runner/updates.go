@@ -26,7 +26,7 @@ func (update *Update) branchExists() (bool, error) {
 	return git.BranchExists(branch), nil
 }
 
-type Updates map[component.Runner][]Update
+type Updates map[*component.Runner][]Update
 
 func (updates Updates) PrintOverview() {
 	if len(updates) < 1 {
@@ -86,8 +86,7 @@ func (availableUpdates Updates) Prompt(branch bool) error {
 
 			if i < len(updates) {
 				update := updates[i]
-				err := runner.Act(update.dependencyConfig, update.dependencies, branch)
-				if err != nil {
+				if err := runner.Act(update.dependencies, branch); err != nil {
 					return err
 				}
 				update.completed = true
@@ -104,8 +103,7 @@ func (availableUpdates Updates) Prompt(branch bool) error {
 func (availableUpdates Updates) Run(branch bool) error {
 	for runner, updates := range availableUpdates {
 		for _, update := range updates {
-			err := runner.Act(update.dependencyConfig, update.dependencies, branch)
-			if err != nil {
+			if err := runner.Act(update.dependencies, branch); err != nil {
 				return err
 			}
 			update.completed = true

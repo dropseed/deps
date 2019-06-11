@@ -1,12 +1,19 @@
 package config
 
-import "strings"
+import (
+	"fmt"
+	"os"
+	"strings"
+
+	"github.com/dropseed/deps/internal/env"
+)
 
 // Dependency is a path + type in dependencies.yml
 type Dependency struct {
-	Type            string                 `mapstructure:"type" yaml:"type" json:"type"`
-	Version         string                 `mapstructure:"version,omitempty" yaml:"version,omitempty" json:"version,omitempty"`
+	Type string `mapstructure:"type" yaml:"type" json:"type"`
+	// Version         string                 `mapstructure:"version,omitempty" yaml:"version,omitempty" json:"version,omitempty"`
 	Path            string                 `mapstructure:"path,omitempty" yaml:"path,omitempty" json:"path,omitempty"`
+	Env             map[string]string      `mapstructure:"env,omitempty" yaml:"env,omitempty" json:"env"`
 	Settings        map[string]interface{} `mapstructure:"settings,omitempty" yaml:"settings,omitempty" json:"settings"`
 	LockfileUpdates LockfileUpdates        `mapstructure:"lockfile_updates,omitempty" yaml:"lockfile_updates,omitempty" json:"lockfile_updates,omitempty"`
 	ManifestUpdates ManifestUpdates        `mapstructure:"manifest_updates,omitempty" yaml:"manifest_updates,omitempty" json:"manifest_updates,omitempty"`
@@ -52,4 +59,22 @@ func (dependency *Dependency) Compile() {
 			filter.Versions = "Y.Y.Y"
 		}
 	}
+}
+
+func (dependency *Dependency) Environ() ([]string, error) {
+	environ := os.Environ()
+
+	for k, v := range dependency.Settings {
+		environString, err := env.SettingToEnviron(k, v)
+		if err != nil {
+			return nil, err
+		}
+		environ = append(environ, environString)
+	}
+
+	for k, v := range dependency.Env {
+		environ = append(environ, fmt.Sprintf("%s=%s", k, v))
+	}
+
+	return environ, nil
 }

@@ -97,20 +97,34 @@ func getConfig() (*config.Config, error) {
 func getAvailableUpdates(cfg *config.Config) (Updates, error) {
 	availableUpdates := Updates{}
 
-	for _, dependencyConfig := range cfg.Dependencies {
+	for index, dependencyConfig := range cfg.Dependencies {
 
 		runner, err := component.NewRunnerFromString(dependencyConfig.Type)
 		if err != nil {
 			return nil, err
 		}
+		env, err := dependencyConfig.Environ()
+		if err != nil {
+			return nil, err
+		}
+		runner.Index = index
+		runner.Env = env
 
 		// add a .shouldInstall - true when local or ref changed?
+
+		// overriding this is really just a debug/testing thing... shouldn't need to commit it?
+		// so what's the best way to accomplish that...
+		// cmd line flag or env var...?
+		// or a separate patch type config file? so you can ignore it/trash it etc.
+		// but it can have complex types?
+		// dependencies_components.yml - still not easy in CI really
+
 		err = runner.Install()
 		if err != nil {
 			return nil, err
 		}
 
-		dependencies, err := runner.Collect(dependencyConfig)
+		dependencies, err := runner.Collect(dependencyConfig.Path)
 		if err != nil {
 			return nil, err
 		}
@@ -121,7 +135,7 @@ func getAvailableUpdates(cfg *config.Config) (Updates, error) {
 		}
 
 		if len(updates) > 0 {
-			availableUpdates[*runner] = updates
+			availableUpdates[runner] = updates
 		}
 	}
 

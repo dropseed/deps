@@ -12,17 +12,17 @@ import (
 	"github.com/dropseed/deps/internal/git"
 	"github.com/dropseed/deps/internal/pullrequest/adapter"
 
-	"github.com/dropseed/deps/internal/env"
 	"github.com/dropseed/deps/internal/schema"
 
-	"github.com/dropseed/deps/internal/config"
 	"github.com/dropseed/deps/internal/output"
 )
 
 type Runner struct {
+	Index  int
 	Given  string
 	Config *Config
 	Path   string
+	Env    []string
 }
 
 const DEBUG = true
@@ -30,16 +30,16 @@ const DefaultRemotePrefix = "dropseed/deps-"
 const DefaultCacheDirName = "deps"
 
 func NewRunnerFromString(s string) (*Runner, error) {
-	runner, err := NewRunnerFromPath(s)
+	runner, err := newRunnerFromPath(s)
 
 	if os.IsNotExist(err) {
-		runner, err = NewRunnerFromRemote(s)
+		runner, err = newRunnerFromRemote(s)
 	}
 
 	return runner, err
 }
 
-func NewRunnerFromPath(s string) (*Runner, error) {
+func newRunnerFromPath(s string) (*Runner, error) {
 	componentPath := s
 
 	configPath := path.Join(componentPath, DefaultFilename)
@@ -55,7 +55,7 @@ func NewRunnerFromPath(s string) (*Runner, error) {
 	}, nil
 }
 
-func NewRunnerFromRemote(s string) (*Runner, error) {
+func newRunnerFromRemote(s string) (*Runner, error) {
 	url := s
 
 	if !strings.Contains(url, "/") {
@@ -113,11 +113,19 @@ func NewRunnerFromRemote(s string) (*Runner, error) {
 		return nil, err
 	}
 
-	return NewRunnerFromPath(clonePath)
+	return newRunnerFromPath(clonePath)
 }
 
 func (r *Runner) GetName() string {
 	return path.Base(r.Path)
+}
+
+func (r *Runner) getOverrideFromEnv(name string) string {
+	override := os.Getenv(fmt.Sprintf("DEPS_%d_%s", r.Index, strings.ToUpper(name)))
+	if override != "" {
+		output.Event("Overriding %s command from env", name)
+	}
+	return override
 }
 
 func (r *Runner) Install() error {
@@ -126,10 +134,18 @@ func (r *Runner) Install() error {
 	// - yes it does if new (just cloned)
 	// - yes it does if ref chagned
 	// so maybe not horrible if it runs every time right now
+
 	output.Event("Installing %s", r.Given)
-	cmd := exec.Command("sh", "-c", r.Config.Install)
+
+	command := r.Config.Install
+	if override := r.getOverrideFromEnv("install"); override != "" {
+		command = override
+	}
+	output.Debug(command)
+
+	cmd := exec.Command("sh", "-c", command)
 	cmd.Dir = r.Path
-	cmd.Env = os.Environ()
+	cmd.Env = r.Env
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
@@ -139,11 +155,15 @@ func (r *Runner) Install() error {
 	return nil
 }
 
-func (r *Runner) Collect(dependencyConfig *config.Dependency) (*schema.Dependencies, error) {
+func (r *Runner) Collect(inputPath string) (*schema.Dependencies, error) {
 	output.Event("Collecting with %s", r.Given)
 
-	inputPath := dependencyConfig.Path
-	outputPath, err := r.run(r.Config.Collect, dependencyConfig, inputPath)
+	command := r.Config.Collect
+	if override := r.getOverrideFromEnv("collect"); override != "" {
+		command = override
+	}
+
+	outputPath, err := r.run(command, inputPath)
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +182,7 @@ func (r *Runner) Collect(dependencyConfig *config.Dependency) (*schema.Dependenc
 	return dependencies, nil
 }
 
-func (r *Runner) Act(dependencyConfig *config.Dependency, inputDependencies *schema.Dependencies, branch bool) error {
+func (r *Runner) Act(inputDependencies *schema.Dependencies, branch bool) error {
 	// In CI
 	// - clear out git (using stash)
 	// - branch, commit, push, PR
@@ -214,7 +234,13 @@ func (r *Runner) Act(dependencyConfig *config.Dependency, inputDependencies *sch
 	}
 
 	// Run it
-	outputPath, err := r.run(r.Config.Act, dependencyConfig, inputFile.Name())
+
+	command := r.Config.Act
+	if override := r.getOverrideFromEnv("act"); override != "" {
+		command = override
+	}
+
+	outputPath, err := r.run(command, inputFile.Name())
 	if err != nil {
 		return err
 	}
@@ -273,39 +299,27 @@ func (r *Runner) Act(dependencyConfig *config.Dependency, inputDependencies *sch
 	return nil
 }
 
-func (r *Runner) envFromDependencyConfig(dependencyConfig *config.Dependency) ([]string, error) {
-	environ := os.Environ()
-
-	// TODO also add env to dependencyConfig
-
-	for k, v := range dependencyConfig.Settings {
-		environString, err := env.SettingToEnviron(k, v)
-		if err != nil {
-			return nil, err
-		}
-		environ = append(environ, environString)
-	}
-
-	return environ, nil
-}
-
-func (r *Runner) run(command string, dependencyConfig *config.Dependency, inputPath string) (string, error) {
+func (r *Runner) run(command string, inputPath string) (string, error) {
 	tmpfile, err := ioutil.TempFile("", "deps-")
 	if err != nil {
 		return "", err
 	}
 	outputPath := tmpfile.Name()
 
+	commandString := fmt.Sprintf("%s %s %s", command, inputPath, outputPath)
+
+	output.Debug(commandString)
+
 	cmd := exec.Command(
 		"sh",
 		"-c",
-		fmt.Sprintf("%s %s %s", command, inputPath, outputPath),
+		commandString,
 	)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	cmd.Env, err = r.envFromDependencyConfig(dependencyConfig)
+	cmd.Env = r.Env
 	cmd.Env = append(cmd.Env, fmt.Sprintf("DEPS_COMPONENT_PATH=%s", r.Path))
 	if err != nil {
 		return "", err
