@@ -292,7 +292,7 @@ func (r *Runner) Act(inputDependencies *schema.Dependencies, branch bool) error 
 			// TODO hooks or what do you do otherwise?
 
 			if err = git.PushBranch(branchName); err != nil {
-				if strings.Contains(err.Error(), "Autentication failed") {
+				if strings.Contains(err.Error(), "Authentication failed") {
 					if err = pr.PreparePush(); err != nil {
 						return err
 					}
@@ -300,6 +300,8 @@ func (r *Runner) Act(inputDependencies *schema.Dependencies, branch bool) error 
 					if err = git.PushBranch(branchName); err != nil {
 						return err
 					}
+				} else {
+					return err
 				}
 			}
 			if err = pr.Create(); err != nil {
