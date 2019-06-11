@@ -46,8 +46,25 @@ func GitHost() string {
 	if override := os.Getenv("DEPS_GIT_HOST"); override != "" {
 		return override
 	}
-	// check git-remote
-	// git remote get-url origin
+
+	cmd := exec.Command("git", "remote", "get-url", "origin")
+	remote, err := cmd.CombinedOutput()
+	if err != nil {
+		return ""
+	}
+
+	remoteS := string(remote)
+
+	// TODO regex, ssh urls, etc.
+
+	if strings.HasPrefix(remoteS, "https://github.com/") {
+		return "github"
+	}
+
+	if strings.HasPrefix(remoteS, "https://gitlab.com/") {
+		return "gitlab"
+	}
+
 	return ""
 }
 
@@ -75,7 +92,7 @@ func BranchExists(branch string) bool {
 	return true
 }
 
-func GetSHA() (string, error) {
+func CurrentSHA() (string, error) {
 	cmd := exec.Command("git", "rev-parse", "--verify", "HEAD")
 	out, err := cmd.CombinedOutput()
 

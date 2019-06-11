@@ -191,7 +191,7 @@ func (r *Runner) Act(inputDependencies *schema.Dependencies, branch bool) error 
 
 	output.Event("Updating with %s", r.Given)
 
-	gitSha, err := git.GetSHA()
+	gitSha, err := git.CurrentSHA()
 	if err != nil {
 		return err
 	}

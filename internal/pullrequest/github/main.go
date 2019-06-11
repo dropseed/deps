@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 
@@ -34,23 +33,25 @@ func NewPullrequestFromDependenciesJSONPathAndEnv(dependenciesJSONPath string) (
 		return nil, err
 	}
 
-	fullName := os.Getenv("GITHUB_REPO_FULL_NAME")
+	fullName := getRepoFullName()
 	parts := strings.Split(fullName, "/")
 	return &PullRequest{
 		Pullrequest:   prBase,
 		RepoOwnerName: parts[0],
 		RepoName:      parts[1],
 		RepoFullName:  fullName,
-		APIToken:      os.Getenv("GITHUB_API_TOKEN"),
+		APIToken:      getAPIToken(),
 	}, nil
 }
 
 func (pr *PullRequest) getCreateJSONData() ([]byte, error) {
 	var base string
+	// TODO settings can probably be given directly now from config
 	if base = env.GetSetting("GITHUB_BASE_BRANCH", ""); base == "" {
 		base = pr.DefaultBaseBranch
 	}
 
+	// TODO does this need to change?
 	body, err := dereferenceGitHubIssueLinks(pr.Body)
 	if err != nil {
 		return nil, err
@@ -69,7 +70,7 @@ func (pr *PullRequest) getCreateJSONData() ([]byte, error) {
 
 func (pr *PullRequest) addHeadersToRequest(req *http.Request) {
 	req.Header.Add("Authorization", "token "+pr.APIToken)
-	req.Header.Add("User-Agent", "dependencies.io pullrequest")
+	req.Header.Add("User-Agent", "deps")
 	req.Header.Set("Content-Type", "application/json")
 }
 

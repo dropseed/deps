@@ -112,13 +112,6 @@ func getAvailableUpdates(cfg *config.Config) (Updates, error) {
 
 		// add a .shouldInstall - true when local or ref changed?
 
-		// overriding this is really just a debug/testing thing... shouldn't need to commit it?
-		// so what's the best way to accomplish that...
-		// cmd line flag or env var...?
-		// or a separate patch type config file? so you can ignore it/trash it etc.
-		// but it can have complex types?
-		// dependencies_components.yml - still not easy in CI really
-
 		err = runner.Install()
 		if err != nil {
 			return nil, err
