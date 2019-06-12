@@ -18,12 +18,16 @@ type Update struct {
 	completed        bool
 }
 
-func (update *Update) branchExists() (bool, error) {
+func (update *Update) shouldSkip() bool {
 	branch, err := update.dependencies.GetBranchName()
 	if err != nil {
-		return false, err
+		panic(err)
 	}
-	return git.BranchExists(branch), nil
+	if git.BranchExists(branch) {
+		output.Debug("Skipping update: branch %s already exists", branch)
+		return true
+	}
+	return false
 }
 
 type Updates map[*component.Runner][]Update
@@ -133,7 +137,7 @@ func NewUpdatesFromDependencies(dependencies *schema.Dependencies, dependencyCon
 			}
 
 			// TODO move this into runner later
-			if exists, err := update.branchExists(); exists || err != nil {
+			if update.shouldSkip() {
 				continue
 			}
 
@@ -180,7 +184,7 @@ func NewUpdatesFromDependencies(dependencies *schema.Dependencies, dependencyCon
 				}
 
 				// TODO move this into runner later
-				if exists, err := update.branchExists(); exists || err != nil {
+				if update.shouldSkip() {
 					continue
 				}
 
