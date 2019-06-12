@@ -291,32 +291,25 @@ func (r *Runner) Act(inputDependencies *schema.Dependencies, branch bool) error 
 		if pr != nil {
 			// TODO hooks or what do you do otherwise?
 
-			if err = git.PushBranch(branchName); err != nil {
-				if strings.Contains(err.Error(), "Authentication failed") {
-					if err = pr.PreparePush(); err != nil {
-						return err
-					}
+			if err := git.PushBranch(branchName); err != nil {
+				// TODO better to check for "Authentication failed" in output?
+				if err := pr.PreparePush(); err != nil {
+					return err
+				}
 
-					if err = git.PushBranch(branchName); err != nil {
-						return err
-					}
-				} else {
+				if err := git.PushBranch(branchName); err != nil {
 					return err
 				}
 			}
-			if err = pr.Create(); err != nil {
+			if err := pr.Create(); err != nil {
 				return err
 			}
-			if err = pr.DoRelated(); err != nil {
+			if err := pr.DoRelated(); err != nil {
 				return err
 			}
-			// TODO remove this?
-			// if err = pr.OutputActions(); err != nil {
-			// 	return err
-			// }
 		}
 
-		if err = git.CheckoutLast(); err != nil {
+		if err := git.CheckoutLast(); err != nil {
 			return err
 		}
 

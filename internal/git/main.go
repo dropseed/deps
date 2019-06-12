@@ -12,25 +12,14 @@ import (
 
 // BranchForJob branches off of GIT_SHA
 func Branch(to, from string) {
-	cmd := exec.Command("git", "checkout", "-b", to, from)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	err := cmd.Run()
-	if err != nil {
+	if err := run("checkout", "-b", to, from); err != nil {
 		panic(err)
 	}
 }
 
 // Push a given branch to the origin
 func PushBranch(branchName string) error {
-	cmd := exec.Command("git", "push", "--set-upstream", "origin", branchName)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	err := cmd.Run()
-	if err != nil {
-		return err
-	}
-	return nil
+	return run("push", "--set-upstream", "origin", branchName)
 }
 
 func GetBranchName(id string) string {
@@ -73,26 +62,15 @@ func GitRemote() string {
 }
 
 func Clone(url, path string) error {
-	cmd := exec.Command("git", "clone", url, path)
-	cmd.Env = os.Environ()
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	err := cmd.Run()
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return run("clone", url, path)
 }
 
 func BranchExists(branch string) bool {
-	cmd := exec.Command("git", "rev-parse", "--verify", branch)
-	err := cmd.Run()
 	// TODO need to check exit code or stderr? what about other failures
+	err := run("rev-parse", "--verify", branch)
 	if err != nil {
 		return false
 	}
-
 	return true
 }
 
@@ -108,43 +86,17 @@ func CurrentSHA() string {
 }
 
 func AddCommit(message string) error {
-	add := exec.Command("git", "add", ".")
-
-	if output.Verbosity > 0 {
-		add.Stdout = os.Stdout
-		add.Stderr = os.Stderr
-	}
-
-	if err := add.Run(); err != nil {
+	if err := run("add", "."); err != nil {
 		return err
 	}
-
-	commit := exec.Command("git", "commit", "-m", message)
-
-	if output.Verbosity > 0 {
-		commit.Stdout = os.Stdout
-		commit.Stderr = os.Stderr
-	}
-
-	if err := commit.Run(); err != nil {
+	if err := run("commit", "-m", message); err != nil {
 		return err
 	}
-
 	return nil
 }
 
 func CheckoutLast() error {
-	cmd := exec.Command("git", "checkout", "-")
-
-	if output.Verbosity > 0 {
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-	}
-
-	if err := cmd.Run(); err != nil {
-		return err
-	}
-	return nil
+	return run("checkout", "-")
 }
 
 func Stash(message string) (bool, error) {
@@ -161,15 +113,15 @@ func Stash(message string) (bool, error) {
 }
 
 func StashPop() error {
-	cmd := exec.Command("git", "stash", "pop")
-	if err := cmd.Run(); err != nil {
-		return err
-	}
-	return nil
+	return run("stash", "pop")
 }
 
 func Pull() error {
-	cmd := exec.Command("git", "pull")
+	return run("pull")
+}
+
+func run(args ...string) error {
+	cmd := exec.Command("git", args...)
 
 	if output.Verbosity > 0 {
 		cmd.Stdout = os.Stdout
@@ -179,5 +131,6 @@ func Pull() error {
 	if err := cmd.Run(); err != nil {
 		return err
 	}
+
 	return nil
 }
