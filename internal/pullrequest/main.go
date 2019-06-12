@@ -1,8 +1,7 @@
 package pullrequest
 
 import (
-	"os"
-
+	"github.com/dropseed/deps/internal/git"
 	"github.com/dropseed/deps/internal/schema"
 )
 
@@ -42,7 +41,7 @@ func NewPullrequestFromJSONPathAndEnv(dependenciesJSONPath string) (*Pullrequest
 		Branch:            branch,
 		Title:             title,
 		Body:              body,
-		DefaultBaseBranch: os.Getenv("GIT_BRANCH"),
+		DefaultBaseBranch: git.CurrentBranch(),
 		Dependencies:      dependencies,
 		Action:            &schema.Action{Metadata: map[string]interface{}{}},
 	}, nil

@@ -85,11 +85,22 @@ func CurrentSHA() string {
 	return strings.TrimSpace(string(out))
 }
 
+func CurrentBranch() string {
+	cmd := exec.Command("git", "rev-parse", "--abbrev-ref", "HEAD")
+	out, err := cmd.CombinedOutput()
+
+	if err != nil {
+		panic(err)
+	}
+
+	return strings.TrimSpace(string(out))
+}
+
 func AddCommit(message string) error {
 	if err := run("add", "."); err != nil {
 		return err
 	}
-	if err := run("commit", "-m", message); err != nil {
+	if err := run("commit", "--author", "deps <bot@dependencies.io>", "-m", message); err != nil {
 		return err
 	}
 	return nil
