@@ -10,6 +10,10 @@ import (
 
 var Verbosity = 0
 
+func IsDebug() bool {
+	return Verbosity > 0
+}
+
 func Event(f string, args ...interface{}) {
 	if terminal.IsTerminal(int(os.Stdout.Fd())) {
 		color.Set(color.FgMagenta)
@@ -20,7 +24,7 @@ func Event(f string, args ...interface{}) {
 }
 
 func Debug(f string, args ...interface{}) {
-	if Verbosity < 1 {
+	if !IsDebug() {
 		return
 	}
 	if terminal.IsTerminal(int(os.Stdout.Fd())) {

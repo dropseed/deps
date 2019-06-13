@@ -21,7 +21,6 @@ type Runner struct {
 	Env    []string
 }
 
-const DEBUG = true
 const DefaultRemotePrefix = "dropseed/deps-"
 const DefaultCacheDirName = "deps"
 

@@ -19,7 +19,7 @@ func (r *Runner) Collect(inputPath string) (*schema.Dependencies, error) {
 	if err != nil {
 		return nil, err
 	}
-	if !DEBUG {
+	if !output.IsDebug() {
 		defer os.Remove(outputPath)
 	}
 

@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/dropseed/deps/internal/git"
-
 	"github.com/dropseed/deps/internal/component"
 	"github.com/dropseed/deps/internal/config"
 	"github.com/dropseed/deps/internal/output"
@@ -15,46 +13,47 @@ import (
 const COLLECTOR = "collector"
 const ACTOR = "actor"
 
-// Run a full interactive update process
-func Local() error {
-	baseBranch := ""
+func getConfig() (*config.Config, error) {
+	cfg, err := config.NewConfigFromPath(config.DefaultFilename, nil)
+	if os.IsNotExist(err) {
+		output.Event("No local config found, detecting your dependencies automatically")
+		// should we always check for inferred? and could let them know what they
+		// don't have in theirs?
+		// dump both to yaml, use regular diff tool and highlighting?
+		cfg, err = config.InferredConfigFromDir(".")
+		if err != nil {
+			return nil, err
+		}
 
-	cfg, err := getConfig()
-	if err != nil {
-		return err
+		inferred, err := cfg.DumpYAML()
+		if err != nil {
+			return nil, err
+		}
+		println("---")
+		println(inferred)
+		println("---")
+	} else if err != nil {
+		return nil, err
 	}
 
-	availableUpdates, err := getAvailableUpdates(cfg)
-	if err != nil {
-		return err
+	if len(cfg.Dependencies) < 1 {
+		return nil, errors.New("no dependencies found")
 	}
 
-	// TODO for the updates that have branches: try lockfile update on them?
-	// if no branch, act on update
+	cfg.Compile()
 
-	availableUpdates.PrintOverview()
-
-	if err := availableUpdates.Prompt(baseBranch); err != nil {
-		return err
-	}
-
-	return nil
+	return cfg, nil
 }
 
-func CI(updateLimit int) error {
-	baseBranch := git.CurrentBranch()
-
+func collectUpdates(updateLimit int) (Updates, Updates, Updates, error) {
 	cfg, err := getConfig()
 	if err != nil {
-		return err
+		return nil, nil, nil, err
 	}
-
-	// get Repo obj? required if running "CI" version
-	// and can validate before proceeding?
 
 	availableUpdates, err := getAvailableUpdates(cfg)
 	if err != nil {
-		return err
+		return nil, nil, nil, err
 	}
 
 	newUpdates := Updates{}      // PRs for these
@@ -89,48 +88,7 @@ func CI(updateLimit int) error {
 		fmt.Println()
 	}
 
-	if len(newUpdates) > 0 {
-		output.Event("Performing updates")
-		if err := newUpdates.Run(baseBranch); err != nil {
-			return err
-		}
-	} else {
-		output.Success("No new updates")
-	}
-
-	return nil
-}
-
-func getConfig() (*config.Config, error) {
-	cfg, err := config.NewConfigFromPath(config.DefaultFilename, nil)
-	if os.IsNotExist(err) {
-		output.Event("No local config found, detecting your dependencies automatically")
-		// should we always check for inferred? and could let them know what they
-		// don't have in theirs?
-		// dump both to yaml, use regular diff tool and highlighting?
-		cfg, err = config.InferredConfigFromDir(".")
-		if err != nil {
-			return nil, err
-		}
-
-		inferred, err := cfg.DumpYAML()
-		if err != nil {
-			return nil, err
-		}
-		println("---")
-		println(inferred)
-		println("---")
-	} else if err != nil {
-		return nil, err
-	}
-
-	if len(cfg.Dependencies) < 1 {
-		return nil, errors.New("no dependencies found")
-	}
-
-	cfg.Compile()
-
-	return cfg, nil
+	return newUpdates, existingUpdates, limitedUpdates, nil
 }
 
 func getAvailableUpdates(cfg *config.Config) (Updates, error) {

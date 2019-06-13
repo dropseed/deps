@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"runtime/debug"
+	"time"
 
 	"github.com/dropseed/deps/internal/git"
 	"github.com/dropseed/deps/internal/output"
@@ -71,7 +72,7 @@ func (r *Runner) Act(inputDependencies *schema.Dependencies, baseBranch string) 
 		return err
 	}
 	inputFile, err := ioutil.TempFile("", "deps-")
-	if !DEBUG {
+	if !output.IsDebug() {
 		defer os.Remove(inputFile.Name())
 	}
 	if err != nil {
@@ -92,7 +93,7 @@ func (r *Runner) Act(inputDependencies *schema.Dependencies, baseBranch string) 
 	if err != nil {
 		return err
 	}
-	if !DEBUG {
+	if !output.IsDebug() {
 		defer os.Remove(outputPath)
 	}
 
@@ -128,6 +129,10 @@ func (r *Runner) Act(inputDependencies *schema.Dependencies, baseBranch string) 
 					return err
 				}
 			}
+
+			output.Debug("Waiting a second for the push to be processed by the host")
+			time.Sleep(2 * time.Second)
+
 			if err := pr.Create(); err != nil {
 				return err
 			}

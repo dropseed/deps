@@ -26,7 +26,7 @@ func (updates Updates) PrintOverview() {
 	}
 }
 
-func (updates Updates) Prompt(branch string) error {
+func (updates Updates) Prompt() error {
 	for {
 		items := []string{}
 		for _, update := range updates {
@@ -58,7 +58,7 @@ func (updates Updates) Prompt(branch string) error {
 
 		if i < len(updates) {
 			update := updates[i]
-			if err := update.runner.Act(update.dependencies, branch); err != nil {
+			if err := update.runner.Act(update.dependencies, ""); err != nil {
 				return err
 			}
 			update.completed = true

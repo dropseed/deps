@@ -90,7 +90,16 @@ func (pr *PullRequest) createPR() (map[string]interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	pullrequestsURL := fmt.Sprintf("https://api.github.com/repos/%v/pulls", pr.RepoFullName)
+
+	output.Debug("Creating pull request:\n%s", pullrequestData)
+
+	apiBase := "https://api.github.com"
+	// TODO can maybe automatically get this from remote instead?
+	// if base := env.GetSetting("DEPS_GITHUB_API_BASE_URL", ""); base == "" {
+	// 	apiBase = base
+	// }
+
+	pullrequestsURL := fmt.Sprintf("%s/repos/%v/pulls", apiBase, pr.RepoFullName)
 
 	client := &http.Client{}
 

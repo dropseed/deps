@@ -37,13 +37,13 @@ func GitHost() string {
 
 	remote := GitRemote()
 
-	// TODO regex, ssh urls, etc.
+	// TODO https://user:pass@
 
-	if strings.HasPrefix(remote, "https://github.com/") {
+	if strings.HasPrefix(remote, "https://github.com/") || strings.HasPrefix(remote, "git@github.com:") {
 		return "github"
 	}
 
-	if strings.HasPrefix(remote, "https://gitlab.com/") {
+	if strings.HasPrefix(remote, "https://gitlab.com/") || strings.HasPrefix(remote, "git@gitlab.com:") {
 		return "gitlab"
 	}
 
@@ -85,7 +85,7 @@ func CurrentSHA() string {
 	return strings.TrimSpace(string(out))
 }
 
-func CurrentBranch() string {
+func CurrentRef() string {
 	cmd := exec.Command("git", "rev-parse", "--abbrev-ref", "HEAD")
 	out, err := cmd.CombinedOutput()
 
@@ -134,7 +134,7 @@ func Pull() error {
 func run(args ...string) error {
 	cmd := exec.Command("git", args...)
 
-	if output.Verbosity > 0 {
+	if output.IsDebug() {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 	}
