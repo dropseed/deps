@@ -126,6 +126,12 @@ func RenameBranch(old, new string) {
 	}
 }
 
+func FetchAllBranches() {
+	if err := run("fetch", "--all"); err != nil {
+		panic(err)
+	}
+}
+
 func run(args ...string) error {
 	cmd := exec.Command("git", args...)
 
