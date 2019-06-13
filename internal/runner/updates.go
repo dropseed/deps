@@ -1,17 +1,14 @@
 package runner
 
 import (
-	"fmt"
-
 	"github.com/dropseed/deps/internal/config"
 	"github.com/dropseed/deps/internal/output"
 	"github.com/dropseed/deps/internal/schema"
-	"github.com/manifoldco/promptui"
 )
 
 type Updates []*Update
 
-func (updates Updates) PrintOverview() {
+func (updates Updates) printOverview() {
 	if len(updates) < 1 {
 		output.Success("No updates found")
 	}
@@ -26,62 +23,7 @@ func (updates Updates) PrintOverview() {
 	}
 }
 
-func (updates Updates) Prompt() error {
-	for {
-		items := []string{}
-		for _, update := range updates {
-			if !update.completed {
-				title, err := update.dependencies.GenerateTitle()
-				if err != nil {
-					return err
-				}
-				items = append(items, title)
-			}
-		}
-
-		if len(items) < 1 {
-			// No updates left
-			break
-		}
-
-		items = append(items, "Skip")
-
-		prompt := promptui.Select{
-			Label: fmt.Sprintf("Choose an update to make"),
-			Items: items,
-		}
-
-		i, _, err := prompt.Run()
-		if err != nil {
-			return err
-		}
-
-		if i < len(updates) {
-			update := updates[i]
-			if err := update.runner.Act(update.dependencies, ""); err != nil {
-				return err
-			}
-			update.completed = true
-		} else {
-			// Chose skip
-			break
-		}
-	}
-
-	return nil
-}
-
-func (updates Updates) Run(branch string) error {
-	for _, update := range updates {
-		if err := update.runner.Act(update.dependencies, branch); err != nil {
-			return err
-		}
-		update.completed = true
-	}
-	return nil
-}
-
-func NewUpdatesFromDependencies(dependencies *schema.Dependencies, dependencyConfig *config.Dependency) (Updates, error) {
+func newUpdatesFromDependencies(dependencies *schema.Dependencies, dependencyConfig *config.Dependency) (Updates, error) {
 	updates := Updates{}
 
 	if *dependencyConfig.LockfileUpdates.Enabled {

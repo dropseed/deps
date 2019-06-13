@@ -15,21 +15,14 @@ import (
 )
 
 func (r *Runner) Act(inputDependencies *schema.Dependencies, baseBranch string) error {
-	// In CI
-	// - clear out git (using stash)
-	// - baseBranch, commit, push, PR
-	// Local
-	// - just update files
-
 	output.Event("Updating with %s", r.Given)
 
-	gitSha := git.CurrentSHA()
-
-	updateBranch := inputDependencies.GetBranchName()
-
+	predictedUpdateBranch := ""
 	stashed := false
 
 	if baseBranch != "" {
+		// If we're given a base branch then we'll be creating a new
+		// branch for the update
 		id := inputDependencies.GetID()
 		var err error
 		err = nil
@@ -38,7 +31,8 @@ func (r *Runner) Act(inputDependencies *schema.Dependencies, baseBranch string) 
 		if err != nil {
 			return err
 		}
-		git.Branch(updateBranch, gitSha)
+		predictedUpdateBranch = inputDependencies.GetBranchName()
+		git.Branch(predictedUpdateBranch)
 	} else {
 		output.Event("Running changes directly (no branches)")
 	}
@@ -66,30 +60,20 @@ func (r *Runner) Act(inputDependencies *schema.Dependencies, baseBranch string) 
 		}
 	}()
 
-	// Put the input in a file
-	inputJSON, err := json.MarshalIndent(inputDependencies, "", "  ")
+	inputFilename, err := inputTempFile(inputDependencies)
 	if err != nil {
 		return err
 	}
-	inputFile, err := ioutil.TempFile("", "deps-")
 	if !output.IsDebug() {
-		defer os.Remove(inputFile.Name())
+		defer os.Remove(inputFilename)
 	}
-	if err != nil {
-		return err
-	}
-	if _, err := inputFile.Write(inputJSON); err != nil {
-		panic(err)
-	}
-
-	// Run it
 
 	command := r.Config.Act
 	if override := r.getOverrideFromEnv("act"); override != "" {
 		command = override
 	}
 
-	outputPath, err := r.run(command, inputFile.Name())
+	outputPath, err := r.run(command, inputFilename)
 	if err != nil {
 		return err
 	}
@@ -97,11 +81,27 @@ func (r *Runner) Act(inputDependencies *schema.Dependencies, baseBranch string) 
 		defer os.Remove(outputPath)
 	}
 
+	outputDependencies, err := schema.NewDependenciesFromJSONPath(outputPath)
+	if err != nil {
+		return err
+	}
+
 	// baseBranch
 	// before_update / after_branch?
 	// how would this work more naturally now in ci? try without it and find out
 
 	if baseBranch != "" {
+
+		updateBranch := outputDependencies.GetBranchName()
+		if updateBranch != predictedUpdateBranch {
+			output.Debug("Actual update differed from expected, renaming git branch")
+			git.RenameBranch(predictedUpdateBranch, updateBranch)
+		}
+
+		pr, err := adapter.PullrequestAdapterFromDependenciesJSONPathAndHost(outputPath, git.GitHost(), baseBranch)
+		if err != nil {
+			return err
+		}
 
 		// TODO run commit also, just commit all, use inputDependencies to get title, etc.?
 		title, err := inputDependencies.GenerateTitle()
@@ -112,10 +112,6 @@ func (r *Runner) Act(inputDependencies *schema.Dependencies, baseBranch string) 
 			return err
 		}
 
-		pr, err := adapter.PullrequestAdapterFromDependenciesJSONPathAndHost(outputPath, git.GitHost(), baseBranch)
-		if err != nil {
-			return err
-		}
 		if pr != nil {
 			// TODO hooks or what do you do otherwise?
 
@@ -154,4 +150,19 @@ func (r *Runner) Act(inputDependencies *schema.Dependencies, baseBranch string) 
 	}
 
 	return nil
+}
+
+func inputTempFile(inputDependencies *schema.Dependencies) (string, error) {
+	inputJSON, err := json.MarshalIndent(inputDependencies, "", "  ")
+	if err != nil {
+		return "", err
+	}
+	inputFile, err := ioutil.TempFile("", "deps-")
+	if err != nil {
+		return "", err
+	}
+	if _, err := inputFile.Write(inputJSON); err != nil {
+		panic(err)
+	}
+	return inputFile.Name(), nil
 }

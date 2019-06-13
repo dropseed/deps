@@ -20,7 +20,7 @@ func CI(updateLimit int) error {
 
 	if len(newUpdates) > 0 {
 		output.Event("Performing updates")
-		if err := newUpdates.Run(getBaseBranch()); err != nil {
+		if err := newUpdates.run(getBaseBranch()); err != nil {
 			return err
 		}
 	} else {
@@ -50,4 +50,14 @@ func getBaseBranch() string {
 	}
 
 	return baseBranch
+}
+
+func (updates Updates) run(branch string) error {
+	for _, update := range updates {
+		if err := update.runner.Act(update.dependencies, branch); err != nil {
+			return err
+		}
+		update.completed = true
+	}
+	return nil
 }

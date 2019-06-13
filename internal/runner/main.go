@@ -72,19 +72,19 @@ func collectUpdates(updateLimit int) (Updates, Updates, Updates, error) {
 
 	if len(existingUpdates) > 0 {
 		output.Event("%d existing updates", len(existingUpdates))
-		existingUpdates.PrintOverview()
+		existingUpdates.printOverview()
 		fmt.Println()
 	}
 
 	if len(limitedUpdates) > 0 {
 		output.Event("%d updates skipped based on limit", len(limitedUpdates))
-		limitedUpdates.PrintOverview()
+		limitedUpdates.printOverview()
 		fmt.Println()
 	}
 
 	if len(newUpdates) > 0 {
 		output.Event("%d new updates to be made", len(newUpdates))
-		newUpdates.PrintOverview()
+		newUpdates.printOverview()
 		fmt.Println()
 	}
 
@@ -119,7 +119,7 @@ func getAvailableUpdates(cfg *config.Config) (Updates, error) {
 			return nil, err
 		}
 
-		updates, err := NewUpdatesFromDependencies(dependencies, dependencyConfig)
+		updates, err := newUpdatesFromDependencies(dependencies, dependencyConfig)
 		if err != nil {
 			return nil, err
 		}

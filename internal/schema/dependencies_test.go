@@ -246,3 +246,17 @@ func TestGenerateBodyWithLockfilesAndManifests(t *testing.T) {
 		t.Error("Body does not match expected: ", body)
 	}
 }
+
+func TestGetIDConsistency(t *testing.T) {
+	dependencies, err := NewDependenciesFromJSONPath("./testdata/lockfiles_and_manifests.json")
+	if err != nil {
+		t.Error(err)
+	}
+	initialID := dependencies.GetID()
+	for index := 0; index < 100; index++ {
+		testID := dependencies.GetID()
+		if initialID != testID {
+			t.FailNow()
+		}
+	}
+}

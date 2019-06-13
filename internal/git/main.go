@@ -11,8 +11,8 @@ import (
 )
 
 // BranchForJob branches off of GIT_SHA
-func Branch(to, from string) {
-	if err := run("checkout", "-b", to, from); err != nil {
+func Branch(to string) {
+	if err := run("checkout", "-b", to); err != nil {
 		panic(err)
 	}
 }
@@ -74,17 +74,6 @@ func BranchExists(branch string) bool {
 	return true
 }
 
-func CurrentSHA() string {
-	cmd := exec.Command("git", "rev-parse", "--verify", "HEAD")
-	out, err := cmd.CombinedOutput()
-
-	if err != nil {
-		panic(err)
-	}
-
-	return strings.TrimSpace(string(out))
-}
-
 func CurrentRef() string {
 	cmd := exec.Command("git", "rev-parse", "--abbrev-ref", "HEAD")
 	out, err := cmd.CombinedOutput()
@@ -129,6 +118,12 @@ func StashPop() error {
 
 func Pull() error {
 	return run("pull")
+}
+
+func RenameBranch(old, new string) {
+	if err := run("branch", "-m", old, new); err != nil {
+		panic(err)
+	}
 }
 
 func run(args ...string) error {
