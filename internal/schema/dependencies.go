@@ -333,22 +333,18 @@ func getBodyPartsForManifests(manifests map[string]*Manifest) ([]string, error) 
 	return parts, nil
 }
 
-func (dependencies *Dependencies) GetID() (string, error) {
+func (dependencies *Dependencies) GetID() string {
 	out, err := json.Marshal(dependencies)
 	if err != nil {
-		return "", err
+		panic(err)
 	}
 	sum := md5.Sum(out)
 	str := hex.EncodeToString(sum[:])
 	short := str[:7]
-	return short, nil
+	return short
 }
 
-func (dependencies *Dependencies) GetBranchName() (string, error) {
-	id, err := dependencies.GetID()
-	if err != nil {
-		return "", err
-	}
-
-	return git.GetBranchName(id), nil
+func (dependencies *Dependencies) GetBranchName() string {
+	id := dependencies.GetID()
+	return git.GetBranchName(id)
 }

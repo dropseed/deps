@@ -72,7 +72,7 @@ func (pr *PullRequest) getCreateJSONData() ([]byte, error) {
 		"base":  base,
 		"body":  body,
 	}
-	fmt.Printf("%+v\n", pullrequestMap)
+
 	pullrequestData, _ := json.Marshal(pullrequestMap)
 	return pullrequestData, nil
 }
@@ -106,14 +106,14 @@ func (pr *PullRequest) createPR() (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	if resp.StatusCode != 201 {
-		return nil, fmt.Errorf("failed to create pull request: %+v", resp)
-	}
-
 	body, err := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
 	if err != nil {
 		return nil, err
+	}
+
+	if resp.StatusCode != 201 {
+		return nil, fmt.Errorf("Failed to create pull request:\n\n%s\n\n%+v", body, resp)
 	}
 
 	var data map[string]interface{}

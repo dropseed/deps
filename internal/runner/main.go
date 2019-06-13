@@ -2,7 +2,10 @@ package runner
 
 import (
 	"errors"
+	"fmt"
 	"os"
+
+	"github.com/dropseed/deps/internal/git"
 
 	"github.com/dropseed/deps/internal/component"
 	"github.com/dropseed/deps/internal/config"
@@ -14,6 +17,7 @@ const ACTOR = "actor"
 
 // Run a full interactive update process
 func Local() error {
+	baseBranch := ""
 
 	cfg, err := getConfig()
 	if err != nil {
@@ -30,15 +34,16 @@ func Local() error {
 
 	availableUpdates.PrintOverview()
 
-	branch := false
-	if err := availableUpdates.Prompt(branch); err != nil {
+	if err := availableUpdates.Prompt(baseBranch); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func CI() error {
+func CI(updateLimit int) error {
+	baseBranch := git.CurrentBranch()
+
 	cfg, err := getConfig()
 	if err != nil {
 		return err
@@ -52,14 +57,45 @@ func CI() error {
 		return err
 	}
 
-	// TODO for the updates that have branches: try lockfile update on them?
-	// if no branch, act on update
+	newUpdates := Updates{}      // PRs for these
+	limitedUpdates := Updates{}  // nothing
+	existingUpdates := Updates{} // lockfile update on these?
 
-	availableUpdates.PrintOverview()
+	for _, update := range availableUpdates {
+		if update.branchExists() {
+			existingUpdates = append(existingUpdates, update)
+		} else if updateLimit > -1 && len(newUpdates) >= updateLimit {
+			limitedUpdates = append(limitedUpdates, update)
+		} else {
+			newUpdates = append(newUpdates, update)
+		}
+	}
 
-	branch := true
-	if err := availableUpdates.Run(branch); err != nil {
-		return err
+	if len(existingUpdates) > 0 {
+		output.Event("%d existing updates", len(existingUpdates))
+		existingUpdates.PrintOverview()
+		fmt.Println()
+	}
+
+	if len(limitedUpdates) > 0 {
+		output.Event("%d updates skipped based on limit", len(limitedUpdates))
+		limitedUpdates.PrintOverview()
+		fmt.Println()
+	}
+
+	if len(newUpdates) > 0 {
+		output.Event("%d new updates to be made", len(newUpdates))
+		newUpdates.PrintOverview()
+		fmt.Println()
+	}
+
+	if len(newUpdates) > 0 {
+		output.Event("Performing updates")
+		if err := newUpdates.Run(baseBranch); err != nil {
+			return err
+		}
+	} else {
+		output.Success("No new updates")
 	}
 
 	return nil
@@ -131,7 +167,11 @@ func getAvailableUpdates(cfg *config.Config) (Updates, error) {
 		}
 
 		if len(updates) > 0 {
-			availableUpdates[runner] = updates
+			for _, update := range updates {
+				// Store this for use later
+				update.runner = runner
+			}
+			availableUpdates = append(availableUpdates, updates...)
 		}
 	}
 

@@ -1,7 +1,6 @@
 package pullrequest
 
 import (
-	"github.com/dropseed/deps/internal/git"
 	"github.com/dropseed/deps/internal/schema"
 )
 
@@ -22,10 +21,7 @@ func NewPullrequestFromJSONPathAndEnv(dependenciesJSONPath string) (*Pullrequest
 		return nil, err
 	}
 
-	branch, err := dependencies.GetBranchName()
-	if err != nil {
-		return nil, err
-	}
+	branch := dependencies.GetBranchName()
 
 	title, err := dependencies.GenerateTitle()
 	if err != nil {
@@ -41,7 +37,7 @@ func NewPullrequestFromJSONPathAndEnv(dependenciesJSONPath string) (*Pullrequest
 		Branch:            branch,
 		Title:             title,
 		Body:              body,
-		DefaultBaseBranch: git.CurrentBranch(),
+		DefaultBaseBranch: "",
 		Dependencies:      dependencies,
 		Action:            &schema.Action{Metadata: map[string]interface{}{}},
 	}, nil

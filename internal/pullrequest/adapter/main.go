@@ -18,10 +18,11 @@ type PullrequestAdapter interface {
 }
 
 // PullrequestAdapterFromDependenciesJSONPathAndHost returns a host-specific Pullrequest struct
-func PullrequestAdapterFromDependenciesJSONPathAndHost(dependenciesJSONPath, host string) (PullrequestAdapter, error) {
+func PullrequestAdapterFromDependenciesJSONPathAndHost(dependenciesJSONPath, host, baseBranch string) (PullrequestAdapter, error) {
 	switch strings.ToLower(host) {
 	case "github":
 		pr, err := github.NewPullrequestFromDependenciesJSONPathAndEnv(dependenciesJSONPath)
+		pr.DefaultBaseBranch = baseBranch
 		if err == nil {
 			return pr, nil
 		}
@@ -29,6 +30,7 @@ func PullrequestAdapterFromDependenciesJSONPathAndHost(dependenciesJSONPath, hos
 
 	case "gitlab":
 		pr, err := gitlab.NewPullrequestFromDependenciesJSONPathAndEnv(dependenciesJSONPath)
+		pr.DefaultBaseBranch = baseBranch
 		if err == nil {
 			return pr, nil
 		}
@@ -38,6 +40,7 @@ func PullrequestAdapterFromDependenciesJSONPathAndHost(dependenciesJSONPath, hos
 		// in test env we will run a mock version of PR
 		// behavior, so that we can further test the interaction
 		pr, err := gittest.NewPullrequestFromDependenciesJSONPathAndEnv(dependenciesJSONPath)
+		pr.DefaultBaseBranch = baseBranch
 		if err == nil {
 			return pr, nil
 		}
