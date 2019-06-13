@@ -66,11 +66,16 @@ func Clone(url, path string) error {
 }
 
 func BranchExists(branch string) bool {
-	// TODO need to check exit code or stderr? what about other failures
-	err := run("rev-parse", "--verify", branch)
-	if err != nil {
+	// See if we have a matching branch locally
+	if err := run("rev-parse", "--verify", branch); err != nil {
 		return false
 	}
+
+	// Also need to check remote, in case the branch is cloned locally
+	if err := run("ls-remote", "--exit-code", "--heads", "origin", branch); err != nil {
+		return false
+	}
+
 	return true
 }
 
