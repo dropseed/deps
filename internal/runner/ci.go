@@ -13,10 +13,6 @@ func CI(updateLimit int) error {
 	// get Repo obj? required if running "CI" version
 	// and can validate before proceeding?
 
-	// CI doesn't always have other branch names at hand
-	// which is how we check for existing updates on other branches
-	git.FetchAllBranches()
-
 	newUpdates, _, _, err := collectUpdates(updateLimit)
 	if err != nil {
 		return err
