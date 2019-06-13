@@ -32,6 +32,10 @@ func (r *Runner) Act(inputDependencies *schema.Dependencies, baseBranch string) 
 		// Before returning, try to checkout the previous and put
 		// the stashed changes back
 		defer func() {
+
+			// Theres should only be uncommitted changes if we're bailing early
+			git.ResetAndClean()
+
 			if err := git.CheckoutLast(); err != nil {
 				panic(err)
 			}

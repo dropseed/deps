@@ -104,6 +104,15 @@ func CheckoutLast() error {
 	return run("checkout", "-")
 }
 
+func ResetAndClean() {
+	if err := run("reset", "--hard"); err != nil {
+		panic(err)
+	}
+	if err := run("clean", "-df"); err != nil {
+		panic(err)
+	}
+}
+
 func Stash(message string) bool {
 	cmd := exec.Command("git", "stash", "push", "--include-untracked", "-m", message)
 	out, err := cmd.CombinedOutput()
