@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"runtime/debug"
 	"time"
 
 	"github.com/dropseed/deps/internal/git"
@@ -20,45 +19,31 @@ func (r *Runner) Act(inputDependencies *schema.Dependencies, baseBranch string) 
 	predictedUpdateBranch := ""
 	stashed := false
 
-	if baseBranch != "" {
+	if baseBranch == "" {
+		output.Event("Running changes directly (no branches)")
+	} else {
 		// If we're given a base branch then we'll be creating a new
 		// branch for the update
-		id := inputDependencies.GetID()
-		var err error
-		err = nil
 		output.Event("Temporarily saving your uncommitted changes in a git stash")
-		stashed, err = git.Stash(fmt.Sprintf("Deps save before update %s", id))
-		if err != nil {
-			return err
-		}
+		stashed = git.Stash(fmt.Sprintf("Deps save before update"))
 		predictedUpdateBranch = inputDependencies.GetBranchName()
 		git.Branch(predictedUpdateBranch)
-	} else {
-		output.Event("Running changes directly (no branches)")
-	}
 
-	// Try to revert this stuff if something goes wrong
-	defer func() {
-		if r := recover(); r != nil {
-			output.Error("Recovering from update error")
-
+		// Before returning, try to checkout the previous and put
+		// the stashed changes back
+		defer func() {
 			if err := git.CheckoutLast(); err != nil {
 				panic(err)
 			}
 
 			if stashed {
+				output.Event("Putting original uncommitted changes back")
 				if err := git.StashPop(); err != nil {
 					panic(err)
 				}
 			}
-
-			// TODO delete baseBranch?
-
-			debug.PrintStack()
-
-			panic(r)
-		}
-	}()
+		}()
+	}
 
 	inputFilename, err := inputTempFile(inputDependencies)
 	if err != nil {
@@ -68,12 +53,7 @@ func (r *Runner) Act(inputDependencies *schema.Dependencies, baseBranch string) 
 		defer os.Remove(inputFilename)
 	}
 
-	command := r.Config.Act
-	if override := r.getOverrideFromEnv("act"); override != "" {
-		command = override
-	}
-
-	outputPath, err := r.run(command, inputFilename)
+	outputPath, err := r.run(r.getCommand(r.Config.Act, "act"), inputFilename)
 	if err != nil {
 		return err
 	}
@@ -93,8 +73,15 @@ func (r *Runner) Act(inputDependencies *schema.Dependencies, baseBranch string) 
 	if baseBranch != "" {
 
 		updateBranch := outputDependencies.GetBranchName()
+
 		if updateBranch != predictedUpdateBranch {
 			output.Debug("Actual update differed from expected, renaming git branch")
+
+			if git.BranchExists(updateBranch) {
+				output.Warning("Aborting update branch rename since the new branch should already exist")
+				return nil
+			}
+
 			git.RenameBranch(predictedUpdateBranch, updateBranch)
 		}
 
@@ -133,17 +120,6 @@ func (r *Runner) Act(inputDependencies *schema.Dependencies, baseBranch string) 
 				return err
 			}
 			if err := pr.DoRelated(); err != nil {
-				return err
-			}
-		}
-
-		if err := git.CheckoutLast(); err != nil {
-			return err
-		}
-
-		if stashed {
-			output.Event("Putting original uncommitted changes back")
-			if err := git.StashPop(); err != nil {
 				return err
 			}
 		}

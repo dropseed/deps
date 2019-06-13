@@ -16,10 +16,7 @@ func (r *Runner) Install() error {
 
 	output.Event("Installing %s", r.Given)
 
-	command := r.Config.Install
-	if override := r.getOverrideFromEnv("install"); override != "" {
-		command = override
-	}
+	command := r.getCommand(r.Config.Install, "install")
 	output.Debug(command)
 
 	cmd := exec.Command("sh", "-c", command)

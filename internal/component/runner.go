@@ -115,6 +115,14 @@ func (r *Runner) GetName() string {
 	return path.Base(r.Path)
 }
 
+func (r *Runner) getCommand(defaultCmd, cmdName string) string {
+	command := defaultCmd
+	if override := r.getOverrideFromEnv(cmdName); override != "" {
+		command = override
+	}
+	return command
+}
+
 func (r *Runner) getOverrideFromEnv(name string) string {
 	override := os.Getenv(fmt.Sprintf("DEPS_%d_%s", r.Index, strings.ToUpper(name)))
 	if override != "" {

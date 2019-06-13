@@ -10,12 +10,7 @@ import (
 func (r *Runner) Collect(inputPath string) (*schema.Dependencies, error) {
 	output.Event("Collecting with %s", r.Given)
 
-	command := r.Config.Collect
-	if override := r.getOverrideFromEnv("collect"); override != "" {
-		command = override
-	}
-
-	outputPath, err := r.run(command, inputPath)
+	outputPath, err := r.run(r.getCommand(r.Config.Collect, "collect"), inputPath)
 	if err != nil {
 		return nil, err
 	}
