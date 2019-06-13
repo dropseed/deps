@@ -67,16 +67,16 @@ func Clone(url, path string) error {
 
 func BranchExists(branch string) bool {
 	// See if we have a matching branch locally
-	if err := run("rev-parse", "--verify", branch); err != nil {
-		return false
+	if err := run("rev-parse", "--verify", branch); err == nil {
+		return true
 	}
 
 	// Also need to check remote, in case the branch is cloned locally
-	if err := run("ls-remote", "--exit-code", "--heads", "origin", branch); err != nil {
-		return false
+	if err := run("ls-remote", "--exit-code", "--heads", "origin", branch); err == nil {
+		return true
 	}
 
-	return true
+	return false
 }
 
 func CurrentRef() string {
@@ -138,6 +138,7 @@ func FetchAllBranches() {
 }
 
 func run(args ...string) error {
+	output.Debug("git %s", strings.Join(args, " "))
 	cmd := exec.Command("git", args...)
 
 	if output.IsDebug() {
