@@ -74,9 +74,12 @@ func (r *Runner) Act(inputDependencies *schema.Dependencies, baseBranch string, 
 	// before_update / after_branch?
 	// how would this work more naturally now in ci? try without it and find out
 
-	updateBranch := outputDependencies.GetBranchName()
+	// Empty by default -- current branch
+	updateBranch := ""
 
 	if baseBranch != "" {
+		updateBranch = outputDependencies.GetBranchName()
+
 		if updateBranch != predictedUpdateBranch {
 			output.Debug("Actual update differed from expected, renaming git branch")
 
