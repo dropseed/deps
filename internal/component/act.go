@@ -19,6 +19,21 @@ func (r *Runner) Act(inputDependencies *schema.Dependencies, baseBranch string, 
 	predictedUpdateBranch := ""
 	stashed := false
 
+	if commitPush {
+		output.Event("Temporarily saving your uncommitted changes in a git stash")
+		stashed = git.Stash(fmt.Sprintf("Deps save before update"))
+
+		// Stash pop needs to happen last (so be added first)
+		defer func() {
+			if stashed {
+				output.Event("Putting original uncommitted changes back")
+				if err := git.StashPop(); err != nil {
+					panic(err)
+				}
+			}
+		}()
+	}
+
 	if baseBranch == "" {
 		output.Event("Running changes directly (no branches)")
 	} else {
@@ -31,20 +46,6 @@ func (r *Runner) Act(inputDependencies *schema.Dependencies, baseBranch string, 
 			// Theres should only be uncommitted changes if we're bailing early
 			git.ResetAndClean()
 			git.CheckoutLast()
-		}()
-	}
-
-	if commitPush {
-		output.Event("Temporarily saving your uncommitted changes in a git stash")
-		stashed = git.Stash(fmt.Sprintf("Deps save before update"))
-
-		defer func() {
-			if stashed {
-				output.Event("Putting original uncommitted changes back")
-				if err := git.StashPop(); err != nil {
-					panic(err)
-				}
-			}
 		}()
 	}
 
