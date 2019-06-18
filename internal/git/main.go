@@ -23,10 +23,20 @@ func PushBranch(branchName string) error {
 }
 
 func GetBranchName(id string) string {
+	prefix := getBranchPrefix()
+	return fmt.Sprintf("%s%s", prefix, id)
+}
+
+func IsDepsBranch(branchName string) bool {
+	prefix := getBranchPrefix()
+	return strings.HasPrefix(branchName, prefix)
+}
+
+func getBranchPrefix() string {
 	branchPrefix := env.GetSetting("branch_prefix", "")
 	branchSeparator := env.GetSetting("branch_separator", "/")
 
-	return fmt.Sprintf("%sdeps%s%s", branchPrefix, branchSeparator, id)
+	return fmt.Sprintf("%sdeps%s", branchPrefix, branchSeparator)
 }
 
 func GitHost() string {
@@ -90,18 +100,23 @@ func CurrentRef() string {
 	return strings.TrimSpace(string(out))
 }
 
-func AddCommit(message string) error {
+func AddCommit(message string) {
 	if err := run("add", "."); err != nil {
-		return err
+		panic(err)
 	}
 	if err := run("commit", "--author", "deps <bot@dependencies.io>", "-m", message); err != nil {
-		return err
+		panic(err)
 	}
-	return nil
 }
 
-func CheckoutLast() error {
-	return run("checkout", "-")
+func Checkout(s string) {
+	if err := run("checkout", s); err != nil {
+		panic(err)
+	}
+}
+
+func CheckoutLast() {
+	Checkout("-")
 }
 
 func ResetAndClean() {

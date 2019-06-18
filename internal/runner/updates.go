@@ -6,6 +6,9 @@ import (
 	"github.com/dropseed/deps/internal/schema"
 )
 
+var lockfileUpdatesDisabled = false
+var manifestUpdatesDisabled = false
+
 type Updates []*Update
 
 func (updates Updates) printOverview() {
@@ -26,7 +29,7 @@ func (updates Updates) printOverview() {
 func newUpdatesFromDependencies(dependencies *schema.Dependencies, dependencyConfig *config.Dependency) (Updates, error) {
 	updates := Updates{}
 
-	if *dependencyConfig.LockfileUpdates.Enabled {
+	if *dependencyConfig.LockfileUpdates.Enabled && !lockfileUpdatesDisabled {
 		for path, lockfile := range dependencies.Lockfiles {
 			if lockfile.Updated == nil || len(lockfile.Updated.Dependencies) < 1 {
 				continue
@@ -47,7 +50,7 @@ func newUpdatesFromDependencies(dependencies *schema.Dependencies, dependencyCon
 		}
 	}
 
-	if *dependencyConfig.ManifestUpdates.Enabled {
+	if *dependencyConfig.ManifestUpdates.Enabled && !manifestUpdatesDisabled {
 		for path, manifest := range dependencies.Manifests {
 
 			if manifest.Updated == nil || len(manifest.Updated.Dependencies) < 1 {

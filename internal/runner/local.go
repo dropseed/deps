@@ -52,7 +52,7 @@ func (updates Updates) prompt() error {
 
 		if i < len(updates) {
 			update := updates[i]
-			if err := update.runner.Act(update.dependencies, ""); err != nil {
+			if err := update.runner.Act(update.dependencies, "", false); err != nil {
 				return err
 			}
 			update.completed = true

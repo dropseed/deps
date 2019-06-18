@@ -13,7 +13,7 @@ import (
 	"github.com/dropseed/deps/internal/schema"
 )
 
-func (r *Runner) Act(inputDependencies *schema.Dependencies, baseBranch string) error {
+func (r *Runner) Act(inputDependencies *schema.Dependencies, baseBranch string, commitPush bool) error {
 	output.Event("Updating with %s", r.Given)
 
 	predictedUpdateBranch := ""
@@ -24,22 +24,21 @@ func (r *Runner) Act(inputDependencies *schema.Dependencies, baseBranch string) 
 	} else {
 		// If we're given a base branch then we'll be creating a new
 		// branch for the update
-		output.Event("Temporarily saving your uncommitted changes in a git stash")
-		stashed = git.Stash(fmt.Sprintf("Deps save before update"))
 		predictedUpdateBranch = inputDependencies.GetBranchName()
 		git.Branch(predictedUpdateBranch)
 
-		// Before returning, try to checkout the previous and put
-		// the stashed changes back
 		defer func() {
-
 			// Theres should only be uncommitted changes if we're bailing early
 			git.ResetAndClean()
+			git.CheckoutLast()
+		}()
+	}
 
-			if err := git.CheckoutLast(); err != nil {
-				panic(err)
-			}
+	if commitPush {
+		output.Event("Temporarily saving your uncommitted changes in a git stash")
+		stashed = git.Stash(fmt.Sprintf("Deps save before update"))
 
+		defer func() {
 			if stashed {
 				output.Event("Putting original uncommitted changes back")
 				if err := git.StashPop(); err != nil {
@@ -74,10 +73,9 @@ func (r *Runner) Act(inputDependencies *schema.Dependencies, baseBranch string) 
 	// before_update / after_branch?
 	// how would this work more naturally now in ci? try without it and find out
 
+	updateBranch := outputDependencies.GetBranchName()
+
 	if baseBranch != "" {
-
-		updateBranch := outputDependencies.GetBranchName()
-
 		if updateBranch != predictedUpdateBranch {
 			output.Debug("Actual update differed from expected, renaming git branch")
 
@@ -88,44 +86,47 @@ func (r *Runner) Act(inputDependencies *schema.Dependencies, baseBranch string) 
 
 			git.RenameBranch(predictedUpdateBranch, updateBranch)
 		}
+	}
 
-		pr, err := adapter.PullrequestAdapterFromDependenciesJSONPathAndHost(outputPath, git.GitHost(), baseBranch)
+	var pr adapter.PullrequestAdapter
+
+	if baseBranch != "" {
+		pr, err = adapter.PullrequestAdapterFromDependenciesJSONPathAndHost(outputPath, git.GitHost(), baseBranch)
 		if err != nil {
 			return err
 		}
+	}
 
-		// TODO run commit also, just commit all, use inputDependencies to get title, etc.?
+	if commitPush {
 		title, err := inputDependencies.GenerateTitle()
 		if err != nil {
 			return err
 		}
-		if err = git.AddCommit(title); err != nil {
-			return err
-		}
 
-		if pr != nil {
-			// TODO hooks or what do you do otherwise?
+		git.AddCommit(title)
+
+		if err := git.PushBranch(updateBranch); err != nil {
+			// TODO better to check for "Authentication failed" in output?
+			if err := pr.PreparePush(); err != nil {
+				return err
+			}
 
 			if err := git.PushBranch(updateBranch); err != nil {
-				// TODO better to check for "Authentication failed" in output?
-				if err := pr.PreparePush(); err != nil {
-					return err
-				}
-
-				if err := git.PushBranch(updateBranch); err != nil {
-					return err
-				}
-			}
-
-			output.Debug("Waiting a second for the push to be processed by the host")
-			time.Sleep(2 * time.Second)
-
-			if err := pr.Create(); err != nil {
 				return err
 			}
-			if err := pr.DoRelated(); err != nil {
-				return err
-			}
+		}
+
+		output.Debug("Waiting a second for the push to be processed by the host")
+		time.Sleep(2 * time.Second)
+	}
+
+	if pr != nil {
+		// TODO hooks or what do you do otherwise?
+		if err := pr.Create(); err != nil {
+			return err
+		}
+		if err := pr.DoRelated(); err != nil {
+			return err
 		}
 	}
 
