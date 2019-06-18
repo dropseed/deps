@@ -19,6 +19,9 @@ func Branch(to string) {
 
 // Push a given branch to the origin
 func PushBranch(branchName string) error {
+	if branchName == "" {
+		return run("push")
+	}
 	return run("push", "--set-upstream", "origin", branchName)
 }
 
