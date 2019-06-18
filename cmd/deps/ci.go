@@ -6,13 +6,12 @@ import (
 )
 
 var ciUpdateLimit int
-var ciIfEnv string
 
 var ciCMD = &cobra.Command{
 	Use:   "ci",
 	Short: "Run deps on the current directory",
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := runner.CI(ciUpdateLimit, ciIfEnv); err != nil {
+		if err := runner.CI(ciUpdateLimit); err != nil {
 			printErrAndExitFailure(err)
 		}
 	},
@@ -20,6 +19,5 @@ var ciCMD = &cobra.Command{
 
 func init() {
 	ciCMD.Flags().IntVarP(&ciUpdateLimit, "limit", "l", -1, "limit the number of updates performed")
-	ciCMD.Flags().StringVarP(&ciIfEnv, "if-env", "e", "", "skip deps ci if this env var is set")
 	rootCmd.AddCommand(ciCMD)
 }

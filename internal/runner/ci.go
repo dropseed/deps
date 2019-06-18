@@ -9,19 +9,8 @@ import (
 	"github.com/dropseed/deps/internal/output"
 )
 
-func CI(updateLimit int, ifEnv string) error {
-	branch := getBaseBranch()
-	if branch == "master" {
-		if ifEnv != "" && !checkEnvCondition(ifEnv) {
-			output.Success("Skipping deps on master branch based on if env condition %s", ifEnv)
-			return nil
-		}
-	} else if git.IsDepsBranch(branch) {
-		output.Success("Running deps on an existing deps update branch")
-	} else {
-		output.Success("Skipping deps on branch %s", branch)
-		return nil
-	}
+func CI(updateLimit int) error {
+	branch := getCurrentBranch()
 
 	startingRef := git.CurrentRef()
 
@@ -58,26 +47,29 @@ func CI(updateLimit int, ifEnv string) error {
 	return nil
 }
 
-func getBaseBranch() string {
-	baseBranch := git.CurrentRef()
+func getCurrentBranch() string {
+	branch := git.CurrentRef()
 
 	// CI environments may be checking out a specific ref,
 	// so use the variables they provide to see if we get a different branch name
+	if b := os.Getenv("TRAVIS_PULL_REQUEST_BRANCH"); b != "" {
+		branch = b
+	}
 	if b := os.Getenv("TRAVIS_BRANCH"); b != "" {
-		baseBranch = b
+		branch = b
 	}
 	if b := os.Getenv("CIRCLE_BRANCH"); b != "" {
-		baseBranch = b
+		branch = b
 	}
 	if b := os.Getenv("GITHUB_REF"); strings.HasPrefix(b, "refs/heads/") {
-		baseBranch = b[11:]
+		branch = b[11:]
 	}
 
-	if baseBranch == "" {
+	if branch == "" {
 		panic(errors.New("Unable to determine base branch"))
 	}
 
-	return baseBranch
+	return branch
 }
 
 func (updates Updates) run(branch string, commitPush bool) error {
@@ -88,25 +80,4 @@ func (updates Updates) run(branch string, commitPush bool) error {
 		update.completed = true
 	}
 	return nil
-}
-
-func checkEnvCondition(s string) bool {
-	parts := strings.SplitN(s, "=", 2)
-	envKey := parts[0]
-	envVal := ""
-	if len(parts) > 1 {
-		envVal = parts[1]
-	}
-
-	actualVal := os.Getenv(envKey)
-
-	if envVal == "" && actualVal != "" {
-		return false
-	}
-
-	if envVal != actualVal {
-		return false
-	}
-
-	return true
 }
