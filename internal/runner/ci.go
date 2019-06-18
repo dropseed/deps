@@ -2,11 +2,14 @@ package runner
 
 import (
 	"errors"
+	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 
 	"github.com/dropseed/deps/internal/git"
 	"github.com/dropseed/deps/internal/output"
+	"github.com/dropseed/deps/internal/pullrequest/github"
 )
 
 func CI(updateLimit int) error {
@@ -19,6 +22,10 @@ func CI(updateLimit int) error {
 
 	output.Debug("Checking out the tip of the branch (no point in looking at old commits for updates)")
 	git.Checkout(branch)
+
+	if !git.CanPush() {
+		preparePush()
+	}
 
 	if git.IsDepsBranch(branch) {
 		output.Event("Deps branch detected: running lockfile updates directly on this branch")
@@ -80,4 +87,20 @@ func (updates Updates) run(branch string, commitPush bool) error {
 		update.completed = true
 	}
 	return nil
+}
+
+func preparePush() {
+	gitHost := git.GitHost()
+
+	if gitHost == "github" {
+		token := github.GetAPIToken()
+		output.Debug("Writing GitHub token to ~/.netrc")
+		echo := fmt.Sprintf("echo -e \"machine github.com\n  login x-access-token\n  password %s\" >> ~/.netrc", token)
+		cmd := exec.Command("sh", "-c", echo)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			panic(err)
+		}
+	}
 }

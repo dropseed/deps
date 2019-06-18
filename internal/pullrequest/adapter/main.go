@@ -11,7 +11,6 @@ import (
 
 // PullrequestAdapter implements the basic Pullrequest functions
 type PullrequestAdapter interface {
-	PreparePush() error
 	Create() error
 	DoRelated() error
 	// OutputActions() error

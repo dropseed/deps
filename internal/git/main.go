@@ -18,11 +18,22 @@ func Branch(to string) {
 }
 
 // Push a given branch to the origin
-func PushBranch(branchName string) error {
+func PushBranch(branchName string) {
 	if branchName == "" {
-		return run("push")
+		if err := run("push"); err != nil {
+			panic(err)
+		}
 	}
-	return run("push", "--set-upstream", "origin", branchName)
+	if err := run("push", "--set-upstream", "origin", branchName); err != nil {
+		panic(err)
+	}
+}
+
+func CanPush() bool {
+	if err := run("push", "--dry-run"); err != nil {
+		return false
+	}
+	return true
 }
 
 func GetBranchName(id string) string {

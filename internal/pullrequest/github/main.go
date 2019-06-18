@@ -7,8 +7,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
-	"os/exec"
 	"strconv"
 	"strings"
 
@@ -131,18 +129,6 @@ func (pr *PullRequest) createPR() (map[string]interface{}, error) {
 	}
 
 	return data, nil
-}
-
-func (pr *PullRequest) PreparePush() error {
-	output.Debug("Writing GitHub token to ~/.netrc")
-	echo := fmt.Sprintf("echo -e \"machine github.com\n  login x-access-token\n  password %s\" >> ~/.netrc", pr.APIToken)
-	cmd := exec.Command("sh", "-c", echo)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
-		return err
-	}
-	return nil
 }
 
 // Create performs the creation of the PR on GitHub

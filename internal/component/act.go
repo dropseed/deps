@@ -93,9 +93,10 @@ func (r *Runner) Act(inputDependencies *schema.Dependencies, baseBranch string, 
 	}
 
 	var pr adapter.PullrequestAdapter
+	gitHost := git.GitHost()
 
 	if baseBranch != "" {
-		pr, err = adapter.PullrequestAdapterFromDependenciesJSONPathAndHost(outputPath, git.GitHost(), baseBranch)
+		pr, err = adapter.PullrequestAdapterFromDependenciesJSONPathAndHost(outputPath, gitHost, baseBranch)
 		if err != nil {
 			return err
 		}
@@ -108,17 +109,7 @@ func (r *Runner) Act(inputDependencies *schema.Dependencies, baseBranch string, 
 		}
 
 		git.AddCommit(title)
-
-		if err := git.PushBranch(updateBranch); err != nil {
-			// TODO better to check for "Authentication failed" in output?
-			if err := pr.PreparePush(); err != nil {
-				return err
-			}
-
-			if err := git.PushBranch(updateBranch); err != nil {
-				return err
-			}
-		}
+		git.PushBranch(updateBranch)
 
 		output.Debug("Waiting a second for the push to be processed by the host")
 		time.Sleep(2 * time.Second)
