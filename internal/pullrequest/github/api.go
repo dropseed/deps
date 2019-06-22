@@ -9,8 +9,6 @@ import (
 	"golang.org/x/oauth2"
 )
 
-const PRAuthor = "app/dependencies"
-
 func (pr *PullRequest) getGitHubClient() (*github.Client, context.Context, error) {
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(
@@ -47,9 +45,8 @@ func (pr *PullRequest) getRelatedPR() (*github.Issue, error) {
 	// This search is not exact... "Update yarn.lock" will also match "Update docs/yarn.lock",
 	// so we have to do additional filtering afterwards
 	query := fmt.Sprintf(
-		"\"%v\" in:title author:%v is:pr is:open repo:%v created:<%v",
+		"\"%v\" in:title is:pr is:open repo:%v created:<%v",
 		strings.Replace(relatedPRTitleSearch, "\"", "\\\"", -1),
-		PRAuthor,
 		pr.RepoFullName,
 		pr.CreatedAt,
 	)

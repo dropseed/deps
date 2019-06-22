@@ -39,3 +39,11 @@ func TestBranchExists(t *testing.T) {
 		t.FailNow()
 	}
 }
+
+// func TestGetDepsBranches(t *testing.T) {
+// 	branches := GetDepsBranches()
+// 	for _, b := range branches {
+// 		println(b)
+// 	}
+// 	t.Fail()
+// }

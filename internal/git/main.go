@@ -46,6 +46,26 @@ func IsDepsBranch(branchName string) bool {
 	return strings.HasPrefix(branchName, prefix)
 }
 
+func GetDepsBranches() []string {
+	cmd := exec.Command("git", "branch", "--list", "--no-column")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		panic(err)
+	}
+	s := string(out)
+
+	lines := strings.Split(s, "\n")
+
+	branches := []string{}
+	for _, line := range lines {
+		branch := strings.TrimSpace(line)
+		if IsDepsBranch(branch) {
+			branches = append(branches, branch)
+		}
+	}
+	return branches
+}
+
 func getBranchPrefix() string {
 	branchPrefix := env.GetSetting("branch_prefix", "")
 	branchSeparator := env.GetSetting("branch_separator", "/")

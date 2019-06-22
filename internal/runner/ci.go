@@ -12,43 +12,78 @@ import (
 	"github.com/dropseed/deps/internal/pullrequest/github"
 )
 
+type branchUpdate struct {
+	base                    string
+	checkout                string
+	manifestUpdatesDisabled bool
+}
+
 func CI(updateLimit int) error {
-	branch := getCurrentBranch()
-
-	startingRef := git.CurrentRef()
-
 	output.Debug("Fetching all branches so we can check for existing updates")
 	git.FetchAllBranches()
-
-	output.Debug("Checking out the tip of the branch (no point in looking at old commits for updates)")
-	git.Checkout(branch)
 
 	if !git.CanPush() {
 		preparePush()
 	}
 
-	if git.IsDepsBranch(branch) {
+	branches := []branchUpdate{}
+
+	startingBranch := getCurrentBranch()
+	startingRef := git.CurrentRef()
+
+	if git.IsDepsBranch(startingBranch) {
 		output.Event("Deps branch detected: running lockfile updates directly on this branch")
-		branch = ""
-		manifestUpdatesDisabled = true
+		branches = append(branches, branchUpdate{
+			base:                    "",
+			checkout:                startingBranch,
+			manifestUpdatesDisabled: true,
+		})
+	} else {
+		branches = append(branches, branchUpdate{
+			base:                    startingBranch,
+			checkout:                startingBranch,
+			manifestUpdatesDisabled: false,
+		})
+		// Run lockfile updates on any existing deps branches
+		for _, branch := range git.GetDepsBranches() {
+			branches = append(branches, branchUpdate{
+				base:                    "",
+				checkout:                branch,
+				manifestUpdatesDisabled: true,
+			})
+		}
 	}
 
-	newUpdates, _, _, err := collectUpdates(updateLimit)
-	if err != nil {
-		return err
-	}
+	for _, branch := range branches {
+		output.Debug("Checking out the tip of the branch")
+		git.Checkout(branch.checkout)
 
-	if len(newUpdates) > 0 {
-		output.Event("Performing updates")
-		if err := newUpdates.run(branch, true); err != nil {
+		manifestUpdatesDisabled = branch.manifestUpdatesDisabled
+
+		// Limit new updates on the main branch only
+		limit := -1
+		if branch.base == startingBranch {
+			limit = updateLimit
+		}
+
+		newUpdates, _, _, err := collectUpdates(limit)
+		if err != nil {
 			return err
 		}
-	} else {
-		output.Success("No new updates")
+
+		if len(newUpdates) > 0 {
+			output.Event("Performing updates")
+			if err := newUpdates.run(branch.base, true); err != nil {
+				return err
+			}
+		} else {
+			output.Success("No new updates")
+		}
+
+		output.Debug("Attempting to put git back in the original state")
+		git.ResetAndClean()
 	}
 
-	output.Debug("Attempting to put git back in the original state")
-	git.ResetAndClean()
 	git.Checkout(startingRef)
 
 	return nil
@@ -79,9 +114,9 @@ func getCurrentBranch() string {
 	return branch
 }
 
-func (updates Updates) run(branch string, commitPush bool) error {
+func (updates Updates) run(baseBranch string, commitPush bool) error {
 	for _, update := range updates {
-		if err := update.runner.Act(update.dependencies, branch, commitPush); err != nil {
+		if err := update.runner.Act(update.dependencies, baseBranch, commitPush); err != nil {
 			return err
 		}
 		update.completed = true
