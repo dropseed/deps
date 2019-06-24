@@ -22,14 +22,15 @@ func CI(updateLimit int) error {
 	output.Debug("Fetching all branches so we can check for existing updates")
 	git.FetchAllBranches()
 
-	if !git.CanPush() {
-		preparePush()
-	}
-
 	branches := []branchUpdate{}
 
 	startingBranch := getCurrentBranch()
 	startingRef := git.CurrentRef()
+
+	git.Checkout(startingBranch)
+	if !git.CanPush() {
+		preparePush()
+	}
 
 	if git.IsDepsBranch(startingBranch) {
 		output.Event("Deps branch detected: running lockfile updates directly on this branch")
