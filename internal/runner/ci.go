@@ -51,6 +51,9 @@ func CI(updateLimit int) error {
 				checkout:                branch,
 				manifestUpdatesDisabled: true,
 			})
+			// TODO if lockfile is updated in a branch,
+			// then the PR description may need to be updated too?
+			// title should be good
 		}
 	}
 

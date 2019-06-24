@@ -47,7 +47,7 @@ func IsDepsBranch(branchName string) bool {
 }
 
 func GetDepsBranches() []string {
-	cmd := exec.Command("git", "branch", "--list", "--no-column")
+	cmd := exec.Command("git", "branch", "--list", "--all", "--no-column")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		panic(err)
@@ -59,6 +59,9 @@ func GetDepsBranches() []string {
 	branches := []string{}
 	for _, line := range lines {
 		branch := strings.TrimSpace(line)
+		if strings.HasPrefix(branch, "remotes/origin/") {
+			branch = branch[15:]
+		}
 		if IsDepsBranch(branch) {
 			branches = append(branches, branch)
 		}
