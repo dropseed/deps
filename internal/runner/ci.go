@@ -2,14 +2,12 @@ package runner
 
 import (
 	"errors"
-	"fmt"
 	"os"
-	"os/exec"
 	"strings"
 
 	"github.com/dropseed/deps/internal/git"
 	"github.com/dropseed/deps/internal/output"
-	"github.com/dropseed/deps/internal/pullrequest/github"
+	"github.com/dropseed/deps/internal/pullrequest/adapter"
 )
 
 type branchUpdate struct {
@@ -19,6 +17,14 @@ type branchUpdate struct {
 }
 
 func CI(updateLimit int) error {
+	repo := adapter.NewRepoFromEnv()
+	if repo == nil {
+		return errors.New("Repo not found or not supported")
+	}
+	if err := repo.CheckRequirements(); err != nil {
+		return err
+	}
+
 	output.Debug("Fetching all branches so we can check for existing updates")
 	git.FetchAllBranches()
 
@@ -29,7 +35,7 @@ func CI(updateLimit int) error {
 
 	git.Checkout(startingBranch)
 	if !git.CanPush() {
-		preparePush()
+		repo.PreparePush()
 	}
 
 	if git.IsDepsBranch(startingBranch) {
@@ -59,7 +65,7 @@ func CI(updateLimit int) error {
 	}
 
 	for _, branch := range branches {
-		output.Debug("Checking out the tip of the branch")
+		output.Debug("Checking out the tip of %s branch", branch)
 		git.Checkout(branch.checkout)
 
 		manifestUpdatesDisabled = branch.manifestUpdatesDisabled
@@ -76,12 +82,12 @@ func CI(updateLimit int) error {
 		}
 
 		if len(newUpdates) > 0 {
-			output.Event("Performing updates")
+			output.Event("Performing updates on %s", branch)
 			if err := newUpdates.run(branch.base, true); err != nil {
 				return err
 			}
 		} else {
-			output.Success("No new updates")
+			output.Success("No new updates on %s", branch)
 		}
 
 		output.Debug("Attempting to put git back in the original state")
@@ -126,20 +132,4 @@ func (updates Updates) run(baseBranch string, commitPush bool) error {
 		update.completed = true
 	}
 	return nil
-}
-
-func preparePush() {
-	gitHost := git.GitHost()
-
-	if gitHost == "github" {
-		token := github.GetAPIToken()
-		output.Debug("Writing GitHub token to ~/.netrc")
-		echo := fmt.Sprintf("echo -e \"machine github.com\n  login x-access-token\n  password %s\" >> ~/.netrc", token)
-		cmd := exec.Command("sh", "-c", echo)
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		if err := cmd.Run(); err != nil {
-			panic(err)
-		}
-	}
 }

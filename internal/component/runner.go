@@ -104,9 +104,11 @@ func newRunnerFromRemote(s string) (*Runner, error) {
 	// run git pull - need to be able to specify version somehow though
 	// "version" optional on deps config? anything that can be git checkout in this case
 	// so maybe sharing these across repos isn't bad... checkout happens every time
-	if err := git.Pull(); err != nil {
-		return nil, err
-	}
+
+	// TODO need to point it to the repo, not run in current dir
+	// if err := git.Pull(); err != nil {
+	// 	return nil, err
+	// }
 
 	return newRunnerFromPath(clonePath)
 }
@@ -147,9 +149,12 @@ func (r *Runner) run(command string, inputPath string) (string, error) {
 		"-c",
 		commandString,
 	)
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+
+	if output.IsDebug() {
+		cmd.Stdin = os.Stdin
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+	}
 
 	cmd.Env = r.Env
 	cmd.Env = append(cmd.Env, fmt.Sprintf("DEPS_COMPONENT_PATH=%s", r.Path))

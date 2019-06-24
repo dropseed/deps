@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/dropseed/deps/internal/git"
 	"github.com/dropseed/deps/internal/pullrequest/github"
 	"github.com/dropseed/deps/internal/pullrequest/gitlab"
 	"github.com/dropseed/deps/internal/pullrequest/gittest"
@@ -15,6 +16,24 @@ type PullrequestAdapter interface {
 	DoRelated() error
 	// OutputActions() error
 }
+
+type RepoAdapter interface {
+	CheckRequirements() error
+	PreparePush()
+	// NewPullrequest(*schema.Dependencies, string) PullrequestAdapter
+}
+
+func NewRepoFromEnv() RepoAdapter {
+	gitHost := git.GitHost()
+	if gitHost == "github" {
+		return github.NewRepoFromEnv()
+	}
+	return nil
+}
+
+// func NewPullrequestFromRepo(repo RepoAdapter, deps *schema.Dependencies, baseBranch string) PullrequestAdapter {
+// 	return repo.NewPullrequest(deps, baseBranch)
+// }
 
 // PullrequestAdapterFromDependenciesJSONPathAndHost returns a host-specific Pullrequest struct
 func PullrequestAdapterFromDependenciesJSONPathAndHost(dependenciesJSONPath, host, baseBranch string) (PullrequestAdapter, error) {

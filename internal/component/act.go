@@ -28,7 +28,7 @@ func (r *Runner) Act(inputDependencies *schema.Dependencies, baseBranch string, 
 			if stashed {
 				output.Event("Putting original uncommitted changes back")
 				if err := git.StashPop(); err != nil {
-					panic(err)
+					output.Error("Error putting stash back: %v", err)
 				}
 			}
 		}()
@@ -96,6 +96,7 @@ func (r *Runner) Act(inputDependencies *schema.Dependencies, baseBranch string, 
 	gitHost := git.GitHost()
 
 	if baseBranch != "" {
+		// pr = repo.NewPullrequest(outputDependencies, baseBranch)
 		pr, err = adapter.PullrequestAdapterFromDependenciesJSONPathAndHost(outputPath, gitHost, baseBranch)
 		if err != nil {
 			return err

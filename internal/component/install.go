@@ -22,8 +22,10 @@ func (r *Runner) Install() error {
 	cmd := exec.Command("sh", "-c", command)
 	cmd.Dir = r.Path
 	cmd.Env = r.Env
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	if output.IsDebug() {
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+	}
 	err := cmd.Run()
 	if err != nil {
 		return err
