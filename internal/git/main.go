@@ -1,6 +1,7 @@
 package git
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -86,11 +87,11 @@ func GitHost() string {
 
 	// TODO https://user:pass@
 
-	if strings.HasPrefix(remote, "https://github.com/") || strings.HasPrefix(remote, "git@github.com:") {
+	if strings.HasPrefix(remote, "https://github.com/") || strings.HasPrefix(remote, "ssh://git@github.com:") {
 		return "github"
 	}
 
-	if strings.HasPrefix(remote, "https://gitlab.com/") || strings.HasPrefix(remote, "git@gitlab.com:") {
+	if strings.HasPrefix(remote, "https://gitlab.com/") || strings.HasPrefix(remote, "ssh://git@gitlab.com:") {
 		return "gitlab"
 	}
 
@@ -108,8 +109,10 @@ func GitRemote() string {
 	return s
 }
 
-func Clone(url, path string) error {
-	return run("clone", url, path)
+func Clone(url, path string) {
+	if err := run("clone", url, path); err != nil {
+		panic(err)
+	}
 }
 
 func BranchExists(branch string) bool {
@@ -198,16 +201,39 @@ func FetchAllBranches() {
 	}
 }
 
+func IsDirty() bool {
+	cmd := exec.Command("git", "status", "--porcelain")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		panic(err)
+	}
+	cleaned := strings.TrimSpace(string(out))
+	return cleaned != ""
+}
+
 func run(args ...string) error {
-	output.Debug("git %s", strings.Join(args, " "))
+	cmdString := fmt.Sprintf("git %s", strings.Join(args, " "))
+	output.Debug(cmdString)
 	cmd := exec.Command("git", args...)
+
+	out := bytes.Buffer{}
 
 	if output.IsDebug() {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
+	} else {
+		cmd.Stdout = &out
+		cmd.Stderr = &out
 	}
 
 	if err := cmd.Run(); err != nil {
+
+		if !output.IsDebug() {
+			// Show more output if it wasn't showing already
+			println(cmdString)
+			println(out.String())
+		}
+
 		return err
 	}
 

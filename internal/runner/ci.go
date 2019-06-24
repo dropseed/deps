@@ -17,6 +17,10 @@ type branchUpdate struct {
 }
 
 func CI(updateLimit int) error {
+	if git.IsDirty() {
+		return errors.New("git status must be clean to run deps ci")
+	}
+
 	repo := adapter.NewRepoFromEnv()
 	if repo == nil {
 		return errors.New("Repo not found or not supported")
@@ -65,7 +69,7 @@ func CI(updateLimit int) error {
 	}
 
 	for _, branch := range branches {
-		output.Debug("Checking out the tip of %s branch", branch)
+		output.Debug("Checking out the tip of %s branch", branch.checkout)
 		git.Checkout(branch.checkout)
 
 		manifestUpdatesDisabled = branch.manifestUpdatesDisabled

@@ -94,9 +94,7 @@ func newRunnerFromRemote(s string) (*Runner, error) {
 	// basename-hash of path in user home dir?
 
 	if _, err := os.Stat(clonePath); os.IsNotExist(err) {
-		if err := git.Clone(url, clonePath); err != nil {
-			return nil, err
-		}
+		git.Clone(url, clonePath)
 	} else if err != nil {
 		return nil, err
 	}
