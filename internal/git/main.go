@@ -138,7 +138,7 @@ func AddCommit(message string) {
 	if err := run("add", "."); err != nil {
 		panic(err)
 	}
-	if err := run("commit", "--author", "deps <bot@dependencies.io>", "-m", message); err != nil {
+	if err := run("-c", "user.name=deps", "-c", "user.email=bot@dependencies.io", "commit", "-m", message); err != nil {
 		panic(err)
 	}
 }
