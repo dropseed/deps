@@ -77,6 +77,7 @@ func CI(updateLimit int) error {
 		output.Debug("Checking out the tip of %s branch", branch.checkout)
 		git.Checkout(branch.checkout)
 
+		// TODO not a great pattern here?
 		manifestUpdatesDisabled = branch.manifestUpdatesDisabled
 
 		// Limit new updates on the main branch only
@@ -93,6 +94,7 @@ func CI(updateLimit int) error {
 		if len(newUpdates) > 0 {
 			output.Event("Performing updates on %s", branch)
 			for _, update := range newUpdates {
+				output.Event("Running update: %s", update.title)
 				if err := update.runner.Act(update.dependencies, branch.base, true); err != nil {
 					updateErrors = append(updateErrors, struct {
 						update *Update
@@ -101,7 +103,7 @@ func CI(updateLimit int) error {
 						update: update,
 						err:    err,
 					})
-					output.Error("Updated failed: %v", err)
+					output.Error("Update failed: %v", err)
 				} else {
 					update.completed = true
 				}

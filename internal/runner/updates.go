@@ -9,7 +9,12 @@ import (
 var lockfileUpdatesDisabled = false
 var manifestUpdatesDisabled = false
 
-type Updates []*Update
+type Updates map[string]*Update
+
+func (updates Updates) add(deps *schema.Dependencies, cfg *config.Dependency) {
+	update := NewUpdate(deps, cfg)
+	updates[update.id] = update
+}
 
 func (updates Updates) printOverview() {
 	if len(updates) < 1 {
@@ -36,8 +41,7 @@ func newUpdatesFromDependencies(dependencies *schema.Dependencies, dependencyCon
 				},
 			}
 
-			update := NewUpdate(&updateDependencies, dependencyConfig)
-			updates = append(updates, update)
+			updates.add(&updateDependencies, dependencyConfig)
 		}
 	}
 
@@ -74,8 +78,7 @@ func newUpdatesFromDependencies(dependencies *schema.Dependencies, dependencyCon
 					updateDependencies.Manifests[path].Updated.Dependencies[name] = dep
 				}
 
-				update := NewUpdate(&updateDependencies, dependencyConfig)
-				updates = append(updates, update)
+				updates.add(&updateDependencies, dependencyConfig)
 			}
 		}
 	}
