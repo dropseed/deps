@@ -22,14 +22,15 @@ func Local() error {
 
 func (updates Updates) prompt() error {
 	for {
+		refs := map[int]string{}
 		items := []string{}
+
+		updateIndex := 0
 		for _, update := range updates {
 			if !update.completed {
-				title, err := update.dependencies.GenerateTitle()
-				if err != nil {
-					return err
-				}
-				items = append(items, title)
+				items = append(items, update.title)
+				refs[updateIndex] = update.id
+				updateIndex++
 			}
 		}
 
@@ -51,7 +52,7 @@ func (updates Updates) prompt() error {
 		}
 
 		if i < len(updates) {
-			update := updates[i]
+			update := updates[refs[i]]
 			if err := update.runner.Act(update.dependencies, "", false); err != nil {
 				return err
 			}

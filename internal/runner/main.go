@@ -62,11 +62,11 @@ func collectUpdates(updateLimit int) (Updates, Updates, Updates, error) {
 
 	for _, update := range availableUpdates {
 		if update.branchExists() {
-			existingUpdates = append(existingUpdates, update)
+			existingUpdates.addUpdate(update)
 		} else if updateLimit > -1 && len(newUpdates) >= updateLimit {
-			limitedUpdates = append(limitedUpdates, update)
+			limitedUpdates.addUpdate(update)
 		} else {
-			newUpdates = append(newUpdates, update)
+			newUpdates.addUpdate(update)
 		}
 	}
 
@@ -128,8 +128,8 @@ func getAvailableUpdates(cfg *config.Config) (Updates, error) {
 			for _, update := range updates {
 				// Store this for use later
 				update.runner = runner
+				availableUpdates.addUpdate(update)
 			}
-			availableUpdates = append(availableUpdates, updates...)
 		}
 	}
 

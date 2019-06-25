@@ -13,6 +13,10 @@ type Updates map[string]*Update
 
 func (updates Updates) add(deps *schema.Dependencies, cfg *config.Dependency) {
 	update := NewUpdate(deps, cfg)
+	updates.addUpdate(update)
+}
+
+func (updates Updates) addUpdate(update *Update) {
 	updates[update.id] = update
 }
 
