@@ -68,6 +68,11 @@ func CI(updateLimit int) error {
 		}
 	}
 
+	updateErrors := []struct {
+		update *Update
+		err    error
+	}{}
+
 	for _, branch := range branches {
 		output.Debug("Checking out the tip of %s branch", branch.checkout)
 		git.Checkout(branch.checkout)
@@ -87,8 +92,19 @@ func CI(updateLimit int) error {
 
 		if len(newUpdates) > 0 {
 			output.Event("Performing updates on %s", branch)
-			if err := newUpdates.run(branch.base, true); err != nil {
-				return err
+			for _, update := range newUpdates {
+				if err := update.runner.Act(update.dependencies, branch.base, true); err != nil {
+					updateErrors = append(updateErrors, struct {
+						update *Update
+						err    error
+					}{
+						update: update,
+						err:    err,
+					})
+					output.Error("Updated failed: %v", err)
+				} else {
+					update.completed = true
+				}
 			}
 		} else {
 			output.Success("No new updates on %s", branch)
@@ -99,6 +115,13 @@ func CI(updateLimit int) error {
 	}
 
 	git.Checkout(startingRef)
+
+	if len(updateErrors) > 0 {
+		output.Error("There were %d errors making the updates", len(updateErrors))
+		for _, ue := range updateErrors {
+			output.Error("- [%s] %s\n  %v", ue.update.id, ue.update.title, ue.err)
+		}
+	}
 
 	return nil
 }
@@ -126,14 +149,4 @@ func getCurrentBranch() string {
 	}
 
 	return branch
-}
-
-func (updates Updates) run(baseBranch string, commitPush bool) error {
-	for _, update := range updates {
-		if err := update.runner.Act(update.dependencies, baseBranch, commitPush); err != nil {
-			return err
-		}
-		update.completed = true
-	}
-	return nil
 }

@@ -13,6 +13,25 @@ type Update struct {
 	dependencyConfig *config.Dependency
 	completed        bool
 	runner           *component.Runner
+	id               string
+	title            string
+}
+
+func NewUpdate(deps *schema.Dependencies, cfg *config.Dependency) *Update {
+	id := deps.GetID()
+	title, err := deps.GenerateTitle()
+	if err != nil {
+		panic(err)
+	}
+
+	update := Update{
+		dependencies:     deps,
+		dependencyConfig: cfg,
+		id:               id,
+		title:            title,
+	}
+
+	return &update
 }
 
 func (update *Update) branchExists() bool {

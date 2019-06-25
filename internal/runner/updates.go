@@ -17,12 +17,7 @@ func (updates Updates) printOverview() {
 	}
 
 	for _, update := range updates {
-		id := update.dependencies.GetID()
-		title, err := update.dependencies.GenerateTitle()
-		if err != nil {
-			panic(err)
-		}
-		output.Event("[%s] %s", id, title)
+		output.Event("[%s] %s", update.id, update.title)
 	}
 }
 
@@ -41,12 +36,8 @@ func newUpdatesFromDependencies(dependencies *schema.Dependencies, dependencyCon
 				},
 			}
 
-			update := Update{
-				dependencies:     &updateDependencies,
-				dependencyConfig: dependencyConfig,
-			}
-
-			updates = append(updates, &update)
+			update := NewUpdate(&updateDependencies, dependencyConfig)
+			updates = append(updates, update)
 		}
 	}
 
@@ -83,12 +74,8 @@ func newUpdatesFromDependencies(dependencies *schema.Dependencies, dependencyCon
 					updateDependencies.Manifests[path].Updated.Dependencies[name] = dep
 				}
 
-				update := Update{
-					dependencies:     &updateDependencies,
-					dependencyConfig: dependencyConfig,
-				}
-
-				updates = append(updates, &update)
+				update := NewUpdate(&updateDependencies, dependencyConfig)
+				updates = append(updates, update)
 			}
 		}
 	}
