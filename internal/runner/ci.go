@@ -92,7 +92,7 @@ func CI(updateLimit int) error {
 		}
 
 		if len(newUpdates) > 0 {
-			output.Event("Performing updates on %s", branch)
+			output.Event("Performing updates on %s", branch.checkout)
 			for _, update := range newUpdates {
 				output.Event("Running update: %s", update.title)
 				if err := update.runner.Act(update.dependencies, branch.base, true); err != nil {
@@ -109,7 +109,7 @@ func CI(updateLimit int) error {
 				}
 			}
 		} else {
-			output.Success("No new updates on %s", branch)
+			output.Success("No new updates on %s", branch.checkout)
 		}
 
 		output.Debug("Attempting to put git back in the original state")

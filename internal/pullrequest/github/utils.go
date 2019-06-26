@@ -54,7 +54,7 @@ func getRepoFullNameFromRemote(remote string) string {
 	return ""
 }
 
-func getAPIToken() string {
+func GetAPIToken() string {
 	if s := os.Getenv("DEPS_GITHUB_TOKEN"); s != "" {
 		return s
 	}

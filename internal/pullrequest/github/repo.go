@@ -15,7 +15,7 @@ type GitHubRepo struct {
 
 func NewRepoFromEnv() *GitHubRepo {
 	return &GitHubRepo{
-		apiToken: getAPIToken(),
+		apiToken: GetAPIToken(),
 	}
 }
 
@@ -57,6 +57,6 @@ func (repo *GitHubRepo) PreparePush() {
 // 		RepoOwnerName: owner,
 // 		RepoName:      repoName,
 // 		RepoFullName:  fullName,
-// 		APIToken:      getAPIToken(),
+// 		APIToken:      GetAPIToken(),
 // 	}
 // }

@@ -1,14 +1,9 @@
 package schema
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
-	"os"
-	"time"
 
-	"github.com/dropseed/deps/internal/env"
+	"github.com/dropseed/deps/internal/changelogs"
 )
 
 // Dependency contains fields and functions common to lockfiles and manifests
@@ -39,35 +34,5 @@ func (dependency *Dependency) getContentForVersion(dependencyName string, versio
 		return version.Content
 	}
 
-	attemptRemote := env.GetSetting("PULLREQUEST_VERSIONS_API_DISABLED", "") == ""
-	if attemptRemote && dependency.Source != "" && dependencyName != "" && version.Name != "" {
-		apiURL := fmt.Sprintf("https://versions.dependencies.io/%s/%s/%s", dependency.Source, dependencyName, version.Name)
-		tr := &http.Transport{
-			IdleConnTimeout: 45 * time.Second,
-		}
-		client := &http.Client{Transport: tr}
-		req, err := http.NewRequest("GET", apiURL, nil)
-		if err != nil {
-			panic(err)
-		}
-		req.Header.Add("User-Agent", "deps")
-		req.Header.Add("Content-Type", "application/json")
-		req.Header.Add("GitHub-API-Token", os.Getenv("GITHUB_API_TOKEN"))
-		if resp, err := client.Do(req); err == nil && resp.StatusCode >= 200 && resp.StatusCode < 400 {
-			body, err := ioutil.ReadAll(resp.Body)
-			resp.Body.Close()
-			if err == nil {
-				var data map[string]interface{}
-				if err := json.Unmarshal(body, &data); err == nil {
-					if content, ok := data["content"]; ok && content != nil {
-						if content, ok := content.(string); ok && content != "" {
-							return content
-						}
-					}
-				}
-			}
-		}
-	}
-
-	return ""
+	return changelogs.GetChangelog(dependency.Source, dependencyName, version.Name)
 }

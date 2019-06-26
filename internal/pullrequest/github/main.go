@@ -47,7 +47,7 @@ func NewPullrequestFromDependenciesJSONPathAndEnv(dependenciesJSONPath string) (
 		RepoOwnerName: owner,
 		RepoName:      repo,
 		RepoFullName:  fullName,
-		APIToken:      getAPIToken(),
+		APIToken:      GetAPIToken(),
 	}, nil
 }
 
