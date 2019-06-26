@@ -11,7 +11,6 @@ import (
 	"github.com/dropseed/deps/internal/output"
 )
 
-// BranchForJob branches off of GIT_SHA
 func Branch(to string) {
 	if err := run("checkout", "-b", to); err != nil {
 		panic(err)

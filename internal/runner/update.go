@@ -15,6 +15,7 @@ type Update struct {
 	runner           *component.Runner
 	id               string
 	title            string
+	branch           string
 }
 
 func NewUpdate(deps *schema.Dependencies, cfg *config.Dependency) *Update {
@@ -24,17 +25,19 @@ func NewUpdate(deps *schema.Dependencies, cfg *config.Dependency) *Update {
 		panic(err)
 	}
 
+	branch := deps.GetBranchName()
+
 	update := Update{
 		dependencies:     deps,
 		dependencyConfig: cfg,
 		id:               id,
 		title:            title,
+		branch:           branch,
 	}
 
 	return &update
 }
 
 func (update *Update) branchExists() bool {
-	branch := update.dependencies.GetBranchName()
-	return git.BranchExists(branch)
+	return git.BranchExists(update.branch)
 }

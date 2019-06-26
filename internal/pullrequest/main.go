@@ -15,20 +15,15 @@ type Pullrequest struct {
 }
 
 // NewPullrequestFromEnv creates a Pullrequest using env variables
-func NewPullrequestFromJSONPathAndEnv(dependenciesJSONPath string) (*Pullrequest, error) {
-	dependencies, err := schema.NewDependenciesFromJSONPath(dependenciesJSONPath)
+func NewPullrequestFromEnv(deps *schema.Dependencies) (*Pullrequest, error) {
+	branch := deps.GetBranchName()
+
+	title, err := deps.GenerateTitle()
 	if err != nil {
 		return nil, err
 	}
 
-	branch := dependencies.GetBranchName()
-
-	title, err := dependencies.GenerateTitle()
-	if err != nil {
-		return nil, err
-	}
-
-	body, err := dependencies.GenerateBody()
+	body, err := deps.GenerateBody()
 	if err != nil {
 		return nil, err
 	}
@@ -38,55 +33,7 @@ func NewPullrequestFromJSONPathAndEnv(dependenciesJSONPath string) (*Pullrequest
 		Title:             title,
 		Body:              body,
 		DefaultBaseBranch: "",
-		Dependencies:      dependencies,
+		Dependencies:      deps,
 		Action:            &schema.Action{Metadata: map[string]interface{}{}},
 	}, nil
 }
-
-// func (pr *Pullrequest) PreparePush() error {
-// 	return nil
-// }
-
-// func (pr *Pullrequest) Create() error {
-// 	return nil
-// }
-
-// func (pr *Pullrequest) DoRelated() error {
-// 	return nil
-// }
-
-// func (pr *Pullrequest) GetActionsJSON() (string, error) {
-// 	if pr.Action.Name == "" {
-// 		return "", errors.New("Action name must not be empty")
-// 	}
-
-// 	output := map[string]interface{}{
-// 		pr.Action.Name: map[string]interface{}{
-// 			"metadata":     pr.Action.Metadata,
-// 			"dependencies": pr.Dependencies,
-// 		},
-// 	}
-
-// 	jsonOutput, err := json.Marshal(output)
-// 	if err != nil {
-// 		return "", err
-// 	}
-
-// 	return fmt.Sprintf("<Actions>%v</Actions>", string(jsonOutput)), nil
-// }
-
-// // OutputActions sends the Action to stdout
-// func (pr *Pullrequest) OutputActions() error {
-// 	output, err := pr.GetActionsJSON()
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	if output == "" {
-// 		return errors.New("no <Actions> to output")
-// 	}
-
-// 	fmt.Println(output)
-
-// 	return nil
-// }

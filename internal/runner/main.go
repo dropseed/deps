@@ -45,26 +45,23 @@ func getConfig() (*config.Config, error) {
 	return cfg, nil
 }
 
-func collectUpdates(updateLimit int) (Updates, Updates, Updates, error) {
+func collectUpdates() (Updates, Updates, error) {
 	cfg, err := getConfig()
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, err
 	}
 
 	availableUpdates, err := getAvailableUpdates(cfg)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, err
 	}
 
 	newUpdates := Updates{}      // PRs for these
-	limitedUpdates := Updates{}  // nothing
 	existingUpdates := Updates{} // lockfile update on these?
 
 	for _, update := range availableUpdates {
 		if update.branchExists() {
 			existingUpdates.addUpdate(update)
-		} else if updateLimit > -1 && len(newUpdates) >= updateLimit {
-			limitedUpdates.addUpdate(update)
 		} else {
 			newUpdates.addUpdate(update)
 		}
@@ -76,19 +73,13 @@ func collectUpdates(updateLimit int) (Updates, Updates, Updates, error) {
 		fmt.Println()
 	}
 
-	if len(limitedUpdates) > 0 {
-		output.Event("%d updates skipped based on limit", len(limitedUpdates))
-		limitedUpdates.printOverview()
-		fmt.Println()
-	}
-
 	if len(newUpdates) > 0 {
 		output.Event("%d new updates to be made", len(newUpdates))
 		newUpdates.printOverview()
 		fmt.Println()
 	}
 
-	return newUpdates, existingUpdates, limitedUpdates, nil
+	return newUpdates, existingUpdates, nil
 }
 
 func getAvailableUpdates(cfg *config.Config) (Updates, error) {

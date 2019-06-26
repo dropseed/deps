@@ -8,7 +8,7 @@ import (
 
 // Local runs a full interactive update process
 func Local() error {
-	newUpdates, _, _, err := collectUpdates(-1)
+	newUpdates, _, err := collectUpdates()
 	if err != nil {
 		return err
 	}
@@ -53,7 +53,7 @@ func (updates Updates) prompt() error {
 
 		if i < len(updates) {
 			update := updates[refs[i]]
-			if err := update.runner.Act(update.dependencies, "", false); err != nil {
+			if _, err := update.runner.Act(update.dependencies); err != nil {
 				return err
 			}
 			update.completed = true

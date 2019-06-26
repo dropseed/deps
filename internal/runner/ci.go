@@ -2,18 +2,19 @@ package runner
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/dropseed/deps/internal/git"
 	"github.com/dropseed/deps/internal/output"
 	"github.com/dropseed/deps/internal/pullrequest/adapter"
 )
 
-type branchUpdate struct {
-	base                    string
-	checkout                string
-	manifestUpdatesDisabled bool
+type updateError struct {
+	update *Update
+	err    error
 }
 
 func CI(updateLimit int) error {
@@ -32,95 +33,96 @@ func CI(updateLimit int) error {
 	output.Debug("Fetching all branches so we can check for existing updates")
 	git.FetchAllBranches()
 
-	branches := []branchUpdate{}
-
 	startingBranch := getCurrentBranch()
-	startingRef := git.CurrentRef()
 
 	git.Checkout(startingBranch)
 
-	// TODO does this belong? or user responsibility (we can give instruction)
+	// // TODO does this belong? or user responsibility (we can give instruction)
 	if !git.CanPush() {
 		repo.PreparePush()
 	}
 
-	if git.IsDepsBranch(startingBranch) {
-		output.Event("Deps branch detected: running lockfile updates directly on this branch")
-		branches = append(branches, branchUpdate{
-			base:                    "",
-			checkout:                startingBranch,
-			manifestUpdatesDisabled: true,
-		})
-	} else {
-		// master (or other) branch
-		// 1) check for updates based on this branch
-		// 2) find other deps branches and check them for updates
+	updateErrors := []*updateError{}
 
-		branches = append(branches, branchUpdate{
-			base:                    startingBranch,
-			checkout:                startingBranch,
-			manifestUpdatesDisabled: false,
-		})
+	isDepsBranch := git.IsDepsBranch(startingBranch)
 
-		// Run lockfile updates on any existing deps branches
-		for _, branch := range git.GetDepsBranches() {
-			branches = append(branches, branchUpdate{
-				base:                    "",
-				checkout:                branch,
-				manifestUpdatesDisabled: true,
-			})
-		}
+	// TODO better to pass this through collect or something
+	manifestUpdatesDisabled = isDepsBranch
+
+	newUpdates, existingUpdates, err := collectUpdates()
+	if err != nil {
+		return err
 	}
 
-	updateErrors := []struct {
-		update *Update
-		err    error
-	}{}
+	// TODO put specific update limit on new? or disable
+	// same with existing
+	if updateLimit > -1 {
+		// newUpdates = newUpdates[:updateLimit]
+	}
 
-	for _, branch := range branches {
-		output.Debug("Checking out the tip of %s branch", branch.checkout)
-		git.Checkout(branch.checkout)
+	// TODO this is also because collectors may have done some crap and not cleaned up
+	output.Event("Temporarily saving your uncommitted changes in a git stash")
+	stashed := git.Stash(fmt.Sprintf("Deps save before update"))
 
-		// TODO not a great pattern here?
-		manifestUpdatesDisabled = branch.manifestUpdatesDisabled
-
-		// Limit new updates on the main branch only
-		limit := -1
-		if branch.base == startingBranch {
-			limit = updateLimit
-		}
-
-		newUpdates, _, _, err := collectUpdates(limit)
-		if err != nil {
-			return err
-		}
-
-		if len(newUpdates) > 0 {
-			output.Event("Performing updates on %s", branch.checkout)
-			for _, update := range newUpdates {
-				output.Event("Running update: %s", update.title)
-				if err := update.runner.Act(update.dependencies, branch.base, true); err != nil {
-					updateErrors = append(updateErrors, struct {
-						update *Update
-						err    error
-					}{
-						update: update,
-						err:    err,
-					})
-					output.Error("Update failed: %v", err)
-				} else {
-					update.completed = true
-				}
+	// Stash pop needs to happen last (so be added first)
+	defer func() {
+		if stashed {
+			output.Event("Putting original uncommitted changes back")
+			if err := git.StashPop(); err != nil {
+				output.Error("Error putting stash back: %v", err)
 			}
-		} else {
-			output.Success("No new updates on %s", branch.checkout)
+		}
+	}()
+
+	if !isDepsBranch {
+		output.Event("Performing %d new updates on %s", len(newUpdates), startingBranch)
+
+		for _, update := range newUpdates {
+			output.Event("Running update: %s", update.title)
+			if err := runUpdate(update, startingBranch, update.branch); err != nil {
+				updateErrors = append(updateErrors, &updateError{
+					update: update,
+					err:    err,
+				})
+				output.Error("Update failed: %v", err)
+			} else {
+				update.completed = true
+			}
 		}
 
-		output.Debug("Attempting to put git back in the original state")
-		git.ResetAndClean()
+		for _, update := range existingUpdates {
+			output.Event("Checking existing update: %s", update.title)
+			if err := runUpdate(update, update.branch, update.branch); err != nil {
+				updateErrors = append(updateErrors, &updateError{
+					update: update,
+					err:    err,
+				})
+				output.Error("Update failed: %v", err)
+			} else {
+				update.completed = true
+			}
+		}
+	} else {
+		output.Event("Checking for updates to existing deps branch %s", startingBranch)
+		var matchingExistingUpdate *Update
+		for _, update := range existingUpdates {
+			if update.branch == startingBranch {
+				matchingExistingUpdate = update
+			}
+		}
+		if matchingExistingUpdate != nil {
+			output.Event("Applying latest matching update to this branch")
+			if err := runUpdate(matchingExistingUpdate, matchingExistingUpdate.branch, matchingExistingUpdate.branch); err != nil {
+				updateErrors = append(updateErrors, &updateError{
+					update: matchingExistingUpdate,
+					err:    err,
+				})
+				output.Error("Update failed: %v", err)
+			} else {
+				matchingExistingUpdate.completed = true
+			}
+		}
 	}
-
-	git.Checkout(startingRef)
 
 	if len(updateErrors) > 0 {
 		output.Error("There were %d errors making the updates", len(updateErrors))
@@ -155,4 +157,62 @@ func getCurrentBranch() string {
 	}
 
 	return branch
+}
+
+func runUpdate(update *Update, base, head string) error {
+	if base == head {
+		output.Event("Running changes directly (no branches)")
+		git.Checkout(head)
+	} else {
+		git.Checkout(base)
+		git.Branch(head)
+	}
+
+	defer func() {
+		// Theres should only be uncommitted changes if we're bailing early
+		git.ResetAndClean()
+		git.CheckoutLast()
+	}()
+
+	outputDeps, err := update.runner.Act(update.dependencies)
+	if err != nil {
+		return err
+	}
+
+	var pr adapter.PullrequestAdapter
+	gitHost := git.GitHost()
+
+	if base != head {
+		// pr = repo.NewPullrequest(outputDeps, pullrequestToBranch)
+		// TODO should pass head here too
+		pr, err = adapter.PullrequestAdapterFromDependenciesAndHost(outputDeps, gitHost, base)
+		if err != nil {
+			return err
+		}
+	}
+
+	title, err := outputDeps.GenerateTitle()
+	if err != nil {
+		return err
+	}
+
+	// if nothing to commit, don't worry about it
+	if git.IsDirty() {
+		git.AddCommit(title)
+	}
+
+	git.PushBranch(head)
+
+	// TODO hooks or what do you do otherwise?
+
+	if pr != nil {
+		output.Debug("Waiting a second for the push to be processed by the host")
+		time.Sleep(2 * time.Second)
+
+		if err := pr.CreateOrUpdate(); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

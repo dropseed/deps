@@ -10,6 +10,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/dropseed/deps/internal/schema"
+
 	"github.com/dropseed/deps/internal/env"
 	"github.com/dropseed/deps/internal/pullrequest"
 )
@@ -22,9 +24,9 @@ type MergeRequest struct {
 	APIToken      string
 }
 
-// NewPullrequestFromDependenciesJSONPathAndEnv creates a PullRequest
-func NewPullrequestFromDependenciesJSONPathAndEnv(dependenciesJSONPath string) (*MergeRequest, error) {
-	prBase, err := pullrequest.NewPullrequestFromJSONPathAndEnv(dependenciesJSONPath)
+// NewPullrequestFromDependenciesEnv creates a PullRequest
+func NewPullrequestFromDependenciesEnv(deps *schema.Dependencies) (*MergeRequest, error) {
+	prBase, err := pullrequest.NewPullrequestFromEnv(deps)
 	if err != nil {
 		return nil, err
 	}
@@ -36,12 +38,8 @@ func NewPullrequestFromDependenciesJSONPathAndEnv(dependenciesJSONPath string) (
 	}, nil
 }
 
-func (pr *MergeRequest) PreparePush() error {
-	return nil
-}
-
 // Create will create the merge request on GitLab
-func (pr *MergeRequest) Create() error {
+func (pr *MergeRequest) CreateOrUpdate() error {
 	fmt.Printf("Preparing to open GitLab merge request for %v\n", pr.ProjectAPIURL)
 
 	client := &http.Client{}
@@ -133,11 +131,5 @@ func (pr *MergeRequest) Create() error {
 	pr.Action.Name = fmt.Sprintf("MR !%v", int(data["iid"].(float64)))
 	pr.Action.Metadata["gitlab_merge_request"] = data
 
-	return nil
-}
-
-// DoRelated for GitLab is not yet implemented
-func (pr *MergeRequest) DoRelated() error {
-	fmt.Printf("related PR behavior is not yet supported for GitLab")
 	return nil
 }

@@ -97,6 +97,12 @@ func newRunnerFromRemote(s string) (*Runner, error) {
 		git.Clone(url, clonePath)
 	} else if err != nil {
 		return nil, err
+	} else {
+		output.Event("FIXME: removing previous clone of component and recloning")
+		if err := os.RemoveAll(clonePath); err != nil {
+			panic(err)
+		}
+		git.Clone(url, clonePath)
 	}
 
 	// run git pull - need to be able to specify version somehow though

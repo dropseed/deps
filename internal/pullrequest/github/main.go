@@ -3,12 +3,13 @@ package github
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/dropseed/deps/internal/schema"
 
 	"github.com/dropseed/deps/internal/env"
 	"github.com/dropseed/deps/internal/output"
@@ -27,9 +28,9 @@ type PullRequest struct {
 	CreatedAt     string
 }
 
-// NewPullrequestFromDependenciesJSONPathAndEnv creates a PullRequest
-func NewPullrequestFromDependenciesJSONPathAndEnv(dependenciesJSONPath string) (*PullRequest, error) {
-	prBase, err := pullrequest.NewPullrequestFromJSONPathAndEnv(dependenciesJSONPath)
+// NewPullrequestFromDependenciesEnv creates a PullRequest
+func NewPullrequestFromDependenciesEnv(deps *schema.Dependencies) (*PullRequest, error) {
+	prBase, err := pullrequest.NewPullrequestFromEnv(deps)
 	if err != nil {
 		return nil, err
 	}
@@ -132,7 +133,7 @@ func (pr *PullRequest) createPR() (map[string]interface{}, error) {
 }
 
 // Create performs the creation of the PR on GitHub
-func (pr *PullRequest) Create() error {
+func (pr *PullRequest) CreateOrUpdate() error {
 	// check the optional settings now, before actually creating the PR (which we'll have to update)
 	var labels []string
 	if labelsEnv := env.GetSetting("GITHUB_LABELS", ""); labelsEnv != "" {
@@ -158,6 +159,8 @@ func (pr *PullRequest) Create() error {
 	}
 
 	fmt.Printf("Preparing to open GitHub pull request for %v\n", pr.RepoFullName)
+
+	// TODO if pr exists then update original comment (if diff from original)
 
 	data, err := pr.createPR()
 	if err != nil {
@@ -211,44 +214,6 @@ func (pr *PullRequest) Create() error {
 		}
 
 		fmt.Printf("Successfully updated PR fields on %v\n", htmlURL)
-	}
-
-	return nil
-}
-
-// DoRelated performs the related PR behavior set by the user
-func (pr *PullRequest) DoRelated() error {
-	// related pr behavior is valid
-	relatedPRBehavior := env.GetSetting("related_pr_behavior", "close")
-	if relatedPRBehavior == "" {
-		return nil
-	}
-
-	if relatedPRBehavior != "close" {
-		return errors.New("\"close\" is the only supported GitHub related PR behavior")
-	}
-
-	issue, err := pr.getRelatedPR()
-	if err != nil {
-		return err
-	}
-	if issue == nil {
-		fmt.Printf("No related PR found.\n")
-		return nil
-	}
-
-	if relatedPRBehavior == "close" {
-		err := pr.closePR(issue.GetNumber())
-		if err != nil {
-			return err
-		}
-
-		comment := fmt.Sprintf("This PR has been automatically closed in favor of #%v.", pr.Number)
-		err = pr.commentOnIssue(issue.GetNumber(), comment)
-		if err != nil {
-			return err
-		}
-
 	}
 
 	return nil
