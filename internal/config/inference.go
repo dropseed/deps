@@ -40,16 +40,16 @@ var patterns = []inferencePattern{
 		Type:    "js",
 		UseDir:  true,
 	},
-	inferencePattern{
-		Pattern: regexp.MustCompile("^composer.json$"),
-		Type:    "php",
-		UseDir:  true,
-	},
-	inferencePattern{
-		Pattern: regexp.MustCompile("^Dockerfile.*$"),
-		Type:    "dockerfile",
-		UseDir:  false,
-	},
+	// inferencePattern{
+	// 	Pattern: regexp.MustCompile("^composer.json$"),
+	// 	Type:    "php",
+	// 	UseDir:  true,
+	// },
+	// inferencePattern{
+	// 	Pattern: regexp.MustCompile("^Dockerfile.*$"),
+	// 	Type:    "dockerfile",
+	// 	UseDir:  false,
+	// },
 }
 
 // InferredConfigFromPath loads a Config object based on the dependency files present
