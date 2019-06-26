@@ -87,11 +87,11 @@ func GitHost() string {
 
 	// TODO https://user:pass@
 
-	if strings.HasPrefix(remote, "https://github.com/") || strings.HasPrefix(remote, "ssh://git@github.com:") {
+	if strings.HasPrefix(remote, "https://github.com/") || strings.HasPrefix(remote, "git@github.com:") {
 		return "github"
 	}
 
-	if strings.HasPrefix(remote, "https://gitlab.com/") || strings.HasPrefix(remote, "ssh://git@gitlab.com:") {
+	if strings.HasPrefix(remote, "https://gitlab.com/") || strings.HasPrefix(remote, "git@gitlab.com:") {
 		return "gitlab"
 	}
 
