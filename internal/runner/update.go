@@ -18,7 +18,7 @@ type Update struct {
 }
 
 func NewUpdate(deps *schema.Dependencies, cfg *config.Dependency) *Update {
-	id := deps.GetID()
+	id := deps.GetUpdateID()
 	title, err := deps.GenerateTitle()
 	if err != nil {
 		panic(err)

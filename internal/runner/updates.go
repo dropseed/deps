@@ -39,6 +39,8 @@ func newUpdatesFromDependencies(dependencies *schema.Dependencies, dependencyCon
 				continue
 			}
 
+			// All lockfile updates are split out individually
+
 			updateDependencies := schema.Dependencies{
 				Lockfiles: map[string]*schema.Lockfile{
 					path: lockfile,

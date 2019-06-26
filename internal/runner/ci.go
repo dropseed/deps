@@ -38,6 +38,8 @@ func CI(updateLimit int) error {
 	startingRef := git.CurrentRef()
 
 	git.Checkout(startingBranch)
+
+	// TODO does this belong? or user responsibility (we can give instruction)
 	if !git.CanPush() {
 		repo.PreparePush()
 	}
@@ -50,11 +52,16 @@ func CI(updateLimit int) error {
 			manifestUpdatesDisabled: true,
 		})
 	} else {
+		// master (or other) branch
+		// 1) check for updates based on this branch
+		// 2) find other deps branches and check them for updates
+
 		branches = append(branches, branchUpdate{
 			base:                    startingBranch,
 			checkout:                startingBranch,
 			manifestUpdatesDisabled: false,
 		})
+
 		// Run lockfile updates on any existing deps branches
 		for _, branch := range git.GetDepsBranches() {
 			branches = append(branches, branchUpdate{
@@ -62,9 +69,6 @@ func CI(updateLimit int) error {
 				checkout:                branch,
 				manifestUpdatesDisabled: true,
 			})
-			// TODO if lockfile is updated in a branch,
-			// then the PR description may need to be updated too?
-			// title should be good
 		}
 	}
 

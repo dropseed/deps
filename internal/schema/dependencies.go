@@ -333,8 +333,38 @@ func getBodyPartsForManifests(manifests map[string]*Manifest) ([]string, error) 
 	return parts, nil
 }
 
-func (dependencies *Dependencies) GetID() string {
-	out, err := json.Marshal(dependencies)
+func (dependencies *Dependencies) GetUpdateID() string {
+	truncated := Dependencies{
+		// TODO if type is important to separate updates between components,
+		// then can add Dependencies.Type and use that too
+		Lockfiles: map[string]*Lockfile{},
+		Manifests: map[string]*Manifest{},
+	}
+
+	for name := range dependencies.Lockfiles {
+		// Only care about the filename
+		truncated.Lockfiles[name] = nil
+	}
+
+	for name, manifest := range dependencies.Manifests {
+		if len(manifest.Updated.Dependencies) < 1 {
+			continue
+		}
+
+		// Only care about the filename + dependency names
+		truncatedManifest := &Manifest{
+			Updated: &ManifestVersion{
+				Dependencies: map[string]*ManifestDependency{},
+			},
+		}
+		for dep := range manifest.Updated.Dependencies {
+			truncatedManifest.Updated.Dependencies[dep] = nil
+		}
+
+		truncated.Manifests[name] = truncatedManifest
+	}
+
+	out, err := json.Marshal(truncated)
 	if err != nil {
 		panic(err)
 	}
@@ -345,6 +375,6 @@ func (dependencies *Dependencies) GetID() string {
 }
 
 func (dependencies *Dependencies) GetBranchName() string {
-	id := dependencies.GetID()
+	id := dependencies.GetUpdateID()
 	return git.GetBranchName(id)
 }

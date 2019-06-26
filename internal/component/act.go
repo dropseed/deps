@@ -118,6 +118,9 @@ func (r *Runner) Act(inputDependencies *schema.Dependencies, baseBranch string, 
 
 	if pr != nil {
 		// TODO hooks or what do you do otherwise?
+
+		// CreateOrUpdate instead
+
 		if err := pr.Create(); err != nil {
 			return err
 		}
