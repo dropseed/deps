@@ -68,15 +68,15 @@ func collectUpdates() (Updates, Updates, error) {
 	}
 
 	if len(existingUpdates) > 0 {
+		fmt.Println()
 		output.Event("%d existing updates", len(existingUpdates))
 		existingUpdates.printOverview()
-		fmt.Println()
 	}
 
 	if len(newUpdates) > 0 {
+		fmt.Println()
 		output.Event("%d new updates to be made", len(newUpdates))
 		newUpdates.printOverview()
-		fmt.Println()
 	}
 
 	return newUpdates, existingUpdates, nil
