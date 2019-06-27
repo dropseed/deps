@@ -41,8 +41,7 @@ func (dependency *Dependency) Compile() {
 	// if no filters then set the default 1
 	if len(dependency.ManifestUpdates.Filters) == 0 {
 		defaultFilter := &Filter{
-			Versions: "Y.Y.Y",
-			Name:     ".*",
+			Name: ".*",
 		}
 		dependency.ManifestUpdates.Filters = append(dependency.ManifestUpdates.Filters, defaultFilter)
 	}
@@ -54,9 +53,6 @@ func (dependency *Dependency) Compile() {
 		if filter.Group == nil {
 			t := false
 			filter.Group = &t
-		}
-		if filter.Versions == "" {
-			filter.Versions = "Y.Y.Y"
 		}
 	}
 }

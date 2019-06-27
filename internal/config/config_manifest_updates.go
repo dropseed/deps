@@ -1,11 +1,9 @@
 package config
 
 import (
-	"fmt"
 	"regexp"
 
 	"github.com/dropseed/deps/internal/schema"
-	"github.com/dropseed/deps/internal/versionfilter"
 )
 
 type ManifestUpdates struct {
@@ -15,10 +13,9 @@ type ManifestUpdates struct {
 }
 
 type Filter struct {
-	Name     string `mapstructure:"name" yaml:"name" json:"name"`
-	Enabled  *bool  `mapstructure:"enabled,omitempty" yaml:"enabled,omitempty" json:"enabled,omitempty"`
-	Versions string `mapstructure:"versions,omitempty" yaml:"versions,omitempty" json:"versions,omitempty"`
-	Group    *bool  `mapstructure:"group,omitempty" yaml:"group,omitempty" json:"group,omitempty"`
+	Name    string `mapstructure:"name" yaml:"name" json:"name"`
+	Enabled *bool  `mapstructure:"enabled,omitempty" yaml:"enabled,omitempty" json:"enabled,omitempty"`
+	Group   *bool  `mapstructure:"group,omitempty" yaml:"group,omitempty" json:"group,omitempty"`
 }
 
 func (manifestUpdates *ManifestUpdates) FilteredDependencyGroups(dependencies map[string]*schema.ManifestDependency) (map[string]map[string]*schema.ManifestDependency, error) {
@@ -64,53 +61,7 @@ func (manifestUpdates *ManifestUpdates) FilteredDependencyGroups(dependencies ma
 	return groups, nil
 }
 
-// func (manifestUpdates *ManifestUpdates) FilteredVersions(name string, current string, availableVersions []schema.Version) ([]schema.Version, error) {
-// 	if len(availableVersions) < 1 {
-// 		return []schema.Version{}, nil
-// 	}
-// 	for _, filter := range manifestUpdates.Filters {
-// 		if filter.MatchesName(name) {
-// 			if *filter.Enabled {
-
-// 				available := []string{}
-// 				for _, v := range availableVersions {
-// 					available = append(available, v.Name)
-// 				}
-// 				availableStrings, err := filter.FilterVersions(name, current, available)
-// 				if err != nil {
-// 					return nil, err
-// 				}
-
-// 				// convert the strings back to their Version objects with content
-// 				matchMap := utils.StringSliceToMap(availableStrings)
-// 				filteredVersions := []schema.Version{}
-// 				for _, v := range availableVersions {
-// 					if ok := matchMap[v.Name]; ok {
-// 						filteredVersions = append(filteredVersions, v)
-// 					}
-// 				}
-
-// 				return filteredVersions, nil
-
-// 			} else {
-// 				return []schema.Version{}, nil
-// 			}
-// 		}
-// 	}
-
-// 	return []schema.Version{}, nil
-// }
-
 func (filter *Filter) MatchesName(name string) bool {
 	nameRegex := regexp.MustCompile(filter.Name)
 	return nameRegex.MatchString(name)
-}
-
-func (filter *Filter) FilterVersions(name string, current string, available []string) ([]string, error) {
-	f := versionfilter.NewVersionFilter(filter.Versions)
-	if f == nil {
-		return nil, fmt.Errorf("unable to parse filter %s", filter.Versions)
-	}
-
-	return f.Matching(available, current)
 }
