@@ -25,7 +25,7 @@ const DefaultRemotePrefix = "dropseed/deps-"
 const DefaultCacheDirName = "deps"
 
 func NewRunnerFromString(s string) (*Runner, error) {
-	runner, err := newRunnerFromPath(s)
+	runner, err := NewRunnerFromPath(s)
 
 	if os.IsNotExist(err) {
 		runner, err = newRunnerFromRemote(s)
@@ -34,7 +34,7 @@ func NewRunnerFromString(s string) (*Runner, error) {
 	return runner, err
 }
 
-func newRunnerFromPath(s string) (*Runner, error) {
+func NewRunnerFromPath(s string) (*Runner, error) {
 	componentPath := s
 
 	configPath := path.Join(componentPath, DefaultFilename)
@@ -114,7 +114,7 @@ func newRunnerFromRemote(s string) (*Runner, error) {
 	// 	return nil, err
 	// }
 
-	return newRunnerFromPath(clonePath)
+	return NewRunnerFromPath(clonePath)
 }
 
 func (r *Runner) GetName() string {

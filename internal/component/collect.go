@@ -9,6 +9,7 @@ import (
 
 func (r *Runner) Collect(inputPath string) (*schema.Dependencies, error) {
 	output.Event("Collecting with %s", r.Given)
+	output.Debug("Input path: %s", inputPath)
 
 	outputPath, err := r.run(r.getCommand(r.Config.Collect, "collect"), inputPath)
 	if err != nil {

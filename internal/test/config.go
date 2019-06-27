@@ -1,20 +1,16 @@
 package test
 
 import (
-	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
 	"path"
-	"path/filepath"
 	"reflect"
 	"strings"
 
 	"github.com/algobardo/yaml"
 	"github.com/dropseed/deps/internal/config"
-	"github.com/dropseed/deps/internal/schema"
 )
 
 var directoryNamesToSkip = map[string]bool{
@@ -25,84 +21,56 @@ var directoryNamesToSkip = map[string]bool{
 }
 
 type Config struct {
-	Cases []*Case `yaml:"cases"`
+	Tests []*Test `yaml:"tests"`
 	path  string
 }
 
-func (c *Config) relPath() string {
-	wd, err := os.Getwd()
-	if err != nil {
-		panic(err)
-	}
-	rel, err := filepath.Rel(wd, c.path)
-	if err != nil {
-		panic(err)
-	}
-	return rel
-}
-
-type Case struct {
-	Name           string      `yaml:"name"`
-	Type           string      `yaml:"type"`
-	RepoContents   string      `yaml:"repo_contents"`
-	InputDataPath  string      `yaml:"input_data_path,omitempty"`
-	OutputDataPath string      `yaml:"output_data_path"`
-	Tests          []string    `yaml:"tests,omitempty"`
-	UserConfig     *UserConfig `yaml:"user_config,omitempty"`
-}
-
-func (c *Case) displayName() string {
-	return fmt.Sprintf("\"%s\" %s", c.Name, c.Type)
-}
-
-type UserConfig struct {
-	Path     string                 `yaml:"path"`
-	Settings map[string]interface{} `yaml:"settings"`
-}
-
-func (c *Case) asConfigDependency(imageName string) *config.Dependency {
-	depConfig := &config.Dependency{
-		Type: imageName,
-	}
-	if c.UserConfig != nil {
-		depConfig.Path = c.UserConfig.Path
-		depConfig.Settings = c.UserConfig.Settings
-	}
-	depConfig.Compile()
-	return depConfig
-}
-
-func (c *Case) inputSchema() (*schema.Dependencies, error) {
-	if c.InputDataPath != "" {
-		inputSchema, err := schema.NewDependenciesFromJSONPath(c.InputDataPath)
-		if err != nil {
-			return nil, err
+func (c *Config) compile() {
+	for _, test := range c.Tests {
+		test.config = c
+		if test.UserConfig == nil {
+			test.UserConfig = &config.Dependency{}
 		}
-		return inputSchema, nil
+		// Set default data paths
+		if test.Collect == nil {
+			test.Collect = &TestPhase{
+				Input:  test.Data,
+				Output: test.Data,
+			}
+		}
+		if test.Act == nil {
+			test.Act = &TestPhase{
+				Input:  test.Data,
+				Output: test.Data,
+			}
+		}
+		test.UserConfig.Compile()
 	}
-	return nil, nil
 }
 
-func (c *Case) outputSchema() (interface{}, error) {
-	if c.OutputDataPath != "" {
-		// Try to return as Dependencies first
-		outputSchema, err := schema.NewDependenciesFromJSONPath(c.OutputDataPath)
-		if err == nil && (len(outputSchema.Manifests) > 0 || len(outputSchema.Lockfiles) > 0) {
-			return outputSchema, nil
-		}
+func (c *Config) joinPath(s string) string {
+	return path.Join(path.Dir(c.path), s)
+}
 
-		// Fall back to basic json parse
-		fileContent, err := ioutil.ReadFile(c.OutputDataPath)
-		if err != nil {
-			return nil, err
-		}
-		var output interface{}
-		if err := json.Unmarshal(fileContent, &output); err != nil {
-			return nil, err
-		}
-		return output, nil
-	}
-	return nil, nil
+type Test struct {
+	Name       string             `yaml:"name"`
+	Repo       string             `yaml:"repo"`
+	UserConfig *config.Dependency `yaml:"user_config,omitempty"`
+	config     *Config
+	Diff       string     `yaml:"diff,omitempty"`
+	DiffArgs   []string   `yaml:"diff_args,omitempty"`
+	Collect    *TestPhase `yaml:"collect,omitempty"`
+	Act        *TestPhase `yaml:"act,omitempty"`
+	Data       string     `yaml:"data"`
+}
+
+type TestPhase struct {
+	Input  string `yaml:"input,omitempty"`
+	Output string `yaml:"output"`
+}
+
+func (t *Test) displayName() string {
+	return t.Name
 }
 
 // NewConfigFromPath loads a Config from a file
@@ -121,14 +89,16 @@ func NewConfigFromPath(path string) (*Config, error) {
 }
 
 func NewConfigFromReader(reader io.Reader) (*Config, error) {
-	config := &Config{}
+	cfg := &Config{}
 	decoder := yaml.NewDecoder(reader)
 	decoder.SetDefaultMapType(reflect.TypeOf(map[string]interface{}{}))
-	if err := decoder.Decode(config); err != nil {
+	if err := decoder.Decode(cfg); err != nil {
 		return nil, err
 	}
 
-	return config, nil
+	cfg.compile()
+
+	return cfg, nil
 }
 
 func findTestConfigs(dir string) ([]*Config, error) {
@@ -186,5 +156,5 @@ func findTestConfigPaths(dir string, depth int) []string {
 }
 
 func isConfigFile(name string) bool {
-	return strings.HasPrefix(name, "dependencies_test") && (strings.HasSuffix(name, ".yml") || strings.HasSuffix(name, ".yaml"))
+	return strings.HasPrefix(name, "deps_test") && (strings.HasSuffix(name, ".yml") || strings.HasSuffix(name, ".yaml"))
 }

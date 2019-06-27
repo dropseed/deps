@@ -21,6 +21,5 @@ func init() {
 	testCmd.Flags().BoolVarP(&test.UpdateOutputData, "update-output-data", "u", false, "Update output data")
 	testCmd.Flags().BoolVarP(&test.LooseOutputDataComparison, "loose-output-data-comparison", "l", false, "Loose output data comparison")
 	testCmd.Flags().BoolVarP(&test.ExitEarly, "exit-early", "x", false, "Exit on first failure or error")
-	testCmd.Flags().StringVar(&test.FilterType, "filter-type", "", "Filter test cases by type (collector or actor)")
 	testCmd.Flags().StringVar(&test.FilterName, "filter-name", "", "Filter test cases by name substring")
 }

@@ -1,19 +1,25 @@
 package test
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"os"
+	"os/exec"
 	"path"
+	"runtime"
 	"strings"
 
+	"github.com/dropseed/deps/internal/schema"
+
+	"github.com/dropseed/deps/internal/component"
 	"github.com/dropseed/deps/internal/output"
 )
 
 var UpdateOutputData = false
 var LooseOutputDataComparison = false
 var ExitEarly = false
-var FilterType = ""
 var FilterName = ""
 
 func Run() error {
@@ -27,35 +33,52 @@ func Run() error {
 		return err
 	}
 
-	cases := casesMatchingFilters(configs)
-	if len(cases) == 0 {
-		return errors.New("no test cases found")
+	if len(configs) < 1 {
+		return errors.New("No test configs found")
 	}
 
-	testsTotal := len(cases)
+	output.Debug("%d configs loaded", len(configs))
+	for _, config := range configs {
+		output.Debug("- %s", config.path)
+	}
+
+	tests := testsMatchingFilters(configs)
+	if len(tests) == 0 {
+		return errors.New("No matching tests found")
+	}
+
+	// TODO save actual test errors and show them at the end
+
+	testsTotal := len(tests)
 	testsFailed := 0
 	testsPassed := 0
-	output.Event("Test cases found: %d", testsTotal)
+	output.Event("Tests found: %d", testsTotal)
 
-	output.Event("Building docker image %s", pwd)
-	buildImage(pwd, getImageName(pwd))
+	runner, err := component.NewRunnerFromPath(pwd)
+	if err != nil {
+		return err
+	}
 
-	for _, testCase := range cases {
-		output.Event("Starting: %s", testCase.displayName())
-		if err := runTestCase(testCase, pwd); err != nil {
+	if err := runner.Install(); err != nil {
+		return err
+	}
+
+	for _, test := range tests {
+		output.Event("Starting: %s", test.displayName())
+		if err := runTest(runner, test); err != nil {
 			testsFailed++
 			if ExitEarly {
 				return err
 			}
 			output.Error(err.Error())
-			output.Error("Failed: %s\n", testCase.displayName())
+			output.Error("Failed: %s\n", test.displayName())
 		} else {
 			testsPassed++
-			output.Success("Passed: %s\n", testCase.displayName())
+			output.Success("Passed: %s\n", test.displayName())
 		}
 	}
 
-	resultString := fmt.Sprintf("%d passed and %d failed of %d total", testsPassed, testsFailed, testsTotal)
+	resultString := fmt.Sprintf("%d/%d tests passed", testsPassed, testsTotal)
 	if testsFailed > 0 {
 		return errors.New(resultString)
 	}
@@ -63,156 +86,187 @@ func Run() error {
 	return nil
 }
 
-func runTestCase(testCase *Case, dir string) error {
-	return errors.New("unimplemented")
-	// 	depConfig := testCase.asConfigDependency(getImageName(dir))
+func runTest(runner *component.Runner, test *Test) error {
+	copyRepoPath, err := temporaryCopyOfDir(test.config.joinPath(test.Repo))
+	if err != nil {
+		return err
+	}
 
-	// 	repoPath := path.Join(dir, testCase.RepoContents)
-	// 	var err error
-	// 	repoPath, err = utils.TemporaryCopyOfDir(repoPath)
-	// 	if err != nil {
-	// 		return err
-	// 	}
+	if err := os.Chdir(copyRepoPath); err != nil {
+		return err
+	}
 
-	// 	r, err := runner.NewDockerRunner(repoPath, depConfig, testCase.Type)
-	// 	if err != nil {
-	// 		return err
-	// 	}
+	if env, err := test.UserConfig.Environ(); err != nil {
+		return err
+	} else {
+		runner.Env = env
+	}
 
-	// 	if _, err = execute.Run("git", "-C", repoPath, "init"); err != nil {
-	// 		panic(err)
-	// 	}
-	// 	if _, err = execute.Run("git", "-C", repoPath, "add", "."); err != nil {
-	// 		panic(err)
-	// 	}
-	// 	if _, err = execute.Run("git", "-C", repoPath, "-c", "user.name=\"Example User\"", "-c", "user.email=\"testing@example.com\"", "commit", "-m", "First test commit"); err != nil {
-	// 		panic(err)
-	// 	}
-	// 	sha, err := execute.Run("git", "-C", repoPath, "rev-parse", "HEAD")
-	// 	if err != nil {
-	// 		panic(err)
-	// 	}
+	if output.IsDebug() {
+		if wd, err := os.Getwd(); err != nil {
+			return err
+		} else {
+			output.Debug("Running from %s", wd)
+		}
+	}
 
-	// 	r.SetEnv("DEPENDENCIES_ENV", "test")
-	// 	r.SetEnv("GIT_SHA", strings.TrimSpace(string(sha)))
-	// 	r.SetEnv("GIT_HOST", "test")
-	// 	r.SetEnv("GIT_BRANCH", "master")
-	// 	r.SetEnv("JOB_ID", "0")
+	if test.Collect.Output != "" {
+		outputDeps, err := runner.Collect(test.UserConfig.Path)
+		if err != nil {
+			return err
+		}
+		if err := checkOutput(outputDeps, test.config.joinPath(test.Collect.Output)); err != nil {
+			return err
+		}
+	}
 
-	// 	inputSchema, err := testCase.inputSchema()
-	// 	if err != nil {
-	// 		return err
-	// 	}
+	if test.Act.Input != "" && test.Act.Output != "" {
+		inputDeps, err := schema.NewDependenciesFromJSONPath(test.config.joinPath(test.Act.Input))
+		if err != nil {
+			return err
+		}
+		outputDeps, err := runner.Act(inputDeps)
+		if err != nil {
+			return err
+		}
+		if err := checkOutput(outputDeps, test.config.joinPath(test.Act.Output)); err != nil {
+			return err
+		}
+	}
 
-	// 	expectedOutputSchema, err := testCase.outputSchema()
-	// 	if err != nil {
-	// 		return err
-	// 	}
+	if test.Diff != "" {
 
-	// 	outputSchema, err := r.Run(inputSchema)
-	// 	if err != nil {
-	// 		return err
-	// 	}
+		diffRepo := test.config.joinPath(test.Diff)
 
-	// 	if UpdateOutputData {
-	// 		output.Event("Writing parsed output to %s", testCase.OutputDataPath)
-	// 		out, err := json.MarshalIndent(outputSchema, "", "  ")
-	// 		if err != nil {
-	// 			return err
-	// 		}
-	// 		out = append(out, "\n"...)
-	// 		if err := ioutil.WriteFile(testCase.OutputDataPath, out, 0644); err != nil {
-	// 			panic(err)
-	// 		}
-	// 	}
+		if UpdateOutputData {
+			output.Event("Updating test diff repo with actual results")
+			if err := os.RemoveAll(diffRepo); err != nil {
+				panic(err)
+			}
+			if err := copyDir(copyRepoPath, diffRepo); err != nil {
+				panic(err)
+			}
+		}
 
-	// 	if LooseOutputDataComparison {
-	// 		match, err := schemasMatchLoosely(outputSchema, expectedOutputSchema)
-	// 		if err != nil {
-	// 			return err
-	// 		}
-	// 		if !match {
-	// 			return errors.New("output does not loosely match expected")
-	// 		}
-	// 	} else {
-	// 		match, err := schemasMatchExactly(outputSchema, expectedOutputSchema)
-	// 		if err != nil {
-	// 			return err
-	// 		}
-	// 		if !match {
-	// 			return errors.New("output does not exactly match expected")
-	// 		}
-	// 	}
-
-	// 	if len(testCase.Tests) > 0 {
-	// 		if err := runTestCaseExtraTests(testCase, repoPath); err != nil {
-	// 			return err
-	// 		}
-	// 	}
-
-	// 	return nil
-}
-
-func runTestCaseExtraTests(testCase *Case, repoPath string) error {
-	// wd, err := os.Getwd()
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// if err := os.Chdir(repoPath); err != nil {
-	// 	panic(err)
-	// }
-	// execute.Env = []string{"CWD=" + wd}
-
-	// for _, test := range testCase.Tests {
-	// 	cmd := strings.TrimSpace(test)
-	// 	output.Event("- subtest: %s", cmd)
-	// 	_, err := execute.Run("sh", "-c", cmd)
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// }
-
-	// if err := os.Chdir(wd); err != nil {
-	// 	panic(err)
-	// }
-	// execute.Env = []string{}
+		diff := getDiff(diffRepo, copyRepoPath, test.DiffArgs...)
+		if diff != "" {
+			println(diff)
+			return errors.New("Diff does not match expected")
+		}
+	}
 
 	return nil
 }
 
-func casesMatchingFilters(configs []*Config) []*Case {
+func checkOutput(outputDeps *schema.Dependencies, outputPath string) error {
+	if UpdateOutputData {
+		output.Event("Writing parsed output to %s", outputPath)
+		out, err := json.MarshalIndent(outputDeps, "", "  ")
+		if err != nil {
+			return err
+		}
+		out = append(out, "\n"...)
+		if err := ioutil.WriteFile(outputPath, out, 0644); err != nil {
+			panic(err)
+		}
+	}
 
-	output.Debug("Type filter: \"%s\"", FilterType)
+	expectedOutputDeps, err := schema.NewDependenciesFromJSONPath(outputPath)
+	if err != nil {
+		return err
+	}
+
+	if err := compare(outputDeps, expectedOutputDeps); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func getDiff(a string, b string, args ...string) string {
+	cmdArgs := []string{
+		"-Naur",
+		a,
+		b,
+	}
+	cmdArgs = append(cmdArgs, args...)
+	cmd := exec.Command("diff", cmdArgs...)
+	out, _ := cmd.CombinedOutput()
+	// if err != nil {
+	// 	panic(err)
+	// }
+	return strings.TrimSpace(string(out))
+}
+
+func compare(given, expected *schema.Dependencies) error {
+	if LooseOutputDataComparison {
+		givenUpdateID := given.GetUpdateID()
+		expectedUpdateID := expected.GetUpdateID()
+		if givenUpdateID != expectedUpdateID {
+			return fmt.Errorf("Update IDs don't match: %s != %s", givenUpdateID, expectedUpdateID)
+		}
+	} else {
+		if match, err := schemasMatchExactly(given, expected); err != nil {
+			return err
+		} else if !match {
+			return errors.New("Output doesn't match")
+		}
+	}
+
+	return nil
+}
+
+func testsMatchingFilters(configs []*Config) []*Test {
+
 	output.Debug("Name filter: \"%s\"", FilterName)
 
-	cases := []*Case{}
+	tests := []*Test{}
 	for _, cfg := range configs {
-		for _, c := range cfg.Cases {
+		for _, c := range cfg.Tests {
 			match := true
 
-			match = match && (FilterType == "" || c.Type == FilterType)
 			match = match && (FilterName == "" || strings.Contains(c.Name, FilterName))
 
 			if match {
-				cases = append(cases, c)
+				tests = append(tests, c)
 			} else {
 				output.Debug("%s does not match filters", c.displayName())
 			}
 		}
 	}
-	return cases
+	return tests
 }
 
-func getImageName(dir string) string {
-	name := "deps-test-" + path.Base(dir)
-	name = strings.Replace(name, "/", "-", -1)
-	return name
+func temporaryCopyOfDir(dirToCopy string) (string, error) {
+	tmpPath := "" // use the default
+
+	if runtime.GOOS == "darwin" {
+		// the default is not shared with docker, by default
+		tmpPath = "/tmp"
+	}
+
+	dir, err := ioutil.TempDir(tmpPath, "deps-")
+	if err != nil {
+		return "", err
+	}
+
+	repoDir := path.Join(dir, "repo")
+	if err := copyDir(dirToCopy, repoDir); err != nil {
+		panic(err)
+	}
+	output.Debug("Made temporary copy of %s into %s\n", dirToCopy, repoDir)
+
+	return repoDir, nil
 }
 
-func buildImage(path, name string) error {
-	// _, err := execute.Run("docker", "build", "-t", name, path)
-	// if err != nil {
-	// 	return err
-	// }
+func copyDir(from, to string) error {
+	cmd := exec.Command("cp", "-a", from, to)
+	if output.IsDebug() {
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+	}
+	if err := cmd.Run(); err != nil {
+		return err
+	}
 	return nil
 }

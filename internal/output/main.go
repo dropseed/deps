@@ -15,12 +15,19 @@ func IsDebug() bool {
 }
 
 func Event(f string, args ...interface{}) {
-	if terminal.IsTerminal(int(os.Stdout.Fd())) {
+	isTerm := terminal.IsTerminal(int(os.Stdout.Fd()))
+	if isTerm {
 		color.Set(color.FgMagenta)
 		print("> ")
 		color.Unset()
 	}
+	if isTerm && IsDebug() {
+		color.Set(color.Bold)
+	}
 	fmt.Printf(f+"\n", args...)
+	if isTerm && IsDebug() {
+		color.Unset()
+	}
 }
 
 func Debug(f string, args ...interface{}) {

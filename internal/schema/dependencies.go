@@ -341,27 +341,31 @@ func (dependencies *Dependencies) GetUpdateID() string {
 		Manifests: map[string]*Manifest{},
 	}
 
-	for name := range dependencies.Lockfiles {
-		// Only care about the filename
-		truncated.Lockfiles[name] = nil
+	if dependencies.Lockfiles != nil {
+		for name := range dependencies.Lockfiles {
+			// Only care about the filename
+			truncated.Lockfiles[name] = nil
+		}
 	}
 
-	for name, manifest := range dependencies.Manifests {
-		if len(manifest.Updated.Dependencies) < 1 {
-			continue
-		}
+	if dependencies.Manifests != nil {
+		for name, manifest := range dependencies.Manifests {
+			if manifest.Updated == nil || len(manifest.Updated.Dependencies) < 1 {
+				continue
+			}
 
-		// Only care about the filename + dependency names
-		truncatedManifest := &Manifest{
-			Updated: &ManifestVersion{
-				Dependencies: map[string]*ManifestDependency{},
-			},
-		}
-		for dep := range manifest.Updated.Dependencies {
-			truncatedManifest.Updated.Dependencies[dep] = nil
-		}
+			// Only care about the filename + dependency names
+			truncatedManifest := &Manifest{
+				Updated: &ManifestVersion{
+					Dependencies: map[string]*ManifestDependency{},
+				},
+			}
+			for dep := range manifest.Updated.Dependencies {
+				truncatedManifest.Updated.Dependencies[dep] = nil
+			}
 
-		truncated.Manifests[name] = truncatedManifest
+			truncated.Manifests[name] = truncatedManifest
+		}
 	}
 
 	out, err := json.Marshal(truncated)
