@@ -129,6 +129,7 @@ func CI(updateLimit int) error {
 		for _, ue := range updateErrors {
 			output.Error("- [%s] %s\n  %v", ue.update.id, ue.update.title, ue.err)
 		}
+		return fmt.Errorf("%d errors", len(updateErrors))
 	}
 
 	return nil
