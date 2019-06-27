@@ -51,16 +51,16 @@ func (updates Updates) prompt() error {
 			return err
 		}
 
-		if i < len(updates) {
-			update := updates[refs[i]]
-			if _, err := update.runner.Act(update.dependencies); err != nil {
-				return err
-			}
-			update.completed = true
-		} else {
-			// Chose skip
+		if i+1 == len(items) {
+			// Chose to skip
 			break
 		}
+
+		update := updates[refs[i]]
+		if _, err := update.runner.Act(update.dependencies); err != nil {
+			return err
+		}
+		update.completed = true
 	}
 
 	return nil
