@@ -16,26 +16,22 @@ type Update struct {
 	completed        bool
 	runner           *component.Runner
 	id               string
-	uniqueID         string
 	title            string
 	branch           string
 }
 
 func NewUpdate(deps *schema.Dependencies, cfg *config.Dependency) *Update {
-	id := deps.GetUpdateID()
-	uniqueID := deps.GetUniqueID()
-	title, err := deps.GenerateTitle()
-	if err != nil {
+	if err := deps.ValidateAndCompile(); err != nil {
 		panic(err)
 	}
 
-	branch := git.GetBranchName(fmt.Sprintf("%s-%s", id, uniqueID))
+	branch := git.GetBranchName(fmt.Sprintf("%s-%s", deps.UpdateID, deps.UniqueID))
 
 	update := Update{
 		dependencies:     deps,
 		dependencyConfig: cfg,
-		id:               id,
-		title:            title,
+		id:               deps.UpdateID,
+		title:            deps.Title,
 		branch:           branch,
 	}
 

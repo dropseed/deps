@@ -18,6 +18,12 @@ const maxBodyLength = 65535
 type Dependencies struct {
 	Lockfiles map[string]*Lockfile `json:"lockfiles,omitempty"`
 	Manifests map[string]*Manifest `json:"manifests,omitempty"`
+
+	Title       string `json:"title,omitempty"`
+	Description string `json:"description,omitempty"`
+	// TODO need to make sure adding these fields doesn't mess with ids when marshalling?
+	UpdateID string `json:"update_id,omitempty"`
+	UniqueID string `json:"unique_id,omitempty"`
 }
 
 // NewDependenciesFromJSONPath loads Dependencies from a JSON file path
@@ -36,14 +42,14 @@ func NewDependenciesFromJSONContent(content []byte) (*Dependencies, error) {
 		return nil, err
 	}
 
-	if err := deps.Validate(); err != nil {
+	if err := deps.ValidateAndCompile(); err != nil {
 		return nil, err
 	}
 
 	return &deps, nil
 }
 
-func (s *Dependencies) Validate() error {
+func (s *Dependencies) ValidateAndCompile() error {
 	for _, lockfile := range s.Lockfiles {
 		if err := lockfile.Validate(); err != nil {
 			return err
@@ -54,30 +60,33 @@ func (s *Dependencies) Validate() error {
 			return err
 		}
 	}
+
+	var err error
+
+	s.Title, err = s.generateTitle()
+	if err != nil {
+		return err
+	}
+
+	s.Description, err = s.generateDescription()
+	if err != nil {
+		return err
+	}
+
+	s.UpdateID = s.getUpdateID()
+	s.UniqueID = s.getUniqueID()
+
 	return nil
 }
 
-// GenerateTitle generates a title string from the dependencies schema
-func (s *Dependencies) GenerateTitle() (string, error) {
-	return s.generateTitle(false)
-}
-
-// GenerateRelatedPRTitleSearch generates a title search query string from the dependencies schema
-func (s *Dependencies) GenerateRelatedPRTitleSearch() (string, error) {
-	return s.generateTitle(true)
-}
-
 // generateTitle generates a title string from the dependencies dependencies, optinally for the related PR search
-func (s *Dependencies) generateTitle(forRelatedPRSearch bool) (string, error) {
+func (s *Dependencies) generateTitle() (string, error) {
 	lockfiles := s.Lockfiles
 	manifests := s.Manifests
 	foundLockfiles := len(lockfiles) > 0
 	foundManifests := len(manifests) > 0
 
 	if foundLockfiles && foundManifests {
-		if forRelatedPRSearch {
-			return "", errors.New("Can't generate a title to search for in this scenario")
-		}
 		lfPlural := "lockfiles"
 		if len(lockfiles) == 1 {
 			lfPlural = "lockfile"
@@ -124,10 +133,6 @@ func (s *Dependencies) generateTitle(forRelatedPRSearch bool) (string, error) {
 				dep := dependencies[name]
 				installed := manifest.Current.Dependencies[name].Constraint
 				updated := dep.Constraint
-				if forRelatedPRSearch {
-					// remove the last version name from the title returned
-					updated = ""
-				}
 				return fmt.Sprintf("Update %v in %v from %v to %v", name, manifestPath, installed, updated), nil
 			}
 
@@ -149,10 +154,6 @@ func (s *Dependencies) generateTitle(forRelatedPRSearch bool) (string, error) {
 
 			// TODO if > 2 items, put an "and " in front of the last one
 
-			if forRelatedPRSearch {
-				return "", errors.New("Can't generate a title to search for in this scenario")
-			}
-
 			return fmt.Sprintf("Update %v dependencies from %v", len(dependencies), strings.Join(sourceNames, ", ")), nil
 
 		}
@@ -165,7 +166,7 @@ func (s *Dependencies) generateTitle(forRelatedPRSearch bool) (string, error) {
 }
 
 // GenerateBody generates a body string from the dependencies schema
-func (s *Dependencies) GenerateBody() (string, error) {
+func (s *Dependencies) generateDescription() (string, error) {
 	lockfiles := s.Lockfiles
 	manifests := s.Manifests
 	foundLockfiles := len(lockfiles) > 0
@@ -332,7 +333,7 @@ func getBodyPartsForManifests(manifests map[string]*Manifest) ([]string, error) 
 	return parts, nil
 }
 
-func (dependencies *Dependencies) GetUpdateID() string {
+func (dependencies *Dependencies) getUpdateID() string {
 	truncated := Dependencies{
 		// TODO if type is important to separate updates between components,
 		// then can add Dependencies.Type and use that too
@@ -370,7 +371,7 @@ func (dependencies *Dependencies) GetUpdateID() string {
 	return getShortMD5(truncated)
 }
 
-func (dependencies *Dependencies) GetUniqueID() string {
+func (dependencies *Dependencies) getUniqueID() string {
 	return getShortMD5(dependencies)
 }
 

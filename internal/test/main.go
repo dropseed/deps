@@ -200,10 +200,8 @@ func getDiff(a string, b string, args ...string) string {
 
 func compare(given, expected *schema.Dependencies) error {
 	if LooseOutputDataComparison {
-		givenUpdateID := given.GetUpdateID()
-		expectedUpdateID := expected.GetUpdateID()
-		if givenUpdateID != expectedUpdateID {
-			return fmt.Errorf("Update IDs don't match: %s != %s", givenUpdateID, expectedUpdateID)
+		if given.UpdateID != expected.UpdateID {
+			return fmt.Errorf("Update IDs don't match: %s != %s", given.UpdateID, expected.UpdateID)
 		}
 	} else {
 		if match, err := schemasMatchExactly(given, expected); err != nil {

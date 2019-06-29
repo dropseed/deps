@@ -185,17 +185,12 @@ func runUpdate(update *Update, base, head string) error {
 		return err
 	}
 
-	title, err := outputDeps.GenerateTitle()
-	if err != nil {
-		return err
-	}
-
 	// if nothing to commit, don't worry about it
 	if !git.IsDirty() {
 		return nil
 	}
 
-	git.AddCommit(title)
+	git.AddCommit(outputDeps.Title)
 	// TODO try adding more lines for dependency breakdown,
 	// especially on lockfiles
 

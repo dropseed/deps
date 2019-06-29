@@ -2,8 +2,6 @@ package schema
 
 import (
 	"fmt"
-
-	"github.com/dropseed/deps/internal/changelogs"
 )
 
 // Dependency contains fields and functions common to lockfiles and manifests
@@ -30,9 +28,10 @@ func (dependency *Dependency) getMarkdownContentForVersion(dependencyName string
 
 // getContentForVersion finds the content for a given version, optionally from the remote API
 func (dependency *Dependency) getContentForVersion(dependencyName string, version *Version) string {
-	if version.Content != "" {
-		return version.Content
-	}
+	return ""
+	// if version.Content != "" {
+	// 	return version.Content
+	// }
 
-	return changelogs.GetChangelog(dependency.Source, dependencyName, version.Name)
+	// return changelogs.GetChangelog(dependency.Source, dependencyName, version.Name)
 }

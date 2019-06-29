@@ -252,9 +252,9 @@ func TestGetIDConsistency(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	initialID := dependencies.GetUpdateID()
+	initialID := dependencies.getUpdateID()
 	for index := 0; index < 100; index++ {
-		testID := dependencies.GetUpdateID()
+		testID := dependencies.getUpdateID()
 		if initialID != testID {
 			t.FailNow()
 		}
