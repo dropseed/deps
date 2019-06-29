@@ -49,7 +49,7 @@ func CI(updateLimit int) error {
 	// TODO better to pass this through collect or something
 	manifestUpdatesDisabled = isDepsBranch
 
-	newUpdates, existingUpdates, err := collectUpdates()
+	newUpdates, outdatedUpdates, _, err := collectUpdates()
 	if err != nil {
 		return err
 	}
@@ -85,41 +85,35 @@ func CI(updateLimit int) error {
 					err:    err,
 				})
 				output.Error("Update failed: %v", err)
-			} else {
-				update.completed = true
 			}
 		}
 
-		for _, update := range existingUpdates {
-			output.Event("Checking existing update: %s", update.title)
+		for _, update := range outdatedUpdates {
+			output.Event("Updating outdated update: %s", update.title)
 			if err := runUpdate(update, update.branch, update.branch); err != nil {
 				updateErrors = append(updateErrors, &updateError{
 					update: update,
 					err:    err,
 				})
 				output.Error("Update failed: %v", err)
-			} else {
-				update.completed = true
 			}
 		}
 	} else {
 		output.Event("Checking for updates to existing deps branch %s", startingBranch)
-		var matchingExistingUpdate *Update
-		for _, update := range existingUpdates {
+		var outdatedMatch *Update
+		for _, update := range outdatedUpdates {
 			if update.branch == startingBranch {
-				matchingExistingUpdate = update
+				outdatedMatch = update
 			}
 		}
-		if matchingExistingUpdate != nil {
+		if outdatedMatch != nil {
 			output.Event("Applying latest matching update to this branch")
-			if err := runUpdate(matchingExistingUpdate, matchingExistingUpdate.branch, matchingExistingUpdate.branch); err != nil {
+			if err := runUpdate(outdatedMatch, outdatedMatch.branch, outdatedMatch.branch); err != nil {
 				updateErrors = append(updateErrors, &updateError{
-					update: matchingExistingUpdate,
+					update: outdatedMatch,
 					err:    err,
 				})
 				output.Error("Update failed: %v", err)
-			} else {
-				matchingExistingUpdate.completed = true
 			}
 		}
 	}
@@ -161,11 +155,9 @@ func getCurrentBranch() string {
 }
 
 func runUpdate(update *Update, base, head string) error {
-	if base == head {
-		output.Event("Running changes directly (no branches)")
-		git.Checkout(head)
-	} else {
-		git.Checkout(base)
+	git.Checkout(base)
+
+	if base != head {
 		git.Branch(head)
 	}
 
@@ -183,13 +175,14 @@ func runUpdate(update *Update, base, head string) error {
 	var pr adapter.PullrequestAdapter
 	gitHost := git.GitHost()
 
-	if base != head {
-		// pr = repo.NewPullrequest(outputDeps, pullrequestToBranch)
-		// TODO should pass head here too
-		pr, err = adapter.PullrequestAdapterFromDependenciesAndHost(outputDeps, gitHost, base)
-		if err != nil {
-			return err
-		}
+	// TODO always want to get a PR here
+	// either we are going to create it, or need to find existing
+	// if base != head {
+	// 	// pr = repo.NewPullrequest(outputDeps, pullrequestToBranch)
+
+	pr, err = adapter.PullrequestAdapterFromDependenciesAndHost(outputDeps, gitHost, base, head)
+	if err != nil {
+		return err
 	}
 
 	title, err := outputDeps.GenerateTitle()
@@ -198,11 +191,13 @@ func runUpdate(update *Update, base, head string) error {
 	}
 
 	// if nothing to commit, don't worry about it
-	if git.IsDirty() {
-		git.AddCommit(title)
-		// TODO try adding more lines for dependency breakdown,
-		// especially on lockfiles
+	if !git.IsDirty() {
+		return nil
 	}
+
+	git.AddCommit(title)
+	// TODO try adding more lines for dependency breakdown,
+	// especially on lockfiles
 
 	git.PushBranch(head)
 

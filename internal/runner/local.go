@@ -8,7 +8,7 @@ import (
 
 // Local runs a full interactive update process
 func Local() error {
-	newUpdates, _, err := collectUpdates()
+	newUpdates, _, _, err := collectUpdates()
 	if err != nil {
 		return err
 	}

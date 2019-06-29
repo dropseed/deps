@@ -35,10 +35,10 @@ func NewRepoFromEnv() RepoAdapter {
 // }
 
 // PullrequestAdapterFromDependenciesJSONPathAndHost returns a host-specific Pullrequest struct
-func PullrequestAdapterFromDependenciesAndHost(deps *schema.Dependencies, host, baseBranch string) (PullrequestAdapter, error) {
+func PullrequestAdapterFromDependenciesAndHost(deps *schema.Dependencies, host, baseBranch, headBranch string) (PullrequestAdapter, error) {
 	switch strings.ToLower(host) {
 	case "github":
-		pr, err := github.NewPullrequestFromDependenciesEnv(deps)
+		pr, err := github.NewPullrequestFromDependenciesEnv(deps, headBranch)
 		pr.DefaultBaseBranch = baseBranch
 		if err == nil {
 			return pr, nil
@@ -46,7 +46,7 @@ func PullrequestAdapterFromDependenciesAndHost(deps *schema.Dependencies, host, 
 		return nil, err
 
 	case "gitlab":
-		pr, err := gitlab.NewPullrequestFromDependenciesEnv(deps)
+		pr, err := gitlab.NewPullrequestFromDependenciesEnv(deps, headBranch)
 		pr.DefaultBaseBranch = baseBranch
 		if err == nil {
 			return pr, nil

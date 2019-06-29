@@ -1,6 +1,8 @@
 package runner
 
 import (
+	"fmt"
+
 	"github.com/dropseed/deps/internal/component"
 	"github.com/dropseed/deps/internal/config"
 	"github.com/dropseed/deps/internal/git"
@@ -14,18 +16,20 @@ type Update struct {
 	completed        bool
 	runner           *component.Runner
 	id               string
+	uniqueID         string
 	title            string
 	branch           string
 }
 
 func NewUpdate(deps *schema.Dependencies, cfg *config.Dependency) *Update {
 	id := deps.GetUpdateID()
+	uniqueID := deps.GetUniqueID()
 	title, err := deps.GenerateTitle()
 	if err != nil {
 		panic(err)
 	}
 
-	branch := deps.GetBranchName()
+	branch := git.GetBranchName(fmt.Sprintf("%s-%s", id, uniqueID))
 
 	update := Update{
 		dependencies:     deps,
@@ -38,6 +42,11 @@ func NewUpdate(deps *schema.Dependencies, cfg *config.Dependency) *Update {
 	return &update
 }
 
-func (update *Update) branchExists() bool {
+func (update *Update) exists() bool {
 	return git.BranchExists(update.branch)
+}
+
+func (update *Update) outdated() bool {
+	// update id match only
+	return git.BranchExists(git.GetBranchName(update.id))
 }

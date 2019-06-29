@@ -25,8 +25,8 @@ type MergeRequest struct {
 }
 
 // NewPullrequestFromDependenciesEnv creates a PullRequest
-func NewPullrequestFromDependenciesEnv(deps *schema.Dependencies) (*MergeRequest, error) {
-	prBase, err := pullrequest.NewPullrequestFromEnv(deps)
+func NewPullrequestFromDependenciesEnv(deps *schema.Dependencies, branch string) (*MergeRequest, error) {
+	prBase, err := pullrequest.NewPullrequestFromEnv(deps, branch)
 	if err != nil {
 		return nil, err
 	}

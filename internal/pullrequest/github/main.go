@@ -29,8 +29,8 @@ type PullRequest struct {
 }
 
 // NewPullrequestFromDependenciesEnv creates a PullRequest
-func NewPullrequestFromDependenciesEnv(deps *schema.Dependencies) (*PullRequest, error) {
-	prBase, err := pullrequest.NewPullrequestFromEnv(deps)
+func NewPullrequestFromDependenciesEnv(deps *schema.Dependencies, branch string) (*PullRequest, error) {
+	prBase, err := pullrequest.NewPullrequestFromEnv(deps, branch)
 	if err != nil {
 		return nil, err
 	}

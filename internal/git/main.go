@@ -36,9 +36,9 @@ func CanPush() bool {
 	return true
 }
 
-func GetBranchName(id string) string {
+func GetBranchName(suffix string) string {
 	prefix := getBranchPrefix()
-	return fmt.Sprintf("%s%s", prefix, id)
+	return prefix + suffix
 }
 
 func IsDepsBranch(branchName string) bool {
@@ -46,7 +46,7 @@ func IsDepsBranch(branchName string) bool {
 	return strings.HasPrefix(branchName, prefix)
 }
 
-func GetDepsBranches() []string {
+func listBranches() []string {
 	cmd := exec.Command("git", "branch", "--list", "--all", "--no-column")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
@@ -62,9 +62,9 @@ func GetDepsBranches() []string {
 		if strings.HasPrefix(branch, "remotes/origin/") {
 			branch = branch[15:]
 		}
-		if IsDepsBranch(branch) {
-			branches = append(branches, branch)
-		}
+		// if IsDepsBranch(branch) {
+		branches = append(branches, branch)
+		// }
 	}
 	return branches
 }
@@ -114,17 +114,13 @@ func Clone(url, path string) {
 	}
 }
 
-func BranchExists(branch string) bool {
-	// See if we have a matching branch locally
-	if err := run("rev-parse", "--verify", branch); err == nil {
-		return true
+func BranchExists(startsWith string) bool {
+	branches := listBranches()
+	for _, b := range branches {
+		if strings.HasPrefix(b, startsWith) {
+			return true
+		}
 	}
-
-	// Also need to check remote, in case the branch is cloned locally
-	if err := run("ls-remote", "--exit-code", "--heads", "origin", branch); err == nil {
-		return true
-	}
-
 	return false
 }
 

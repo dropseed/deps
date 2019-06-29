@@ -45,32 +45,35 @@ func getConfig() (*config.Config, error) {
 	return cfg, nil
 }
 
-func collectUpdates() (Updates, Updates, error) {
+func collectUpdates() (Updates, Updates, Updates, error) {
 	cfg, err := getConfig()
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	availableUpdates, err := getAvailableUpdates(cfg)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	newUpdates := Updates{}      // PRs for these
-	existingUpdates := Updates{} // lockfile update on these?
+	outdatedUpdates := Updates{} // lockfile update on these?
+	existingUpdates := Updates{}
 
 	for _, update := range availableUpdates {
-		if update.branchExists() {
+		if update.exists() {
 			existingUpdates.addUpdate(update)
+		} else if update.outdated() {
+			outdatedUpdates.addUpdate(update)
 		} else {
 			newUpdates.addUpdate(update)
 		}
 	}
 
-	if len(existingUpdates) > 0 {
+	if len(outdatedUpdates) > 0 {
 		fmt.Println()
-		output.Event("%d existing updates", len(existingUpdates))
-		existingUpdates.printOverview()
+		output.Event("%d outdated updates", len(outdatedUpdates))
+		outdatedUpdates.printOverview()
 	}
 
 	if len(newUpdates) > 0 {
@@ -79,7 +82,7 @@ func collectUpdates() (Updates, Updates, error) {
 		newUpdates.printOverview()
 	}
 
-	return newUpdates, existingUpdates, nil
+	return newUpdates, outdatedUpdates, existingUpdates, nil
 }
 
 func getAvailableUpdates(cfg *config.Config) (Updates, error) {

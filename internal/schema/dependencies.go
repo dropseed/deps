@@ -11,7 +11,6 @@ import (
 	"strings"
 
 	"github.com/dropseed/deps/internal/env"
-	"github.com/dropseed/deps/internal/git"
 )
 
 const maxBodyLength = 65535
@@ -368,7 +367,15 @@ func (dependencies *Dependencies) GetUpdateID() string {
 		}
 	}
 
-	out, err := json.Marshal(truncated)
+	return getShortMD5(truncated)
+}
+
+func (dependencies *Dependencies) GetUniqueID() string {
+	return getShortMD5(dependencies)
+}
+
+func getShortMD5(i interface{}) string {
+	out, err := json.Marshal(i)
 	if err != nil {
 		panic(err)
 	}
@@ -376,9 +383,4 @@ func (dependencies *Dependencies) GetUpdateID() string {
 	str := hex.EncodeToString(sum[:])
 	short := str[:7]
 	return short
-}
-
-func (dependencies *Dependencies) GetBranchName() string {
-	id := dependencies.GetUpdateID()
-	return git.GetBranchName(id)
 }

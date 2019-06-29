@@ -15,9 +15,7 @@ type Pullrequest struct {
 }
 
 // NewPullrequestFromEnv creates a Pullrequest using env variables
-func NewPullrequestFromEnv(deps *schema.Dependencies) (*Pullrequest, error) {
-	branch := deps.GetBranchName()
-
+func NewPullrequestFromEnv(deps *schema.Dependencies, branch string) (*Pullrequest, error) {
 	title, err := deps.GenerateTitle()
 	if err != nil {
 		return nil, err
