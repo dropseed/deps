@@ -200,6 +200,8 @@ func runUpdate(update *Update, base, head string) error {
 	// if nothing to commit, don't worry about it
 	if git.IsDirty() {
 		git.AddCommit(title)
+		// TODO try adding more lines for dependency breakdown,
+		// especially on lockfiles
 	}
 
 	git.PushBranch(head)
