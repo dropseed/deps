@@ -43,6 +43,11 @@ func (manifest *Manifest) Validate() error {
 
 	return nil
 }
+
+func (manifest *Manifest) HasUpdates() bool {
+	return manifest.Updated != nil && len(manifest.Updated.Dependencies) > 0
+}
+
 func (mv *ManifestVersion) Validate() error {
 	for _, dependency := range mv.Dependencies {
 		if err := dependency.Validate(); err != nil {

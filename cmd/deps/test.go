@@ -18,8 +18,8 @@ var testCmd = &cobra.Command{
 func init() {
 	devCmd.AddCommand(testCmd)
 	// Set these variables directly in the test module
-	testCmd.Flags().BoolVarP(&test.UpdateOutputData, "update-output-data", "u", false, "Update output data")
-	testCmd.Flags().BoolVarP(&test.LooseOutputDataComparison, "loose-output-data-comparison", "l", false, "Loose output data comparison")
+	testCmd.Flags().BoolVarP(&test.UpdateOutputData, "update", "u", false, "Update output data")
+	testCmd.Flags().BoolVarP(&test.LooseOutputDataComparison, "loose", "l", false, "Loose output data comparison")
 	testCmd.Flags().BoolVarP(&test.ExitEarly, "exit-early", "x", false, "Exit on first failure or error")
-	testCmd.Flags().StringVar(&test.FilterName, "filter-name", "", "Filter test cases by name substring")
+	testCmd.Flags().StringVar(&test.FilterName, "filter", "", "Filter test cases by name substring")
 }

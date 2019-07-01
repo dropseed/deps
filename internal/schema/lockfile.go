@@ -59,6 +59,10 @@ func (lockfile *Lockfile) Validate() error {
 	return nil
 }
 
+func (lockfile *Lockfile) HasUpdates() bool {
+	return lockfile.Updated != nil && len(lockfile.Updated.Dependencies) > 0
+}
+
 func (lv *LockfileVersion) Validate() error {
 	if lv.Fingerprint == "" {
 		return errors.New("lockfile fingerprint is required")

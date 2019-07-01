@@ -35,7 +35,7 @@ func newUpdatesFromDependencies(dependencies *schema.Dependencies, dependencyCon
 
 	if *dependencyConfig.LockfileUpdates.Enabled && !lockfileUpdatesDisabled {
 		for path, lockfile := range dependencies.Lockfiles {
-			if lockfile.Updated == nil || len(lockfile.Updated.Dependencies) < 1 {
+			if !lockfile.HasUpdates() {
 				continue
 			}
 
@@ -54,7 +54,7 @@ func newUpdatesFromDependencies(dependencies *schema.Dependencies, dependencyCon
 	if *dependencyConfig.ManifestUpdates.Enabled && !manifestUpdatesDisabled {
 		for path, manifest := range dependencies.Manifests {
 
-			if manifest.Updated == nil || len(manifest.Updated.Dependencies) < 1 {
+			if !manifest.HasUpdates() {
 				continue
 			}
 

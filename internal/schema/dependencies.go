@@ -1,10 +1,10 @@
 package schema
 
 import (
+	"bytes"
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"sort"
@@ -17,11 +17,11 @@ type Dependencies struct {
 	Lockfiles map[string]*Lockfile `json:"lockfiles,omitempty"`
 	Manifests map[string]*Manifest `json:"manifests,omitempty"`
 
-	Title       string `json:"title,omitempty"`
-	Description string `json:"description,omitempty"`
-	// TODO need to make sure adding these fields doesn't mess with ids when marshalling?
-	UpdateID string `json:"update_id,omitempty"`
-	UniqueID string `json:"unique_id,omitempty"`
+	// Not included in JSON
+	Title       string `json:"-"`
+	Description string `json:"-"`
+	UpdateID    string `json:"-"`
+	UniqueID    string `json:"-"`
 }
 
 // NewDependenciesFromJSONPath loads Dependencies from a JSON file path
@@ -36,7 +36,9 @@ func NewDependenciesFromJSONPath(path string) (*Dependencies, error) {
 // NewDependenciesFromJSONContent creates a Dependencies instance with Unmarshalled JSON data
 func NewDependenciesFromJSONContent(content []byte) (*Dependencies, error) {
 	deps := Dependencies{}
-	if err := json.Unmarshal(content, &deps); err != nil {
+	decoder := json.NewDecoder(bytes.NewReader(content))
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(&deps); err != nil {
 		return nil, err
 	}
 
@@ -59,18 +61,8 @@ func (s *Dependencies) ValidateAndCompile() error {
 		}
 	}
 
-	var err error
-
-	s.Title, err = s.generateTitle()
-	if err != nil {
-		return err
-	}
-
-	s.Description, err = s.generateDescription()
-	if err != nil {
-		return err
-	}
-
+	s.Title = s.generateTitle()
+	s.Description = s.generateDescription()
 	s.UpdateID = s.getUpdateID()
 	s.UniqueID = s.getUniqueID()
 
@@ -78,9 +70,22 @@ func (s *Dependencies) ValidateAndCompile() error {
 }
 
 // generateTitle generates a title string from the dependencies dependencies, optinally for the related PR search
-func (s *Dependencies) generateTitle() (string, error) {
-	lockfiles := s.Lockfiles
-	manifests := s.Manifests
+func (s *Dependencies) generateTitle() string {
+
+	lockfiles := map[string]*Lockfile{}
+	manifests := map[string]*Manifest{}
+
+	for name, lockfile := range s.Lockfiles {
+		if lockfile.HasUpdates() {
+			lockfiles[name] = lockfile
+		}
+	}
+	for name, manifest := range s.Manifests {
+		if manifest.HasUpdates() {
+			manifests[name] = manifest
+		}
+	}
+
 	foundLockfiles := len(lockfiles) > 0
 	foundManifests := len(manifests) > 0
 
@@ -93,7 +98,7 @@ func (s *Dependencies) generateTitle() (string, error) {
 		if len(manifests) == 1 {
 			mPlural = "manifest"
 		}
-		return fmt.Sprintf("Update %v %v and %v %v", len(lockfiles), lfPlural, len(manifests), mPlural), nil
+		return fmt.Sprintf("Update %v %v and %v %v", len(lockfiles), lfPlural, len(manifests), mPlural)
 	}
 
 	if foundLockfiles {
@@ -104,9 +109,9 @@ func (s *Dependencies) generateTitle() (string, error) {
 		sort.Strings(lockfilePaths)
 
 		if len(lockfilePaths) == 1 {
-			return fmt.Sprintf("Update %v", lockfilePaths[0]), nil
+			return fmt.Sprintf("Update %v", lockfilePaths[0])
 		}
-		return fmt.Sprintf("Update lockfiles: %v", strings.Join(lockfilePaths, ", ")), nil
+		return fmt.Sprintf("Update lockfiles: %v", strings.Join(lockfilePaths, ", "))
 	}
 
 	if foundManifests {
@@ -131,7 +136,7 @@ func (s *Dependencies) generateTitle() (string, error) {
 				dep := dependencies[name]
 				installed := manifest.Current.Dependencies[name].Constraint
 				updated := dep.Constraint
-				return fmt.Sprintf("Update %v in %v from %v to %v", name, manifestPath, installed, updated), nil
+				return fmt.Sprintf("Update %v in %v from %v to %v", name, manifestPath, installed, updated)
 			}
 
 			// more than 1 dependency
@@ -152,26 +157,38 @@ func (s *Dependencies) generateTitle() (string, error) {
 
 			// TODO if > 2 items, put an "and " in front of the last one
 
-			return fmt.Sprintf("Update %v dependencies from %v", len(dependencies), strings.Join(sourceNames, ", ")), nil
+			return fmt.Sprintf("Update %v dependencies from %v", len(dependencies), strings.Join(sourceNames, ", "))
 
 		}
 
 		// More than 1 manifest
-		return fmt.Sprintf("Update dependencies in %v", strings.Join(manifestPaths, ", ")), nil
+		return fmt.Sprintf("Update dependencies in %v", strings.Join(manifestPaths, ", "))
 	}
 
-	return "", errors.New("Unable to determine PR title")
+	return ""
 }
 
 // GenerateBody generates a body string from the dependencies schema
-func (s *Dependencies) generateDescription() (string, error) {
-	lockfiles := s.Lockfiles
-	manifests := s.Manifests
+func (s *Dependencies) generateDescription() string {
+	lockfiles := map[string]*Lockfile{}
+	manifests := map[string]*Manifest{}
+
+	for name, lockfile := range s.Lockfiles {
+		if lockfile.HasUpdates() {
+			lockfiles[name] = lockfile
+		}
+	}
+	for name, manifest := range s.Manifests {
+		if manifest.HasUpdates() {
+			manifests[name] = manifest
+		}
+	}
+
 	foundLockfiles := len(lockfiles) > 0
 	foundManifests := len(manifests) > 0
 
 	if !foundLockfiles && !foundManifests {
-		return "", errors.New("Dependencies must contain either lockfiles or manifests")
+		return ""
 	}
 
 	summaryLines := []string{}
@@ -180,13 +197,13 @@ func (s *Dependencies) generateDescription() (string, error) {
 	if foundLockfiles {
 		lines, err := getSummaryLinesForLockfiles(lockfiles)
 		if err != nil {
-			return "", err
+			panic(err)
 		}
 		summaryLines = append(summaryLines, lines...)
 
 		parts, err := getBodyPartsForLockfiles(lockfiles)
 		if err != nil {
-			return "", err
+			panic(err)
 		}
 		contentParts = append(contentParts, parts...)
 	}
@@ -194,13 +211,13 @@ func (s *Dependencies) generateDescription() (string, error) {
 	if foundManifests {
 		lines, err := getSummaryLinesForManifests(manifests)
 		if err != nil {
-			return "", err
+			panic(err)
 		}
 		summaryLines = append(summaryLines, lines...)
 
 		parts, err := getBodyPartsForManifests(manifests)
 		if err != nil {
-			return "", err
+			panic(err)
 		}
 		contentParts = append(contentParts, parts...)
 	}
@@ -220,7 +237,7 @@ func (s *Dependencies) generateDescription() (string, error) {
 		final = final[:maxBodyLength]
 	}
 
-	return final, nil
+	return final
 }
 
 func getSummaryLinesForLockfiles(lockfiles map[string]*Lockfile) ([]string, error) {
@@ -349,7 +366,7 @@ func (dependencies *Dependencies) getUpdateID() string {
 
 	if dependencies.Manifests != nil {
 		for name, manifest := range dependencies.Manifests {
-			if manifest.Updated == nil || len(manifest.Updated.Dependencies) < 1 {
+			if !manifest.HasUpdates() {
 				continue
 			}
 

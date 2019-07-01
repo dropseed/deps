@@ -1,10 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
-	"github.com/getsentry/raven-go"
+	raven "github.com/getsentry/raven-go"
 
 	"github.com/dropseed/deps/internal/output"
 )
@@ -24,17 +23,22 @@ func printErrAndExitFailure(err error) {
 }
 
 func main() {
-	panickedErr, _ := raven.CapturePanicAndWait(func() {
-		if err := rootCmd.Execute(); err != nil {
-			raven.CaptureErrorAndWait(err, nil)
-			printErrAndExitFailure(err)
-		} else {
-			os.Exit(0)
-		}
-	}, nil)
+	// panickedErr, _ := raven.CapturePanicAndWait(func() {
+	// 	if err := rootCmd.Execute(); err != nil {
+	// 		raven.CaptureErrorAndWait(err, nil)
+	// 		printErrAndExitFailure(err)
+	// 	} else {
+	// 		os.Exit(0)
+	// 	}
+	// }, nil)
 
-	if panickedErr != nil {
-		output.Error(fmt.Sprintf("%v", panickedErr))
-		os.Exit(1)
+	// if panickedErr != nil {
+	// 	output.Error(fmt.Sprintf("Panic: %v", panickedErr))
+	// 	os.Exit(1)
+	// }
+
+	if err := rootCmd.Execute(); err != nil {
+		raven.CaptureErrorAndWait(err, nil)
+		printErrAndExitFailure(err)
 	}
 }
