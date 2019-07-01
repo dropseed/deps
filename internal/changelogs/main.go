@@ -7,12 +7,10 @@ import (
 	"net/http"
 	"os"
 	"time"
-
-	"github.com/dropseed/deps/internal/env"
 )
 
 func GetChangelog(depSource, depName, depVersion string) string {
-	attemptRemote := env.GetSetting("PULLREQUEST_VERSIONS_API_DISABLED", "") == ""
+	attemptRemote := true //env.GetSetting("PULLREQUEST_VERSIONS_API_DISABLED", "") == ""
 
 	if attemptRemote && depSource != "" && depName != "" && depVersion != "" {
 		apiURL := fmt.Sprintf("https://versions.dependencies.io/%s/%s/%s", depSource, depName, depVersion)

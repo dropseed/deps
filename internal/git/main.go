@@ -7,7 +7,6 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/dropseed/deps/internal/env"
 	"github.com/dropseed/deps/internal/output"
 )
 
@@ -70,9 +69,8 @@ func listBranches() []string {
 }
 
 func getBranchPrefix() string {
-	branchPrefix := env.GetSetting("branch_prefix", "")
-	branchSeparator := env.GetSetting("branch_separator", "/")
-
+	branchPrefix := ""
+	branchSeparator := "/"
 	return fmt.Sprintf("%sdeps%s", branchPrefix, branchSeparator)
 }
 

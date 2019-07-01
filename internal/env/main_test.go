@@ -25,17 +25,6 @@ func TestTestEnv(t *testing.T) {
 	}
 }
 
-func TestGetSetting(t *testing.T) {
-	os.Setenv("SETTING_FOO_BAR", "test")
-	if s := GetSetting("foo_bar", ""); s != "test" {
-		t.FailNow()
-	}
-
-	if s := GetSetting("foo_barred", ""); s != "" {
-		t.FailNow()
-	}
-}
-
 func TestSettingVal(t *testing.T) {
 	if s, _ := settingValToEnv(2); s != "2" {
 		t.FailNow()

@@ -74,3 +74,15 @@ func (dependency *Dependency) Environ() ([]string, error) {
 
 	return environ, nil
 }
+
+func (dependency *Dependency) GetSetting(key string) interface{} {
+	if dependency.Settings == nil {
+		return nil
+	}
+	for k, v := range dependency.Settings {
+		if strings.ToLower(k) == strings.ToLower(key) {
+			return v
+		}
+	}
+	return nil
+}

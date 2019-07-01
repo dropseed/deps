@@ -6,12 +6,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strconv"
 	"strings"
 
+	"github.com/dropseed/deps/internal/config"
 	"github.com/dropseed/deps/internal/schema"
 
-	"github.com/dropseed/deps/internal/env"
 	"github.com/dropseed/deps/internal/output"
 	"github.com/dropseed/deps/internal/pullrequest"
 )
@@ -29,8 +28,8 @@ type PullRequest struct {
 }
 
 // NewPullrequestFromDependenciesEnv creates a PullRequest
-func NewPullrequestFromDependenciesEnv(deps *schema.Dependencies, branch string) (*PullRequest, error) {
-	prBase, err := pullrequest.NewPullrequestFromEnv(deps, branch)
+func NewPullrequest(base string, head string, deps *schema.Dependencies, cfg *config.Dependency) (*PullRequest, error) {
+	prBase, err := pullrequest.NewPullrequest(base, head, deps, cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -53,10 +52,9 @@ func NewPullrequestFromDependenciesEnv(deps *schema.Dependencies, branch string)
 }
 
 func (pr *PullRequest) getCreateJSONData() ([]byte, error) {
-	var base string
-	// TODO settings can probably be given directly now from config
-	if base = env.GetSetting("GITHUB_BASE_BRANCH", ""); base == "" {
-		base = pr.DefaultBaseBranch
+	base := pr.Base
+	if override := pr.Config.GetSetting("github_base_branch"); override != nil {
+		base = override.(string)
 	}
 
 	// TODO does this need to change?
@@ -67,7 +65,7 @@ func (pr *PullRequest) getCreateJSONData() ([]byte, error) {
 
 	pullrequestMap := map[string]string{
 		"title": pr.Title,
-		"head":  pr.Branch,
+		"head":  pr.Head,
 		"base":  base,
 		"body":  body,
 	}
@@ -135,33 +133,15 @@ func (pr *PullRequest) createPR() (map[string]interface{}, error) {
 // Create performs the creation of the PR on GitHub
 func (pr *PullRequest) CreateOrUpdate() error {
 	// check the optional settings now, before actually creating the PR (which we'll have to update)
-	var labels []string
-	if labelsEnv := env.GetSetting("GITHUB_LABELS", ""); labelsEnv != "" {
-		if err := json.Unmarshal([]byte(labelsEnv), &labels); err != nil {
-			return err
-		}
-	}
 
-	var assignees []string
-	if assigneesEnv := env.GetSetting("GITHUB_ASSIGNEES", ""); assigneesEnv != "" {
-		if err := json.Unmarshal([]byte(assigneesEnv), &assignees); err != nil {
-			return err
-		}
-	}
-
-	var milestone int64
-	if milestoneEnv := env.GetSetting("GITHUB_MILESTONE", ""); milestoneEnv != "" {
-		var err error
-		milestone, err = strconv.ParseInt(milestoneEnv, 10, 32)
-		if err != nil {
-			return err
-		}
-	}
+	labels := pr.Config.GetSetting("github_labels")
+	assignees := pr.Config.GetSetting("github_assignees")
+	milestone := pr.Config.GetSetting("github_assignees")
 
 	fmt.Printf("Preparing to open GitHub pull request for %v\n", pr.RepoFullName)
 
 	// TODO if pr exists then update original comment (if diff from original)
-
+	// check return code on status?
 	data, err := pr.createPR()
 	if err != nil {
 		return err
@@ -170,26 +150,22 @@ func (pr *PullRequest) CreateOrUpdate() error {
 	pr.Number = int(data["number"].(float64))
 	pr.CreatedAt = data["created_at"].(string)
 
-	// set the Action info for reporting back to dependencies.io
-	pr.Action.Name = fmt.Sprintf("PR #%v", pr.Number)
-	pr.Action.Metadata["github_pull_request"] = data
-
 	// pr has been created at this point, now have to add meta fields in
 	// another request
 	issueURL, _ := data["issue_url"].(string)
 	htmlURL, _ := data["html_url"].(string)
 	fmt.Printf("Successfully created %v\n", htmlURL)
 
-	if len(labels) > 0 || len(assignees) > 0 || milestone > 0 {
+	if labels != nil || assignees != nil || milestone != nil {
 		issueMap := make(map[string]interface{})
 
-		if len(labels) > 0 {
+		if labels != nil {
 			issueMap["labels"] = labels
 		}
-		if len(assignees) > 0 {
+		if assignees != nil {
 			issueMap["assignees"] = assignees
 		}
-		if milestone > 0 {
+		if milestone != nil {
 			issueMap["milestone"] = milestone
 		}
 

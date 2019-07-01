@@ -9,7 +9,8 @@ import (
 
 	"github.com/dropseed/deps/internal/git"
 	"github.com/dropseed/deps/internal/output"
-	"github.com/dropseed/deps/internal/pullrequest/adapter"
+	"github.com/dropseed/deps/internal/pullrequest"
+	"github.com/dropseed/deps/internal/pullrequest/github"
 )
 
 type updateError struct {
@@ -22,10 +23,14 @@ func CI(updateLimit int) error {
 		return errors.New("git status must be clean to run deps ci")
 	}
 
-	repo := adapter.NewRepoFromEnv()
-	if repo == nil {
+	gitHost := git.GitHost()
+	var repo pullrequest.RepoAdapter
+	if gitHost == "github" {
+		repo = github.NewRepoFromEnv()
+	} else {
 		return errors.New("Repo not found or not supported")
 	}
+
 	if err := repo.CheckRequirements(); err != nil {
 		return err
 	}
@@ -172,17 +177,14 @@ func runUpdate(update *Update, base, head string) error {
 		return err
 	}
 
-	var pr adapter.PullrequestAdapter
+	var pr pullrequest.PullrequestAdapter
 	gitHost := git.GitHost()
 
-	// TODO always want to get a PR here
-	// either we are going to create it, or need to find existing
-	// if base != head {
-	// 	// pr = repo.NewPullrequest(outputDeps, pullrequestToBranch)
-
-	pr, err = adapter.PullrequestAdapterFromDependenciesAndHost(outputDeps, gitHost, base, head)
-	if err != nil {
-		return err
+	if gitHost == "github" {
+		pr, err = github.NewPullrequest(base, head, outputDeps, update.dependencyConfig)
+		if err != nil {
+			return err
+		}
 	}
 
 	// if nothing to commit, don't worry about it

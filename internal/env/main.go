@@ -3,18 +3,8 @@ package env
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	"strings"
 )
-
-// GetSetting gets a string for a given setting name from the env
-func GetSetting(name string, defaultValue string) string {
-	v := os.Getenv(fmt.Sprintf("DEPS_SETTING_%s", strings.ToUpper(name)))
-	if v == "" && defaultValue != "" {
-		return defaultValue
-	}
-	return v
-}
 
 func SettingToEnviron(key string, value interface{}) (string, error) {
 	envKey := settingKeyToEnv(key)

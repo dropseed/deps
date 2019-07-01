@@ -9,8 +9,6 @@ import (
 	"io/ioutil"
 	"sort"
 	"strings"
-
-	"github.com/dropseed/deps/internal/env"
 )
 
 const maxBodyLength = 65535
@@ -210,10 +208,11 @@ func (s *Dependencies) generateDescription() (string, error) {
 	summaryHeader := "## Overview\n\nThe following dependencies have been updated by [dependencies.io](https://www.dependencies.io/):\n\n"
 	bodyHeader := "\n\n## Details\n\n"
 
-	notes := env.GetSetting("pullrequest_notes", "")
-	if notes != "" {
-		notes = notes + "\n\n---\n\n"
-	}
+	notes := "" // TODO use go template instead
+	// notes := env.GetSetting("pullrequest_notes", "")
+	// if notes != "" {
+	// 	notes = notes + "\n\n---\n\n"
+	// }
 
 	final := notes + summaryHeader + strings.Join(summaryLines, "\n") + bodyHeader + strings.Join(contentParts, "\n\n---\n\n") + "\n"
 
