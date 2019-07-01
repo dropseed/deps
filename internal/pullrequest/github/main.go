@@ -23,8 +23,6 @@ type PullRequest struct {
 	RepoName      string
 	RepoFullName  string
 	APIToken      string
-	Number        int
-	CreatedAt     string
 }
 
 // NewPullrequestFromDependenciesEnv creates a PullRequest
@@ -146,9 +144,6 @@ func (pr *PullRequest) CreateOrUpdate() error {
 	if err != nil {
 		return err
 	}
-
-	pr.Number = int(data["number"].(float64))
-	pr.CreatedAt = data["created_at"].(string)
 
 	// pr has been created at this point, now have to add meta fields in
 	// another request
