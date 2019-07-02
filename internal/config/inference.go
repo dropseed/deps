@@ -6,6 +6,8 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
+
+	"github.com/dropseed/deps/internal/output"
 )
 
 // MaxInferenceDepth determines how deep in the repo to look
@@ -88,7 +90,8 @@ func inferredDependenciesFromDir(dir string, depth int) []*Dependency {
 
 		fileInfo, err := os.Stat(p)
 		if err != nil {
-			panic(err)
+			output.Debug("Error os.Stat: %v", err)
+			continue
 		}
 
 		if fileInfo.IsDir() {

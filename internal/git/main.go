@@ -164,11 +164,12 @@ func ResetAndClean() {
 func Stash(message string) bool {
 	cmd := exec.Command("git", "stash", "push", "--include-untracked", "-m", message)
 	out, err := cmd.CombinedOutput()
-	println(out)
+	outS := string(out)
+	println(outS)
 	if err != nil {
 		panic(err)
 	}
-	if strings.Contains(string(out), "No local changes to save") {
+	if strings.Contains(outS, "No local changes to save") {
 		return false
 	}
 	return true
