@@ -8,11 +8,10 @@ import (
 )
 
 func (r *Runner) Install() error {
-	// TODO install does not need to happen every time
-	// - yes it does if local (assume could have changed)
-	// - yes it does if new (just cloned)
-	// - yes it does if ref chagned
-	// so maybe not horrible if it runs every time right now
+	if !r.shouldInstall {
+		output.Debug("Skipping install of %s", r.Given)
+		return nil
+	}
 
 	output.Event("Installing %s", r.Given)
 

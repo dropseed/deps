@@ -14,11 +14,12 @@ import (
 )
 
 type Runner struct {
-	Index  int
-	Given  string
-	Config *Config
-	Path   string
-	Env    []string
+	Index         int
+	Given         string
+	Config        *Config
+	Path          string
+	Env           []string
+	shouldInstall bool
 }
 
 const DefaultRemotePrefix = "dropseed/deps-"
@@ -44,9 +45,10 @@ func NewRunnerFromPath(s string) (*Runner, error) {
 	}
 
 	return &Runner{
-		Given:  s,
-		Config: config,
-		Path:   componentPath,
+		Given:         s,
+		Config:        config,
+		Path:          componentPath,
+		shouldInstall: true,
 	}, nil
 }
 
@@ -65,7 +67,6 @@ func newRunnerFromRemote(s string) (*Runner, error) {
 
 	output.Debug("Using component from %s", url)
 
-	// get cache dir for the current dir
 	userCache, err := os.UserCacheDir()
 	if err != nil {
 		return nil, err
@@ -80,41 +81,57 @@ func newRunnerFromRemote(s string) (*Runner, error) {
 		return nil, err
 	}
 
-	// does it not have permission to do 777 on travis?
-	// push another beta and test, but probably so -- what should the
-	// perms be?
-
 	cloneDirName := path.Base(url)
 	cloneDirName = strings.Replace(cloneDirName, ".git", "", -1)
 	clonePath := path.Join(depsCache, "components", cloneDirName)
 
 	output.Debug("Storing component in %s", clonePath)
 
-	// or clone into components specifically for this working repo?
-	// basename-hash of path in user home dir?
+	cloned := false
+	cwd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
 
 	if _, err := os.Stat(clonePath); os.IsNotExist(err) {
 		git.Clone(url, clonePath)
+		cloned = true
 	} else if err != nil {
 		return nil, err
-	} else {
-		output.Event("FIXME: removing previous clone of component and recloning")
-		if err := os.RemoveAll(clonePath); err != nil {
-			panic(err)
-		}
-		git.Clone(url, clonePath)
 	}
 
-	// run git pull - need to be able to specify version somehow though
-	// "version" optional on deps config? anything that can be git checkout in this case
-	// so maybe sharing these across repos isn't bad... checkout happens every time
+	// run git commands from the new repo
+	if err := os.Chdir(clonePath); err != nil {
+		panic(err)
+	}
 
-	// TODO need to point it to the repo, not run in current dir
-	// if err := git.Pull(); err != nil {
-	// 	return nil, err
-	// }
+	refBefore := ""
 
-	return NewRunnerFromPath(clonePath)
+	if !cloned {
+		refBefore = git.CurrentRef()
+		if err := git.Pull(); err != nil {
+			return nil, err
+		}
+	}
+
+	// TODO checkout user specified Version
+	// split @ from string?
+	// git.Checkout
+
+	refAfter := git.CurrentRef()
+
+	if err := os.Chdir(cwd); err != nil {
+		panic(err)
+	}
+
+	runner, err := NewRunnerFromPath(clonePath)
+	if err != nil {
+		return nil, err
+	}
+
+	runner.shouldInstall = refBefore != refAfter
+
+	return runner, nil
 }
 
 func (r *Runner) GetName() string {

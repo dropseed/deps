@@ -101,8 +101,6 @@ func getAvailableUpdates(cfg *config.Config) (Updates, error) {
 		runner.Index = index
 		runner.Env = env
 
-		// add a .shouldInstall - true when local or ref changed?
-
 		if err := runner.Install(); err != nil {
 			return nil, err
 		}
