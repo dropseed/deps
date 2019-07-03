@@ -39,10 +39,11 @@ func NewUpdate(deps *schema.Dependencies, cfg *config.Dependency) *Update {
 }
 
 func (update *Update) exists() bool {
-	return git.BranchExists(update.branch)
+	b := git.BranchMatching(update.branch)
+	return b != ""
 }
 
-func (update *Update) outdated() bool {
+func (update *Update) outdatedBranch() string {
 	// update id match only
-	return git.BranchExists(git.GetBranchName(update.id))
+	return git.BranchMatching(git.GetBranchName(update.id))
 }

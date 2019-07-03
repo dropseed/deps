@@ -63,7 +63,8 @@ func collectUpdates() (Updates, Updates, Updates, error) {
 	for _, update := range availableUpdates {
 		if update.exists() {
 			existingUpdates.addUpdate(update)
-		} else if update.outdated() {
+		} else if outdated := update.outdatedBranch(); outdated != "" {
+			update.branch = outdated // change the branch to the existing match
 			outdatedUpdates.addUpdate(update)
 		} else {
 			newUpdates.addUpdate(update)

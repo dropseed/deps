@@ -112,14 +112,14 @@ func Clone(url, path string) {
 	}
 }
 
-func BranchExists(startsWith string) bool {
+func BranchMatching(startsWith string) string {
 	branches := listBranches()
 	for _, b := range branches {
 		if strings.HasPrefix(b, startsWith) {
-			return true
+			return b
 		}
 	}
-	return false
+	return ""
 }
 
 func CurrentRef() string {
