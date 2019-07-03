@@ -162,7 +162,7 @@ func ResetAndClean() {
 }
 
 func Stash(message string) bool {
-	cmd := exec.Command("git", "stash", "push", "--include-untracked", "-m", message)
+	cmd := exec.Command("git", "stash", "save", "--include-untracked", message)
 	out, err := cmd.CombinedOutput()
 	outS := string(out)
 	println(outS)
