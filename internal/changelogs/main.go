@@ -9,7 +9,45 @@ import (
 	"time"
 )
 
+type ChangelogFetcher interface {
+	fetch() string
+}
+
+type Dependency struct {
+	source  string
+	name    string
+	version string
+	repo    string
+	url     string
+}
+
 func GetChangelog(depSource, depName, depVersion string) string {
+
+	// a cache obj?
+
+	dep := &Dependency{
+		source:  depSource,
+		name:    depName,
+		version: depVersion,
+	}
+
+	// first check remote db for overrides
+	// api/source/name
+	// - repo (url) maybe
+	// - url (just start with this)
+	// - versions.1.0.0.url - or version url pattern?? or url_pattern
+
+	var fetcher ChangelogFetcher
+
+	if dep.source == "pypi" {
+		// pypi fetcher
+		fetcher = &Pypi{
+			dependency: dep,
+		}
+	}
+
+	dep.url = fetcher.fetch()
+
 	attemptRemote := true //env.GetSetting("PULLREQUEST_VERSIONS_API_DISABLED", "") == ""
 
 	if attemptRemote && depSource != "" && depName != "" && depVersion != "" {
