@@ -28,8 +28,8 @@ func (config *Config) Compile() {
 	}
 }
 
-func LoadOrInferConfigFromPath(configpath string, variables map[string]interface{}) (*Config, error) {
-	config, err := NewConfigFromPath(configpath, nil)
+func LoadOrInferConfigFromPath(configpath string) (*Config, error) {
+	config, err := NewConfigFromPath(configpath)
 	if os.IsNotExist(err) {
 		output.Event("No local config found, inferring one from your files")
 		config, err = InferredConfigFromDir(filepath.Dir(configpath))
@@ -44,17 +44,17 @@ func LoadOrInferConfigFromPath(configpath string, variables map[string]interface
 }
 
 // NewConfigFromPath loads a Config from a file
-func NewConfigFromPath(path string, variables map[string]interface{}) (*Config, error) {
+func NewConfigFromPath(path string) (*Config, error) {
 	f, err := os.Open(path)
 	defer f.Close()
 	if err != nil {
 		return nil, err
 	}
 
-	return NewConfigFromReader(f, variables)
+	return NewConfigFromReader(f)
 }
 
-func NewConfigFromReader(reader io.Reader, variables map[string]interface{}) (*Config, error) {
+func NewConfigFromReader(reader io.Reader) (*Config, error) {
 	temp := map[string]interface{}{}
 	decoder := yaml.NewDecoder(reader)
 	decoder.SetDefaultMapType(reflect.TypeOf(map[string]interface{}{}))
@@ -62,18 +62,13 @@ func NewConfigFromReader(reader io.Reader, variables map[string]interface{}) (*C
 		return nil, err
 	}
 
-	return newConfigFromMap(temp, variables)
+	return newConfigFromMap(temp)
 }
 
-func newConfigFromMap(m map[string]interface{}, variables map[string]interface{}) (*Config, error) {
-	// set this so it is accessible in the decode func
-	tempConfigVariables = variables
-	defer resetVariables()
-
+func newConfigFromMap(m map[string]interface{}) (*Config, error) {
 	config := &Config{}
 
 	mapDecoderConfig := mapstructure.DecoderConfig{
-		DecodeHook:  variableMapDecode,
 		Result:      config,
 		ErrorUnused: true,
 	}

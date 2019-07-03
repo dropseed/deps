@@ -14,7 +14,7 @@ const COLLECTOR = "collector"
 const ACTOR = "actor"
 
 func getConfig() (*config.Config, error) {
-	cfg, err := config.NewConfigFromPath(config.DefaultFilename, nil)
+	cfg, err := config.NewConfigFromPath(config.DefaultFilename)
 	if os.IsNotExist(err) {
 		output.Event("No local config found, detecting your dependencies automatically")
 		// should we always check for inferred? and could let them know what they
