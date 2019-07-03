@@ -162,7 +162,11 @@ func getCurrentBranch() string {
 func runUpdate(update *Update, base, head string) error {
 	git.Checkout(base)
 
-	if base != head {
+	if base == head {
+		// PR back to this branch
+		// later env var configurable?
+		base = "master"
+	} else {
 		git.Branch(head)
 	}
 
@@ -189,6 +193,7 @@ func runUpdate(update *Update, base, head string) error {
 
 	// if nothing to commit, don't worry about it
 	if !git.IsDirty() {
+		output.Event("No changes to commit, exiting update early")
 		return nil
 	}
 

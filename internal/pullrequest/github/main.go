@@ -49,6 +49,33 @@ func NewPullrequest(base string, head string, deps *schema.Dependencies, cfg *co
 	}, nil
 }
 
+func (pr *PullRequest) request(verb string, url string, input []byte) (*http.Response, string, error) {
+	client := &http.Client{}
+
+	req, err := http.NewRequest(verb, url, bytes.NewBuffer(input))
+	if err != nil {
+		return nil, "", err
+	}
+
+	req.Header.Add("Authorization", "token "+pr.APIToken)
+	req.Header.Add("User-Agent", "deps")
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, "", err
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	resp.Body.Close()
+	return resp, string(body), err
+}
+
+func (pr *PullRequest) pullsURL() string {
+	apiBase := "https://api.github.com" // or from setting/env
+	return fmt.Sprintf("%s/repos/%s/pulls", apiBase, pr.RepoFullName)
+}
+
 func (pr *PullRequest) getCreateJSONData() ([]byte, error) {
 	base := pr.Base
 	if override := pr.Config.GetSetting("github_base_branch"); override != nil {
@@ -72,15 +99,7 @@ func (pr *PullRequest) getCreateJSONData() ([]byte, error) {
 	return pullrequestData, nil
 }
 
-func (pr *PullRequest) addHeadersToRequest(req *http.Request) {
-	req.Header.Add("Authorization", "token "+pr.APIToken)
-	req.Header.Add("User-Agent", "deps")
-	req.Header.Set("Content-Type", "application/json")
-}
-
 func (pr *PullRequest) createPR() (map[string]interface{}, error) {
-	// open the actual PR, first of two API calls
-
 	pullrequestData, err := pr.getCreateJSONData()
 	if err != nil {
 		return nil, err
@@ -88,44 +107,48 @@ func (pr *PullRequest) createPR() (map[string]interface{}, error) {
 
 	output.Debug("Creating pull request:\n%s", pullrequestData)
 
-	apiBase := "https://api.github.com"
-	// TODO can maybe automatically get this from remote instead?
-	// if base := env.GetSetting("DEPS_GITHUB_API_BASE_URL", ""); base == "" {
-	// 	apiBase = base
-	// }
-
-	pullrequestsURL := fmt.Sprintf("%s/repos/%v/pulls", apiBase, pr.RepoFullName)
-
-	client := &http.Client{}
-
-	req, err := http.NewRequest("POST", pullrequestsURL, bytes.NewBuffer(pullrequestData))
+	resp, body, err := pr.request("POST", pr.pullsURL(), pullrequestData)
 	if err != nil {
 		return nil, err
 	}
 
-	pr.addHeadersToRequest(req)
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, err
+	if strings.Index(string(body), "pull request already exists") != -1 {
+		output.Event("Pull request already exists")
+		return nil, nil
+	} else if resp.StatusCode != 201 {
+		return nil, fmt.Errorf("Failed to create pull request:\\n\n%s\n\n%+v\n\n%+v", body, resp.Request, resp)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
-	resp.Body.Close()
-	if err != nil {
-		return nil, err
-	}
-
-	if resp.StatusCode != 201 {
-		return nil, fmt.Errorf("Failed to create pull request:\n\n%s\n\n%+v", body, resp)
-	}
-
+	output.Event("Created pull request")
 	var data map[string]interface{}
-	if err := json.Unmarshal(body, &data); err != nil {
+	if err := json.Unmarshal([]byte(body), &data); err != nil {
 		return nil, err
 	}
 
 	return data, nil
+}
+
+func (pr *PullRequest) getExisting() (map[string]interface{}, error) {
+	params := fmt.Sprintf("?head=%s:%s&base=%s", pr.RepoOwnerName, pr.Head, pr.Base)
+	resp, body, err := pr.request("GET", pr.pullsURL()+params, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("List pull requests API returned %d", resp.StatusCode)
+	}
+
+	var data []map[string]interface{}
+	if err := json.Unmarshal([]byte(body), &data); err != nil {
+		return nil, err
+	}
+
+	if len(data) != 1 {
+		return nil, fmt.Errorf("Found %d matches for existing pull request", len(data))
+	}
+
+	return data[0], nil
 }
 
 // Create performs the creation of the PR on GitHub
@@ -144,15 +167,26 @@ func (pr *PullRequest) CreateOrUpdate() error {
 	if err != nil {
 		return err
 	}
+	if data == nil {
+		data, err = pr.getExisting()
+		if err != nil {
+			return err
+		}
+	}
 
 	// pr has been created at this point, now have to add meta fields in
 	// another request
 	issueURL, _ := data["issue_url"].(string)
 	htmlURL, _ := data["html_url"].(string)
-	fmt.Printf("Successfully created %v\n", htmlURL)
+	issueTitle, _ := data["title"].(string)
+	issueBody, _ := data["body"].(string)
 
-	if labels != nil || assignees != nil || milestone != nil {
+	if labels != nil || assignees != nil || milestone != nil || pr.Title != issueTitle || pr.Body != issueBody {
 		issueMap := make(map[string]interface{})
+
+		// Make sure these are correct and up-to-date
+		issueMap["title"] = pr.Title
+		issueMap["body"] = pr.Body
 
 		if labels != nil {
 			issueMap["labels"] = labels
@@ -167,15 +201,7 @@ func (pr *PullRequest) CreateOrUpdate() error {
 		fmt.Printf("%+v\n", issueMap)
 		issueData, _ := json.Marshal(issueMap)
 
-		req, err := http.NewRequest("PATCH", issueURL, bytes.NewBuffer(issueData))
-		if err != nil {
-			return err
-		}
-
-		pr.addHeadersToRequest(req)
-
-		client := &http.Client{}
-		resp, err := client.Do(req)
+		resp, _, err := pr.request("PATCH", issueURL, issueData)
 		if err != nil {
 			return err
 		}
@@ -184,7 +210,7 @@ func (pr *PullRequest) CreateOrUpdate() error {
 			return fmt.Errorf("failed to update pull request: %+v", resp)
 		}
 
-		fmt.Printf("Successfully updated PR fields on %v\n", htmlURL)
+		output.Event("Successfully updated PR fields on %v\n", htmlURL)
 	}
 
 	return nil
