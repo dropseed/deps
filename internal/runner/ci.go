@@ -13,7 +13,7 @@ import (
 	"github.com/dropseed/deps/internal/pullrequest/github"
 )
 
-type updateError struct {
+type updateResult struct {
 	update *Update
 	err    error
 }
@@ -47,7 +47,7 @@ func CI(updateLimit int) error {
 		repo.PreparePush()
 	}
 
-	updateErrors := []*updateError{}
+	updateErrors := []*updateResult{}
 
 	isDepsBranch := git.IsDepsBranch(startingBranch)
 
@@ -85,7 +85,7 @@ func CI(updateLimit int) error {
 		for _, update := range newUpdates {
 			output.Event("Running update: %s", update.title)
 			if err := runUpdate(update, startingBranch, update.branch); err != nil {
-				updateErrors = append(updateErrors, &updateError{
+				updateErrors = append(updateErrors, &updateResult{
 					update: update,
 					err:    err,
 				})
@@ -96,7 +96,7 @@ func CI(updateLimit int) error {
 		for _, update := range outdatedUpdates {
 			output.Event("Updating outdated update: %s", update.title)
 			if err := runUpdate(update, update.branch, update.branch); err != nil {
-				updateErrors = append(updateErrors, &updateError{
+				updateErrors = append(updateErrors, &updateResult{
 					update: update,
 					err:    err,
 				})
@@ -114,7 +114,7 @@ func CI(updateLimit int) error {
 		if outdatedMatch != nil {
 			output.Event("Applying latest matching update to this branch")
 			if err := runUpdate(outdatedMatch, outdatedMatch.branch, outdatedMatch.branch); err != nil {
-				updateErrors = append(updateErrors, &updateError{
+				updateErrors = append(updateErrors, &updateResult{
 					update: outdatedMatch,
 					err:    err,
 				})
@@ -130,6 +130,9 @@ func CI(updateLimit int) error {
 		}
 		return fmt.Errorf("%d errors", len(updateErrors))
 	}
+
+	// TODO also updates successful and print green
+	// so summary is successful, skipped, and errored?
 
 	return nil
 }
@@ -163,8 +166,8 @@ func runUpdate(update *Update, base, head string) error {
 	git.Checkout(base)
 
 	if base == head {
-		// PR back to this branch
-		// later env var configurable?
+		// PR back to the main branch
+		// (setting or env var?)
 		base = "master"
 	} else {
 		git.Branch(head)
@@ -191,7 +194,6 @@ func runUpdate(update *Update, base, head string) error {
 		}
 	}
 
-	// if nothing to commit, don't worry about it
 	if !git.IsDirty() {
 		output.Event("No changes to commit, exiting update early")
 		return nil
