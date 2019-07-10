@@ -28,13 +28,6 @@ func PushBranch(branchName string) {
 	}
 }
 
-func CanPush() bool {
-	if err := run("push", "--dry-run"); err != nil {
-		return false
-	}
-	return true
-}
-
 func GetBranchName(suffix string) string {
 	prefix := getBranchPrefix()
 	return prefix + suffix

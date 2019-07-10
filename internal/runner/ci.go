@@ -18,7 +18,7 @@ type updateResult struct {
 	err    error
 }
 
-func CI(updateLimit int) error {
+func CI(autoconfigure bool, updateLimit int) error {
 	if git.IsDirty() {
 		return errors.New("git status must be clean to run deps ci")
 	}
@@ -35,17 +35,16 @@ func CI(updateLimit int) error {
 		return err
 	}
 
+	if autoconfigure {
+		repo.PreparePush()
+	}
+
 	output.Debug("Fetching all branches so we can check for existing updates")
 	git.FetchAllBranches()
 
 	startingBranch := getCurrentBranch()
 
 	git.Checkout(startingBranch)
-
-	// // TODO does this belong? or user responsibility (we can give instruction)
-	if !git.CanPush() {
-		repo.PreparePush()
-	}
 
 	updateErrors := []*updateResult{}
 
