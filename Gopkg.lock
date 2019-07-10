@@ -26,14 +26,6 @@
   revision = "fd13018f8a5ab9df5e8c5f1630baaad2755b7820"
 
 [[projects]]
-  digest = "1:fed1f537c2f1269fe475a8556c393fe466641682d73ef8fd0491cd3aa1e47bad"
-  name = "github.com/certifi/gocertifi"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "deb3ae2ef2610fde3330947281941c562861188b"
-  version = "2018.01.18"
-
-[[projects]]
   branch = "master"
   digest = "1:454adc7f974228ff789428b6dc098638c57a64aa0718f0bd61e53d3cd39d7a75"
   name = "github.com/chzyer/readline"
@@ -61,14 +53,6 @@
   version = "v1.7.0"
 
 [[projects]]
-  digest = "1:d18f6f088d7d8365df47f49dfa24b6ff6701a941118ffda30c589d1bd954074b"
-  name = "github.com/getsentry/raven-go"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "f04e7487e9a6b9d9837d52743fb5f40576c56411"
-  version = "v0.2.0"
-
-[[projects]]
   branch = "travis-1.9"
   digest = "1:e8f5d9c09a7209c740e769713376abda388c41b777ba8e9ed52767e21acf379f"
   name = "github.com/golang/lint"
@@ -78,30 +62,6 @@
   ]
   pruneopts = "UT"
   revision = "883fe33ffc4344bad1ecd881f61afd5ec5d80e0a"
-
-[[projects]]
-  digest = "1:318f1c959a8a740366fce4b1e1eb2fd914036b4af58fbd0a003349b305f118ad"
-  name = "github.com/golang/protobuf"
-  packages = ["proto"]
-  pruneopts = "UT"
-  revision = "b5d812f8a3706043e23a9cd5babf2e5423744d30"
-  version = "v1.3.1"
-
-[[projects]]
-  branch = "master"
-  digest = "1:ac72d92bdb69afbc21da5bb72a95bba140b3d74364cbc91a203d3986f23cef3f"
-  name = "github.com/google/go-github"
-  packages = ["github"]
-  pruneopts = "UT"
-  revision = "8354c0739a78b30158359e98fe14ca3bb823159c"
-
-[[projects]]
-  digest = "1:a63cff6b5d8b95638bfe300385d93b2a6d9d687734b863da8e09dc834510a690"
-  name = "github.com/google/go-querystring"
-  packages = ["query"]
-  pruneopts = "UT"
-  revision = "44c6ddd0a2342c386950e880b658017258da92fc"
-  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
@@ -118,14 +78,6 @@
   packages = ["."]
   pruneopts = "UT"
   revision = "1003c8bd00dc2869cb5ca5282e6ce33834fed514"
-
-[[projects]]
-  digest = "1:a0cefd27d12712af4b5018dc7046f245e1e3b5760e2e848c30b171b570708f9b"
-  name = "github.com/imdario/mergo"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "7c29201646fa3de8506f701213473dd407f19646"
-  version = "v0.3.7"
 
 [[projects]]
   digest = "1:870d441fe217b8e689d7949fef6e43efbc787e50f200cb1e70dbca9204a1d6be"
@@ -212,14 +164,6 @@
   version = "v1.4.0"
 
 [[projects]]
-  digest = "1:cf31692c14422fa27c83a05292eb5cbe0fb2775972e8f1f8446a71549bd8980b"
-  name = "github.com/pkg/errors"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "ba968bfe8b2f7e042a574c888954fccecfa385b4"
-  version = "v0.8.1"
-
-[[projects]]
   digest = "1:d917313f309bda80d27274d53985bc65651f81a5b66b820749ac7f8ef061fd04"
   name = "github.com/sergi/go-diff"
   packages = ["diffmatchpatch"]
@@ -261,28 +205,6 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:f8b491a7c25030a895a0e579742d07136e6958e77ef2d46e769db8eec4e58fcd"
-  name = "golang.org/x/net"
-  packages = [
-    "context",
-    "context/ctxhttp",
-  ]
-  pruneopts = "UT"
-  revision = "f3200d17e092c607f615320ecaad13d87ad9a2b3"
-
-[[projects]]
-  branch = "master"
-  digest = "1:8d1c112fb1679fa097e9a9255a786ee47383fa2549a3da71bcb1334a693ebcfe"
-  name = "golang.org/x/oauth2"
-  packages = [
-    ".",
-    "internal",
-  ]
-  pruneopts = "UT"
-  revision = "aaccbc9213b0974828f81aaac109d194880e3014"
-
-[[projects]]
-  branch = "master"
   digest = "1:ccaeb69b65923bc1ffb0e087967e67be2227e389e3a1c5cb1538c5151f0323d1"
   name = "golang.org/x/sys"
   packages = [
@@ -306,22 +228,6 @@
   revision = "75312fb06703a759656ae75b3d1c24b4aae95dfe"
 
 [[projects]]
-  digest = "1:6eb6e3b6d9fffb62958cf7f7d88dbbe1dd6839436b0802e194c590667a40412a"
-  name = "google.golang.org/appengine"
-  packages = [
-    "internal",
-    "internal/base",
-    "internal/datastore",
-    "internal/log",
-    "internal/remote_api",
-    "internal/urlfetch",
-    "urlfetch",
-  ]
-  pruneopts = "UT"
-  revision = "4c25cacc810c02874000e4f7071286a8e96b2515"
-  version = "v1.6.0"
-
-[[projects]]
   branch = "v3-unstable"
   digest = "1:9e71973a6f518a213cbbfa8c24feab33046b2835684818cb6b2c9ea73e823639"
   name = "gopkg.in/alecthomas/kingpin.v3-unstable"
@@ -343,15 +249,11 @@
   input-imports = [
     "github.com/algobardo/yaml",
     "github.com/fatih/color",
-    "github.com/getsentry/raven-go",
-    "github.com/google/go-github/github",
-    "github.com/imdario/mergo",
     "github.com/manifoldco/promptui",
     "github.com/mitchellh/mapstructure",
     "github.com/sergi/go-diff/diffmatchpatch",
     "github.com/spf13/cobra",
     "golang.org/x/crypto/ssh/terminal",
-    "golang.org/x/oauth2",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

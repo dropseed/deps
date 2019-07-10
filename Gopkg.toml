@@ -24,15 +24,6 @@
 #   go-tests = true
 #   unused-packages = true
 
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/google/go-github"
-
-[[constraint]]
-  branch = "master"
-  name = "golang.org/x/oauth2"
-
 [prune]
   go-tests = true
   unused-packages = true
@@ -47,10 +38,6 @@
 [[constraint]]
   name = "github.com/fatih/color"
   version = "1.7.0"
-
-[[constraint]]
-  name = "github.com/imdario/mergo"
-  version = "0.3.6"
 
 [[constraint]]
   name = "github.com/manifoldco/promptui"
@@ -71,7 +58,3 @@
 [[constraint]]
   branch = "master"
   name = "golang.org/x/crypto"
-
-[[constraint]]
-  name = "github.com/getsentry/raven-go"
-  version = "0.2.0"
