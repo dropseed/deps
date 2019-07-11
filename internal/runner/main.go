@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/dropseed/deps/internal/component"
 	"github.com/dropseed/deps/internal/config"
@@ -45,22 +46,12 @@ func getConfig() (*config.Config, error) {
 	return cfg, nil
 }
 
-func collectUpdates() (Updates, Updates, Updates, error) {
-	cfg, err := getConfig()
-	if err != nil {
-		return nil, nil, nil, err
-	}
-
-	availableUpdates, err := getAvailableUpdates(cfg)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-
+func organizeUpdates(updates Updates) (Updates, Updates, Updates, error) {
 	newUpdates := Updates{}      // PRs for these
 	outdatedUpdates := Updates{} // lockfile update on these?
 	existingUpdates := Updates{}
 
-	for _, update := range availableUpdates {
+	for _, update := range updates {
 		if update.exists() {
 			existingUpdates.addUpdate(update)
 		} else if outdated := update.outdatedBranch(); outdated != "" {
@@ -86,10 +77,22 @@ func collectUpdates() (Updates, Updates, Updates, error) {
 	return newUpdates, outdatedUpdates, existingUpdates, nil
 }
 
-func getAvailableUpdates(cfg *config.Config) (Updates, error) {
-	availableUpdates := Updates{}
+func collectUpdates(cfg *config.Config, types []string) (Updates, error) {
+	if len(types) > 0 {
+		output.Event("Only collecting types: %s", strings.Join(types, ", "))
+	}
+	typesMap := map[string]bool{}
+	for _, t := range types {
+		typesMap[t] = true
+	}
+
+	updates := Updates{}
 
 	for index, dependencyConfig := range cfg.Dependencies {
+
+		if _, ok := typesMap[dependencyConfig.Type]; len(typesMap) > 0 && !ok {
+			continue
+		}
 
 		runner, err := component.NewRunnerFromString(dependencyConfig.Type)
 		if err != nil {
@@ -120,10 +123,10 @@ func getAvailableUpdates(cfg *config.Config) (Updates, error) {
 			for _, update := range updates {
 				// Store this for use later
 				update.runner = runner
-				availableUpdates.addUpdate(update)
+				updates.addUpdate(update)
 			}
 		}
 	}
 
-	return availableUpdates, nil
+	return updates, nil
 }

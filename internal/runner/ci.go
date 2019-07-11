@@ -19,7 +19,7 @@ type updateResult struct {
 	err    error
 }
 
-func CI(autoconfigure bool, updateLimit int) error {
+func CI(autoconfigure bool, types []string, updateLimit int) error {
 	if git.IsDirty() {
 		return errors.New("git status must be clean to run deps ci")
 	}
@@ -43,7 +43,7 @@ func CI(autoconfigure bool, updateLimit int) error {
 	}
 
 	output.Debug("Fetching all branches so we can check for existing updates")
-	git.FetchAllBranches()
+	git.Fetch()
 
 	startingBranch := getCurrentBranch()
 
@@ -56,7 +56,17 @@ func CI(autoconfigure bool, updateLimit int) error {
 	// TODO better to pass this through collect or something
 	manifestUpdatesDisabled = isDepsBranch
 
-	newUpdates, outdatedUpdates, _, err := collectUpdates()
+	cfg, err := getConfig()
+	if err != nil {
+		return err
+	}
+
+	allUpdates, err := collectUpdates(cfg, types)
+	if err != nil {
+		return err
+	}
+
+	newUpdates, outdatedUpdates, _, err := organizeUpdates(allUpdates)
 	if err != nil {
 		return err
 	}

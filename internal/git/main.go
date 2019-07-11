@@ -189,8 +189,8 @@ func RenameBranch(old, new string) {
 	}
 }
 
-func FetchAllBranches() {
-	if err := run("fetch", "--all"); err != nil {
+func Fetch() {
+	if err := run("fetch"); err != nil {
 		panic(err)
 	}
 }

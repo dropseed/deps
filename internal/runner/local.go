@@ -8,7 +8,17 @@ import (
 
 // Local runs a full interactive update process
 func Local() error {
-	newUpdates, _, _, err := collectUpdates()
+	cfg, err := getConfig()
+	if err != nil {
+		return err
+	}
+
+	allUpdates, err := collectUpdates(cfg, []string{})
+	if err != nil {
+		return err
+	}
+
+	newUpdates, _, _, err := organizeUpdates(allUpdates)
 	if err != nil {
 		return err
 	}
