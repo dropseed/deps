@@ -27,12 +27,6 @@ func (repo *GitHubRepo) CheckRequirements() error {
 }
 
 func (repo *GitHubRepo) PreparePush() {
-	// switch remote to https
-	// remove global config
-	// 	git config --global --remove-section url."ssh://git@github.com"
-	// get-url then replace ssh with https
-	// git remote set-url origin https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
-
 	output.Debug("Writing GitHub token to ~/.netrc")
 	echo := fmt.Sprintf("echo -e \"machine github.com\n  login x-access-token\n  password %s\" >> ~/.netrc", repo.apiToken)
 	cmd := exec.Command("sh", "-c", echo)

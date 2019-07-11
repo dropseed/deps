@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 
 	"github.com/dropseed/deps/internal/output"
@@ -97,6 +98,12 @@ func GitRemote() string {
 	s := string(remote)
 	s = strings.TrimSpace(s)
 	return s
+}
+
+func GitRemoteToHTTPS(original string) string {
+	re := regexp.MustCompile("^git@([^:]+):(.+)")
+	updated := re.ReplaceAllString(original, "https://$1/$2")
+	return updated
 }
 
 func Clone(url, path string) {
