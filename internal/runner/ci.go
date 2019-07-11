@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 	"time"
 
@@ -18,7 +19,7 @@ type updateResult struct {
 	err    error
 }
 
-func CI(updateLimit int) error {
+func CI(autoconfigure bool, updateLimit int) error {
 	if git.IsDirty() {
 		return errors.New("git status must be clean to run deps ci")
 	}
@@ -35,17 +36,18 @@ func CI(updateLimit int) error {
 		return err
 	}
 
+	if autoconfigure {
+		if err := autoconfigureRepo(repo); err != nil {
+			return err
+		}
+	}
+
 	output.Debug("Fetching all branches so we can check for existing updates")
 	git.FetchAllBranches()
 
 	startingBranch := getCurrentBranch()
 
 	git.Checkout(startingBranch)
-
-	// // TODO does this belong? or user responsibility (we can give instruction)
-	if !git.CanPush() {
-		repo.PreparePush()
-	}
 
 	updateErrors := []*updateResult{}
 
@@ -133,6 +135,36 @@ func CI(updateLimit int) error {
 
 	// TODO also updates successful and print green
 	// so summary is successful, skipped, and errored?
+
+	return nil
+}
+
+func autoconfigureRepo(repo pullrequest.RepoAdapter) error {
+	if circleci := os.Getenv("CIRCLECI"); circleci != "" {
+		// CircleCI uses ssh clones by default,
+		// so try to switch to https
+
+		if cmd := exec.Command("git", "config", "--global", "--remove-section", "url.\"ssh://git@github.com\""); cmd != nil {
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			if err := cmd.Run(); err != nil {
+				return err
+			}
+		}
+
+		originalOrigin := git.GitRemote()
+		if updatedOrigin := git.GitRemoteToHTTPS(originalOrigin); originalOrigin != updatedOrigin {
+			if cmd := exec.Command("git", "remote", "set-url", updatedOrigin); cmd != nil {
+				cmd.Stdout = os.Stdout
+				cmd.Stderr = os.Stderr
+				if err := cmd.Run(); err != nil {
+					return err
+				}
+			}
+		}
+	}
+
+	repo.PreparePush()
 
 	return nil
 }
