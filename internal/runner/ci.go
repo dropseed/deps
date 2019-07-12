@@ -179,7 +179,7 @@ func autoconfigureRepo(repo pullrequest.RepoAdapter) error {
 		// CircleCI uses ssh clones by default,
 		// so try to switch to https
 
-		if cmd := exec.Command("git", "config", "--global", "--remove-section", "url.\"ssh://git@github.com\""); cmd != nil {
+		if cmd := exec.Command("git", "config", "--global", "--remove-section", "url.'ssh://git@github.com'"); cmd != nil {
 			output.Event("Autoconfigure: %s", strings.Join(cmd.Args, " "))
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
