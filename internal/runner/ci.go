@@ -150,6 +150,25 @@ func CI(autoconfigure bool, types []string, updateLimit int) error {
 }
 
 func autoconfigureRepo(repo pullrequest.RepoAdapter) error {
+
+	if cmd := exec.Command("git", "config", "user.name", "deps"); cmd != nil {
+		output.Event("Autoconfigure: %s", strings.Join(cmd.Args, " "))
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			return err
+		}
+	}
+
+	if cmd := exec.Command("git", "config", "user.email", "bot@dependencies.io"); cmd != nil {
+		output.Event("Autoconfigure: %s", strings.Join(cmd.Args, " "))
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			return err
+		}
+	}
+
 	if circleci := os.Getenv("CIRCLECI"); circleci != "" {
 		// CircleCI uses ssh clones by default,
 		// so try to switch to https
