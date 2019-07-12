@@ -33,8 +33,13 @@ func (updates Updates) printOverview() {
 func newUpdatesFromDependencies(dependencies *schema.Dependencies, dependencyConfig *config.Dependency) (Updates, error) {
 	updates := Updates{}
 
+	// output.Debug("Lockfile updates: %t", !lockfileUpdatesDisabled)
+	// output.Debug("Manifest updates: %t", !manifestUpdatesDisabled)
+
 	if *dependencyConfig.LockfileUpdates.Enabled && !lockfileUpdatesDisabled {
+		output.Debug("Filtering lockfile updates")
 		for path, lockfile := range dependencies.Lockfiles {
+			// output.Debug("%s has updates: %t", path, lockfile.HasUpdates())
 			if !lockfile.HasUpdates() {
 				continue
 			}
@@ -52,8 +57,9 @@ func newUpdatesFromDependencies(dependencies *schema.Dependencies, dependencyCon
 	}
 
 	if *dependencyConfig.ManifestUpdates.Enabled && !manifestUpdatesDisabled {
+		output.Debug("Filtering manifest updates")
 		for path, manifest := range dependencies.Manifests {
-
+			// output.Debug("%s has updates: %t", path, manifest.HasUpdates())
 			if !manifest.HasUpdates() {
 				continue
 			}

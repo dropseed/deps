@@ -66,10 +66,16 @@ func CI(autoconfigure bool, types []string, updateLimit int) error {
 		return err
 	}
 
-	newUpdates, outdatedUpdates, _, err := organizeUpdates(allUpdates)
+	output.Debug("%d collected updates", len(allUpdates))
+
+	newUpdates, outdatedUpdates, existingUpdates, err := organizeUpdates(allUpdates)
 	if err != nil {
 		return err
 	}
+
+	output.Event("%d new updates", len(newUpdates))
+	output.Event("%d outdated updates", len(outdatedUpdates))
+	output.Event("%d existing updates", len(existingUpdates))
 
 	// TODO put specific update limit on new? or disable
 	// same with existing

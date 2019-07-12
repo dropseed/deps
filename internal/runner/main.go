@@ -114,13 +114,13 @@ func collectUpdates(cfg *config.Config, types []string) (Updates, error) {
 			return nil, err
 		}
 
-		updates, err := newUpdatesFromDependencies(dependencies, dependencyConfig)
+		depUpdates, err := newUpdatesFromDependencies(dependencies, dependencyConfig)
 		if err != nil {
 			return nil, err
 		}
 
-		if len(updates) > 0 {
-			for _, update := range updates {
+		if len(depUpdates) > 0 {
+			for _, update := range depUpdates {
 				// Store this for use later
 				update.runner = runner
 				updates.addUpdate(update)
