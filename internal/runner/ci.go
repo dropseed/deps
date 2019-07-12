@@ -155,6 +155,7 @@ func autoconfigureRepo(repo pullrequest.RepoAdapter) error {
 		// so try to switch to https
 
 		if cmd := exec.Command("git", "config", "--global", "--remove-section", "url.\"ssh://git@github.com\""); cmd != nil {
+			output.Event("Autoconfigure: %s", strings.Join(cmd.Args, " "))
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			cmd.Run() // Don't worry about an error
@@ -162,7 +163,8 @@ func autoconfigureRepo(repo pullrequest.RepoAdapter) error {
 
 		originalOrigin := git.GitRemote()
 		if updatedOrigin := git.GitRemoteToHTTPS(originalOrigin); originalOrigin != updatedOrigin {
-			if cmd := exec.Command("git", "remote", "set-url", updatedOrigin); cmd != nil {
+			if cmd := exec.Command("git", "remote", "set-url", "origin", updatedOrigin); cmd != nil {
+				output.Event("Autoconfigure: %s", strings.Join(cmd.Args, " "))
 				cmd.Stdout = os.Stdout
 				cmd.Stderr = os.Stderr
 				if err := cmd.Run(); err != nil {
