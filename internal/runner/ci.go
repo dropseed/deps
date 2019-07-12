@@ -157,9 +157,7 @@ func autoconfigureRepo(repo pullrequest.RepoAdapter) error {
 		if cmd := exec.Command("git", "config", "--global", "--remove-section", "url.\"ssh://git@github.com\""); cmd != nil {
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
-			if err := cmd.Run(); err != nil {
-				return err
-			}
+			cmd.Run() // Don't worry about an error
 		}
 
 		originalOrigin := git.GitRemote()
