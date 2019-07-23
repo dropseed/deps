@@ -75,14 +75,22 @@ func (dependency *Dependency) Environ() ([]string, error) {
 	return environ, nil
 }
 
-func (dependency *Dependency) GetSetting(key string) interface{} {
-	if dependency.Settings == nil {
-		return nil
-	}
-	for k, v := range dependency.Settings {
-		if strings.ToLower(k) == strings.ToLower(key) {
-			return v
+func (dependency *Dependency) GetSetting(name string) interface{} {
+	// Settings can be provided by (in order of priority):
+	// 1. YAML config
+	// 2. Env vars
+
+	if dependency.Settings != nil {
+		for k, v := range dependency.Settings {
+			if strings.ToLower(k) == strings.ToLower(name) {
+				return v
+			}
 		}
 	}
+
+	if v := env.SettingFromEnviron(name); v != nil {
+		return v
+	}
+
 	return nil
 }

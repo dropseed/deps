@@ -3,11 +3,16 @@ package env
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
+
+	"github.com/dropseed/deps/internal/output"
 )
 
-func SettingToEnviron(key string, value interface{}) (string, error) {
-	envKey := settingKeyToEnv(key)
+const SETTING_PREFIX = "DEPS_SETTING_"
+
+func SettingToEnviron(name string, value interface{}) (string, error) {
+	envKey := settingNameToKey(name)
 	envVal, err := settingValToEnv(value)
 	if err != nil {
 		return "", err
@@ -15,8 +20,21 @@ func SettingToEnviron(key string, value interface{}) (string, error) {
 	return fmt.Sprintf("%s=%s", envKey, envVal), nil
 }
 
-func settingKeyToEnv(k string) string {
-	return fmt.Sprintf("DEPS_SETTING_%s", strings.ToUpper(k))
+func SettingFromEnviron(name string) interface{} {
+	v := os.Getenv(settingNameToKey(name))
+	if v != "" {
+		var data interface{}
+		if err := json.Unmarshal([]byte(v), &data); err != nil {
+			output.Error("Setting \"%s\" from env was not valid JSON")
+			panic(err)
+		}
+		return data
+	}
+	return nil
+}
+
+func settingNameToKey(k string) string {
+	return fmt.Sprintf("%s%s", SETTING_PREFIX, strings.ToUpper(k))
 }
 
 func settingValToEnv(v interface{}) (string, error) {
