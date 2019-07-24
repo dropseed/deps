@@ -25,7 +25,7 @@ func SettingFromEnviron(name string) interface{} {
 	if v != "" {
 		var data interface{}
 		if err := json.Unmarshal([]byte(v), &data); err != nil {
-			output.Error("Setting \"%s\" from env was not valid JSON")
+			output.Error("Setting \"%s\" from env was not valid JSON", name)
 			panic(err)
 		}
 		return data
