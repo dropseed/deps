@@ -1,11 +1,15 @@
 package github
 
 import (
+	"encoding/base64"
 	"errors"
 	"fmt"
+	"net/http"
 	"os"
 	"regexp"
+	"strconv"
 
+	"github.com/bradleyfalzon/ghinstallation"
 	"github.com/dropseed/deps/internal/git"
 )
 
@@ -57,6 +61,37 @@ func getRepoFullNameFromRemote(remote string) string {
 func GetAPIToken() string {
 	if s := os.Getenv("DEPS_GITHUB_TOKEN"); s != "" {
 		return s
+	}
+
+	if key := os.Getenv("DEPS_GITHUB_APP_KEY"); key != "" {
+		// key path
+		// key raw
+		// key b64 - only this for now
+
+		keyBytes, err := base64.StdEncoding.DecodeString(key)
+		if err != nil {
+			panic("Could not decode base64 DEPS_GITHUB_APP_KEY")
+		}
+
+		appID, err := strconv.Atoi(os.Getenv("DEPS_GITHUB_APP_ID"))
+		if err != nil {
+			panic("Invalid DEPS_GITHUB_APP_ID")
+		}
+		installationID, err := strconv.Atoi(os.Getenv("DEPS_GITHUB_APP_INSTALLATION_ID"))
+		if err != nil {
+			panic("Invalid DEPS_GITHUB_APP_INSTALLATION_ID")
+		}
+
+		tr := http.DefaultTransport
+		itr, err := ghinstallation.New(tr, appID, installationID, keyBytes)
+		if err != nil {
+			panic(err)
+		}
+		token, err := itr.Token()
+		if err != nil {
+			panic(err)
+		}
+		return token
 	}
 
 	// Used by GitHub Actions

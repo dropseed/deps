@@ -58,3 +58,7 @@
 [[constraint]]
   branch = "master"
   name = "golang.org/x/crypto"
+
+[[constraint]]
+  name = "github.com/bradleyfalzon/ghinstallation"
+  version = "0.1.2"

@@ -26,6 +26,14 @@
   revision = "fd13018f8a5ab9df5e8c5f1630baaad2755b7820"
 
 [[projects]]
+  digest = "1:a031aa66e6c6e76a117498d4b348ca89c0ffec6350977f16fb843d36b8cd9320"
+  name = "github.com/bradleyfalzon/ghinstallation"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "3f4e9b1898e6b65e31827d5dccb97d91d59feaa3"
+  version = "v0.1.2"
+
+[[projects]]
   branch = "master"
   digest = "1:454adc7f974228ff789428b6dc098638c57a64aa0718f0bd61e53d3cd39d7a75"
   name = "github.com/chzyer/readline"
@@ -43,6 +51,14 @@
   pruneopts = "UT"
   revision = "b90dc15cfd220ecf8bbc9043ecb928cef381f011"
   version = "v0.3.4"
+
+[[projects]]
+  digest = "1:76dc72490af7174349349838f2fe118996381b31ea83243812a97e5a0fd5ed55"
+  name = "github.com/dgrijalva/jwt-go"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "06ea1031745cb8b3dab3f6a236daf2b0aa468b7e"
+  version = "v3.2.0"
 
 [[projects]]
   digest = "1:865079840386857c809b72ce300be7580cb50d3d3129ce11bf9aa6ca2bc1934a"
@@ -248,6 +264,7 @@
   analyzer-version = 1
   input-imports = [
     "github.com/algobardo/yaml",
+    "github.com/bradleyfalzon/ghinstallation",
     "github.com/fatih/color",
     "github.com/manifoldco/promptui",
     "github.com/mitchellh/mapstructure",
