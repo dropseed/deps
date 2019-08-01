@@ -59,7 +59,8 @@ func CI(autoconfigure bool, types []string) error {
 
 	git.Checkout(startingBranch)
 
-	updateErrors := []*updateResult{}
+	successfulUpdates := []*updateResult{}
+	failedUpdates := []*updateResult{}
 
 	if isDepsBranch := git.IsDepsBranch(startingBranch); isDepsBranch {
 		return errors.New("You cannot run deps ci on a deps branch")
@@ -105,35 +106,60 @@ func CI(autoconfigure bool, types []string) error {
 	for _, update := range newUpdates {
 		output.Event("Running update: %s", update.title)
 		if err := runUpdate(update, startingBranch, update.branch); err != nil {
-			updateErrors = append(updateErrors, &updateResult{
+			failedUpdates = append(failedUpdates, &updateResult{
 				update: update,
 				err:    err,
 			})
 			output.Error("Update failed: %v", err)
+		} else {
+			successfulUpdates = append(successfulUpdates, &updateResult{
+				update: update,
+				err:    err,
+			})
+			output.Success("Update succeeded: %v", err)
 		}
 	}
 
 	for _, update := range outdatedUpdates {
 		output.Event("Updating outdated update: %s", update.title)
 		if err := runUpdate(update, update.branch, update.branch); err != nil {
-			updateErrors = append(updateErrors, &updateResult{
+			failedUpdates = append(failedUpdates, &updateResult{
 				update: update,
 				err:    err,
 			})
 			output.Error("Update failed: %v", err)
+		} else {
+			successfulUpdates = append(successfulUpdates, &updateResult{
+				update: update,
+				err:    err,
+			})
+			output.Success("Update succeeded: %v", err)
 		}
 	}
 
-	if len(updateErrors) > 0 {
-		output.Error("There were %d errors making the updates", len(updateErrors))
-		for _, ue := range updateErrors {
+	if len(successfulUpdates) > 0 {
+		output.Error("%d updates made successfully!", len(successfulUpdates))
+		for _, ue := range successfulUpdates {
+			output.Error("- [%s] %s", ue.update.id, ue.update.title)
+		}
+	}
+
+	if len(failedUpdates) > 0 {
+		output.Error("There were %d errors making the updates", len(failedUpdates))
+		for _, ue := range failedUpdates {
 			output.Error("- [%s] %s\n  %v", ue.update.id, ue.update.title, ue.err)
 		}
-		return fmt.Errorf("%d errors", len(updateErrors))
 	}
 
-	// TODO also updates successful and print green
-	// so summary is successful, skipped, and errored?
+	if len(successfulUpdates) > 0 {
+		if err := auth.incrementUsage(len(successfulUpdates)); err != nil {
+			return err
+		}
+	}
+
+	if len(failedUpdates) > 0 {
+		return fmt.Errorf("%d errors", len(failedUpdates))
+	}
 
 	return nil
 }

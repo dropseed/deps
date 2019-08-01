@@ -1,6 +1,8 @@
 package runner
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -49,11 +51,45 @@ func (auth *authorizer) validate() error {
 	resp.Body.Close()
 
 	if resp.StatusCode >= 400 {
-		return fmt.Errorf("Authorization API call failed with response %d\n\n%s", resp.StatusCode, string(body))
+		return fmt.Errorf("API call failed with response %d\n\n%s", resp.StatusCode, string(body))
 	}
 
 	output.Debug("Authorized!")
 	output.Debug(string(body))
+
+	return nil
+}
+
+func (auth *authorizer) incrementUsage(quantity int) error {
+	inputJSON, err := json.Marshal(map[string]int{
+		"quantity": quantity,
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	client := &http.Client{}
+
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/api/usage/", appBaseURL), bytes.NewBuffer(inputJSON))
+	if err != nil {
+		return err
+	}
+
+	req.Header.Add("Authorization", "token "+auth.token)
+	req.Header.Add("User-Agent", "deps")
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
+		return fmt.Errorf("API call failed with response %d\n\n%s", resp.StatusCode, string(body))
+	}
 
 	return nil
 }
