@@ -20,6 +20,16 @@ type updateResult struct {
 }
 
 func CI(autoconfigure bool, types []string, updateLimit int) error {
+
+	auth, err := newAuthorizer()
+	if err != nil {
+		return err
+	}
+
+	if err := auth.validate(); err != nil {
+		return err
+	}
+
 	if git.IsDirty() {
 		return errors.New("git status must be clean to run deps ci")
 	}
