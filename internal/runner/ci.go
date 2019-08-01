@@ -19,7 +19,7 @@ type updateResult struct {
 	err    error
 }
 
-func CI(autoconfigure bool, types []string, updateLimit int) error {
+func CI(autoconfigure bool, types []string) error {
 
 	auth, err := newAuthorizer()
 	if err != nil {
@@ -85,12 +85,6 @@ func CI(autoconfigure bool, types []string, updateLimit int) error {
 	output.Event("%d new updates", len(newUpdates))
 	output.Event("%d outdated updates", len(outdatedUpdates))
 	output.Event("%d existing updates", len(existingUpdates))
-
-	// TODO put specific update limit on new? or disable
-	// same with existing
-	if updateLimit > -1 {
-		// newUpdates = newUpdates[:updateLimit]
-	}
 
 	// TODO this is also because collectors may have done some crap and not cleaned up
 	output.Event("Temporarily saving your uncommitted changes in a git stash")
