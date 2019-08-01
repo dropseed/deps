@@ -61,10 +61,9 @@ func CI(autoconfigure bool, types []string, updateLimit int) error {
 
 	updateErrors := []*updateResult{}
 
-	isDepsBranch := git.IsDepsBranch(startingBranch)
-
-	// TODO better to pass this through collect or something
-	manifestUpdatesDisabled = isDepsBranch
+	if isDepsBranch := git.IsDepsBranch(startingBranch); isDepsBranch {
+		return errors.New("You cannot run deps ci on a deps branch")
+	}
 
 	cfg, err := getConfig()
 	if err != nil {
@@ -107,47 +106,27 @@ func CI(autoconfigure bool, types []string, updateLimit int) error {
 		}
 	}()
 
-	if !isDepsBranch {
-		output.Event("Performing %d new updates on %s", len(newUpdates), startingBranch)
+	output.Event("Performing %d new updates on %s", len(newUpdates), startingBranch)
 
-		for _, update := range newUpdates {
-			output.Event("Running update: %s", update.title)
-			if err := runUpdate(update, startingBranch, update.branch); err != nil {
-				updateErrors = append(updateErrors, &updateResult{
-					update: update,
-					err:    err,
-				})
-				output.Error("Update failed: %v", err)
-			}
+	for _, update := range newUpdates {
+		output.Event("Running update: %s", update.title)
+		if err := runUpdate(update, startingBranch, update.branch); err != nil {
+			updateErrors = append(updateErrors, &updateResult{
+				update: update,
+				err:    err,
+			})
+			output.Error("Update failed: %v", err)
 		}
+	}
 
-		for _, update := range outdatedUpdates {
-			output.Event("Updating outdated update: %s", update.title)
-			if err := runUpdate(update, update.branch, update.branch); err != nil {
-				updateErrors = append(updateErrors, &updateResult{
-					update: update,
-					err:    err,
-				})
-				output.Error("Update failed: %v", err)
-			}
-		}
-	} else {
-		output.Event("Checking for updates to existing deps branch %s", startingBranch)
-		var outdatedMatch *Update
-		for _, update := range outdatedUpdates {
-			if update.branch == startingBranch {
-				outdatedMatch = update
-			}
-		}
-		if outdatedMatch != nil {
-			output.Event("Applying latest matching update to this branch")
-			if err := runUpdate(outdatedMatch, outdatedMatch.branch, outdatedMatch.branch); err != nil {
-				updateErrors = append(updateErrors, &updateResult{
-					update: outdatedMatch,
-					err:    err,
-				})
-				output.Error("Update failed: %v", err)
-			}
+	for _, update := range outdatedUpdates {
+		output.Event("Updating outdated update: %s", update.title)
+		if err := runUpdate(update, update.branch, update.branch); err != nil {
+			updateErrors = append(updateErrors, &updateResult{
+				update: update,
+				err:    err,
+			})
+			output.Error("Update failed: %v", err)
 		}
 	}
 
