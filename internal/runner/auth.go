@@ -54,8 +54,7 @@ func (auth *authorizer) validate() error {
 		return fmt.Errorf("API call failed with response %d\n\n%s", resp.StatusCode, string(body))
 	}
 
-	output.Debug("Authorized!")
-	output.Debug(string(body))
+	output.Debug("Authorized with %s", appBaseURL)
 
 	return nil
 }
