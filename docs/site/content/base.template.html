@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    {% if google_tag_manager_id is defined %}
+    <script>(function (w, d, s, l, i) {
+        w[l] = w[l] || []; w[l].push({
+            'gtm.start':
+                new Date().getTime(), event: 'gtm.js'
+        }); var f = d.getElementsByTagName(s)[0],
+            j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+                'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', '{{ google_tag_manager_id}}');</script>
+    {% endif %}
+
+    {% block head_top %}{% endblock %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    {% if docsearch_api_key is defined -%}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+    {%- endif %}
+    <link rel="stylesheet" href="/assets/css/main.css">
+
+    <title>{% if title is defined %}{{ title }} - {% endif %}Dependencies.io Docs</title>
+    {% if description is defined %}<meta name="description" content="{{ description }}">{% endif %}
+
+    {% if title is defined %}<meta property="og:title" content="{{ title }}" />{% endif %}
+    {% if description is defined %}<meta property="og:description" content="{{ description }}" />{% endif %}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Dependencies.io Docs" />
+    <meta property="og:locale" content="en_US" />
+    {% if base_url -%}
+    <meta property="og:url" content="{{ base_url }}{{ url }}" />
+    {% if image_url is defined -%}
+    <meta property="og:image" content="{{ base_url }}{{ image_url }}" />
+    {%- else -%}
+    <!-- <meta property="og:image"
+        content="{{ base_url }}/assets/img/open-graph.png" /> -->
+    {%- endif %}
+    <meta name="twitter:card" content="summary_large_image" />
+    {%- endif %}
+    <link rel="me" href="https://twitter.com/dropseed">
+
+</head>
+
+<body class="flex flex-col min-h-screen text-gray-800">
+    {% if google_tag_manager_id is defined %}
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ google_tag_manager_id }}" height="0" width="0"
+            style="display:none;visibility:hidden"></iframe></noscript>
+    {% endif %}
+
+    <div class="py-3 border-b border-gray-300 md:mb-10 bg-gray-100">
+        <div class="container md:flex md:items-center">
+            <div class="md:w-1/4 mb-2 md:mb-0">
+                <a href="/" class="flex items-center no-underline text-lg"><img src="/assets/img/dependencies-logo.svg"
+                        alt="Dependencies.io logo" class="h-6 inline-block pr-2"> <span class="font-medium">Dependencies.io</span>&nbsp;Docs</a>
+            </div>
+            <div class="md:w-1/2">
+                {% if docsearch_api_key is defined -%}
+                <input type="text" id="search" class="rounded text-lg px-3 py-1 w-full bg-gray-300 appearance-none focus:bg-white focus:outline-none focus:shadow" placeholder="Search">
+                {%- endif %}
+            </div>
+            <div class="md:w-1/4 md:text-right hidden md:block">
+                <a href="https://www.dependencies.io" class="border border-blue-800 hover:bg-blue-800 hover:text-blue-100 rounded px-3 py-1 no-underline">Dependencies.io →</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="md:flex md:flex-row-reverse flex-grow container">
+        <div class="md:w-3/4 lg:w-1/2 mr-auto content">
+            {% block content %}{% endblock %}
+        </div>
+        <div class="md:w-1/4 md:pt-16">
+            {% include "_sidebar.html" %}
+        </div>
+    </div>
+
+    <div class="mt-10">
+        <div class="container flex justify-between py-3 text-gray-500 text-sm border-t border-gray-200">
+            <div>
+                © {{ now().year }} Dropseed, LLC
+            </div>
+            <ul class="-mx-2">
+                {% if support_url %}<li class="inline-block px-2"><a class="text-gray-500 no-underline hover:underline" href="{{ support_url }}">Support</a></li>{% endif %}
+                {% if version is defined %}<li class="inline-block px-2">Version {{ version|truncate(7, end="") }}</li>{% endif %}
+            </ul>
+        </div>
+    </div>
+
+    {% if docsearch_api_key is defined -%}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>
+    <script type="text/javascript"> docsearch({
+            apiKey: '{{ docsearch_api_key }}',
+            indexName: '{{ docsearch_index_name }}',
+            inputSelector: '#search',
+            debug: false
+        });
+    </script>
+    {%- endif %}
+
+</body>
+
+</html>

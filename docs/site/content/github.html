@@ -1,0 +1,10 @@
+{% extends "base.template.html" %}
+
+{% set title = "GitHub" %}
+{% set description = "Examples and instructions for setting up deps in GitHub" %}
+
+{% block content %}
+{% markdown %}
+{% include "includes/_github.md" %}
+{% endmarkdown %}
+{% endblock %}

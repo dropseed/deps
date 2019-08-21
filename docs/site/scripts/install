@@ -1,0 +1,3 @@
+#!/bin/sh -ex
+PIPENV_VENV_IN_PROJECT=1 pipenv sync --dev
+yarn install

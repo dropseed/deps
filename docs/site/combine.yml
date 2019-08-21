@@ -1,0 +1,23 @@
+# before_build:
+#   - run: >-
+#       rm -rf content/includes &&
+#       mkdir content/includes &&
+#       cp ../*.md content/includes/ &&
+#       for f in content/includes/*.md; do mv "$f" "${f/.md/.template.md}"; done
+
+steps:
+  - run: "./node_modules/.bin/tailwind build ./content/assets/css/_tailwind.dev.css -c ./content/assets/css/_tailwind.config.js -o ./output/assets/css/main.css"
+    watch:
+      - "./content/*/_tailwind.config.js"
+      - "./content/*/_tailwind.dev.css"
+
+variables:
+  base_url: https://docs.dependencies.io
+  support_url: https://www.dependencies.io/contact/
+  # docsearch_api_key:
+  #   from_env: DOCSEARCH_API_KEY
+  # docsearch_index_name: pullapprove
+  version:
+    from_env: COMMIT_REF
+  google_tag_manager_id:
+    from_env: GOOGLE_TAG_MANAGER_ID

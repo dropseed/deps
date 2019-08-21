@@ -1,0 +1,50 @@
+{% extends "base.template.html" %}
+
+{% set description = "Documentation and examples of how to use Dependencies.io" %}
+
+{% block content %}
+
+<h1>Overview</h1>
+
+<ul>
+  <li>install locally and run for free</li>
+  <li>need a billing account to use in CI</li>
+  <li>deps.yml or inferred</li>
+</ul>
+
+<div class="bg-gray-100 rounded shadow p-4 mb-4"><strong>Not using version 3 yet?</strong> It's <a href="/migration/">easy to migrate!</a> Or you can find the old version 2 docs <a href="https://v2-docs.pullapprove.com">here</a>.</div>
+
+{% markdown %}
+
+## Locally
+
+An easy way to get started with `deps` is to try it on your own machine!
+
+To install it,
+[download a release](https://github.com/dropseed/deps/releases) or use the following install script:
+```sh
+$ curl https://www.dependencies.io/install.sh | bash -s -- -b $HOME/bin
+```
+
+Once `deps` is in your `$PATH`, you can check a local project for dependency updates:
+```sh
+$ cd MY_GIT_REPO
+$ deps run
+```
+
+## In CI
+
+When you are comfortable with how deps works,
+you'll want to set it up in your CI provider to automate your dependency updates.
+Most CI systems have a cron or scheduled job function,
+which is how we recommend using it.
+This way your regular CI pipeline can run uninterruped by deps during your normal workflows.
+
+Below are some simple examples of how you might configure this,
+but you should adjust the setup to work how you want within your existing CI configuration.
+
+You will also need to give deps access to your git repo. The easiest way to do this is usually with personal access tokens.
+
+{% endmarkdown %}
+
+{% endblock %}
