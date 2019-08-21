@@ -36,7 +36,7 @@ func CI(autoconfigure bool, types []string) error {
 
 	gitHost := git.GitHost()
 	var repo pullrequest.RepoAdapter
-	if gitHost == "github" {
+	if gitHost == git.GITHUB {
 		repo = github.NewRepoFromEnv()
 	} else {
 		return errors.New("Repo not found or not supported")
@@ -263,7 +263,7 @@ func runUpdate(update *Update, base, head string) error {
 	var pr pullrequest.PullrequestAdapter
 	gitHost := git.GitHost()
 
-	if gitHost == "github" {
+	if gitHost == git.GITHUB {
 		pr, err = github.NewPullrequest(base, head, outputDeps, update.dependencyConfig)
 		if err != nil {
 			return err

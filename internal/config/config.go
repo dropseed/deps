@@ -12,8 +12,13 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-// DefaultFilename is where a config is placed by default
-const DefaultFilename = "dependencies.yml"
+var DefaultFilenames = []string{
+	"deps.yml",
+	".deps.yml",
+	"dependencies.yml",
+	".dependencies.yml",
+}
+
 const Version = 3
 
 // Config stores a dependencies.yml config

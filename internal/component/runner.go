@@ -8,6 +8,7 @@ import (
 	"path"
 	"strings"
 
+	"github.com/dropseed/deps/internal/config"
 	"github.com/dropseed/deps/internal/git"
 
 	"github.com/dropseed/deps/internal/output"
@@ -38,15 +39,19 @@ func NewRunnerFromString(s string) (*Runner, error) {
 func NewRunnerFromPath(s string) (*Runner, error) {
 	componentPath := s
 
-	configPath := path.Join(componentPath, DefaultFilename)
-	config, err := NewConfigFromPath(configPath)
+	configPath := config.FindFilename(componentPath, DefaultFilenames...)
+	if configPath == "" {
+		return nil, os.ErrNotExist
+	}
+
+	cfg, err := NewConfigFromPath(configPath)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Runner{
 		Given:         s,
-		Config:        config,
+		Config:        cfg,
 		Path:          componentPath,
 		shouldInstall: true,
 	}, nil

@@ -23,7 +23,7 @@ func newAuthorizer() (*authorizer, error) {
 
 	token := os.Getenv("DEPS_TOKEN")
 	if token == "" {
-		return nil, fmt.Errorf("DEPS_TOKEN must be set. Log in to %s to get your token.", appBaseURL)
+		return nil, fmt.Errorf("DEPS_TOKEN must be set. Ask your team admin or log in to %s to get your token.", appBaseURL)
 	}
 	return &authorizer{
 		token: token,

@@ -9,7 +9,12 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-const DefaultFilename = "dependencies_component.yml"
+var DefaultFilenames = []string{
+	"deps_component.yml",
+	".deps_component.yml",
+	"dependencies_component.yml",
+	".dependencies_component.yml",
+}
 
 type Config struct {
 	Install string `mapstructure:"install" yaml:"install" json:"install"`

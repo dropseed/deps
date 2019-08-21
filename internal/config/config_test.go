@@ -34,7 +34,7 @@ func compareToJSON(t *testing.T, config *Config, path string) {
 }
 
 func TestFull(t *testing.T) {
-	config, err := NewConfigFromPath("./testdata/v2_full.yml", nil)
+	config, err := NewConfigFromPath("./testdata/v2_full.yml")
 	if err != nil {
 		t.Error(err)
 	}
@@ -67,7 +67,7 @@ dependencies:
 }
 
 func TestMinimal(t *testing.T) {
-	config, err := NewConfigFromPath("./testdata/v2_minimal.yml", nil)
+	config, err := NewConfigFromPath("./testdata/v2_minimal.yml")
 	if err != nil {
 		t.Error(err)
 		return
@@ -81,54 +81,11 @@ dependencies:
 	compareToJSON(t, config, "./testdata/v2_minimal.json")
 }
 
-func TestMinimalVariables(t *testing.T) {
-	python := map[string]interface{}{
-		"path": "requirements.txt",
-		"type": "python",
-	}
-	configVars := map[string]interface{}{
-		"deps": []map[string]interface{}{python},
-	}
-	config, err := NewConfigFromPath("./testdata/v2_minimal_variables.yml", configVars)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	expected := `version: 3
-dependencies:
-- type: python
-  path: requirements.txt
-`
-	compareToYAML(t, config, expected)
-	compareToJSON(t, config, "./testdata/v2_minimal_variables.json")
-}
-
-func TestVariableInSettings(t *testing.T) {
-	configVars := map[string]interface{}{
-		"labels": []string{"deps", "automerge"},
-	}
-	config, err := NewConfigFromPath("./testdata/v2_variable_in_settings.yml", configVars)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	expected := `version: 3
-dependencies:
-- type: python
-  settings:
-    github_labels:
-    - deps
-    - automerge
-`
-	compareToYAML(t, config, expected)
-	compareToJSON(t, config, "./testdata/v2_variable_in_settings.json")
-}
-
 func TestConfigFromMap(t *testing.T) {
 	m := map[string]interface{}{
 		"version": Version,
 	}
-	config, err := newConfigFromMap(m, nil)
+	config, err := newConfigFromMap(m)
 
 	if err != nil {
 		t.Error(err)
@@ -136,21 +93,5 @@ func TestConfigFromMap(t *testing.T) {
 
 	if config.Version != Version {
 		t.FailNow()
-	}
-}
-
-func TestMissingVariable(t *testing.T) {
-	m := map[string]interface{}{
-		"version":      Version,
-		"dependencies": "$test",
-	}
-	config, err := newConfigFromMap(m, nil)
-	if err.Error() != `1 error(s) decoding:
-
-* error decoding 'dependencies': $test variable not found` {
-		t.Fail()
-	}
-	if config != nil {
-		t.Fail()
 	}
 }
