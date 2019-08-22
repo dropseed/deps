@@ -3,11 +3,18 @@ package runner
 import (
 	"fmt"
 
+	"github.com/dropseed/deps/internal/git"
+	"github.com/dropseed/deps/internal/output"
+
 	"github.com/manifoldco/promptui"
 )
 
 // Local runs a full interactive update process
 func Local() error {
+	if git.IsDirty() {
+		output.Warning("You have uncommitted changes! We recommend you have a clean git status before running deps locally, so that you can easily track what changed.\n")
+	}
+
 	cfg, err := getConfig()
 	if err != nil {
 		return err
@@ -56,6 +63,7 @@ func (updates Updates) prompt() error {
 			Items: items,
 		}
 
+		println()
 		i, _, err := prompt.Run()
 		if err != nil {
 			return err

@@ -8,7 +8,11 @@ import (
 )
 
 func (r *Runner) Collect(inputPath string) (*schema.Dependencies, error) {
-	output.Event("Collecting with %s", r.Given)
+	if output.Verbosity > 0 {
+		output.Event("Collecting with %s", r.Given)
+	} else {
+		output.Event("Collecting with %s", r.GetName())
+	}
 	output.Debug("Input path: %s", inputPath)
 
 	outputPath, err := r.run(r.getCommand(r.Config.Collect, "collect"), inputPath)
