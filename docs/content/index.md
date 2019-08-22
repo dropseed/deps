@@ -1,29 +1,33 @@
 ---
-description: "Documentation and examples of how to use Dependencies.io"
+description: "Documentation and examples for automatically updating your dependencies with deps"
 ---
 
 # Overview
 
 Deps is a command line tool written in Go.
-You can install it on your own machine to manually make dependency updates and see how things work or tweak your configuration.
+You can install and run it on your own machine to make one-off updates and see how things work.
+Running it locally is also the easiest way to test more advanced configurations *before* committing and pushing it to CI.
 
-To automate dependency updates,
-you'll set up deps to run directly in your CI.
+**To automate dependency updates,
+you'll set up deps to run directly in your CI.**
+Each CI provider is slightly different,
+but generally all you need to do beyond your existing setup is install the tool and set some environment variables!
+When you run `deps ci`,
+it will automatically commit dependency updates to new branches and send pull requests for you to review.
 
 ## Using deps on your machine
 
-An easy way to get started with `deps` is to try it on your own machine!
-You don't need an API token and it's completely free to run locally.
+Running deps locally is completely free and doesn't require and API token.
 
 To install it,
-[download a release](https://github.com/dropseed/deps/releases) or use the following install script:
+[manually download a release](https://github.com/dropseed/deps/releases) or use the following auto-install script:
 ```sh
 $ curl https://www.dependencies.io/install.sh | bash -s -- -b $HOME/bin
 ```
 
-Once `deps` is in your `$PATH`, you can check a local project for dependency updates:
+With `deps` in your `$PATH`, you can check a repo for dependency updates:
 ```sh
-$ cd MY_GIT_REPO
+$ cd project
 $ deps run
 
 > No local config found, detecting your dependencies automatically
@@ -52,6 +56,10 @@ Use the arrow keys to navigate: ↓ ↑ → ←
 
 Running deps locally will run the same steps as `deps ci`,
 but it will *not* commit changes or create pull requests.
+
+If your dependencies were not automatically found,
+or you need a more advanced configuration,
+take a look at `deps.yml`.
 
 ## In CI
 
