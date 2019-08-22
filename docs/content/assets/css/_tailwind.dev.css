@@ -16,7 +16,7 @@ p {
 }
 
 code {
-    @apply bg-green-100 text-green-800;
+    @apply bg-blue-100 text-blue-800;
     border-radius: 3px;
     padding: .15rem .4rem;
     font-size: .9em;
@@ -37,7 +37,7 @@ td {
 
 .highlight {
     background-color: #282c34;
-    @apply text-sm shadow-md rounded p-4 mb-8;
+    @apply text-blue-200 text-sm shadow-md rounded p-4 mb-8;
 }
 .highlight pre { white-space: pre-wrap; word-break: break-word; }
 .highlight .hll { background-color: #4f424c }

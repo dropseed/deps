@@ -1,3 +1,8 @@
+---
+title: "GitHub"
+description: "Examples and instructions for setting up deps in GitHub"
+---
+
 # GitHub
 
 To use deps on a GitHub repo,

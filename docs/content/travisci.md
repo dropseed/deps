@@ -1,10 +1,15 @@
+---
+title: "TravisCI"
+description: "Examples and instructions for setting up deps in TravisCI"
+---
+
 # TravisCI
 
 1. Set your environment variables
 1. Add a daily/weekly/monthly [cron job in the Travis settings UI](https://docs.travis-ci.com/user/cron-jobs/)
 1. Define `jobs` in your `.travis.yml` and use `if` statements to define a deps job that only runs via cron
 
-```yml
+```yaml
 language: python
 
 jobs:

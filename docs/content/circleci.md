@@ -1,3 +1,8 @@
+---
+title: CircleCI
+description: Examples and instructions for setting up deps in CircleCI
+---
+
 # CircleCI
 
 1. Set your environment variables in a [context](https://circleci.com/docs/2.0/contexts/)
@@ -8,7 +13,7 @@ each running in their own container.
 
 The `--type` option is used to run the specific language updates in their respective containers.
 
-```yml
+```yaml
 version: 2
 jobs:
 
