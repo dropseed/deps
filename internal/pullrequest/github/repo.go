@@ -13,10 +13,16 @@ type GitHubRepo struct {
 	apiToken string
 }
 
-func NewRepoFromEnv() *GitHubRepo {
-	return &GitHubRepo{
-		apiToken: GetAPIToken(),
+func NewRepoFromEnv() (*GitHubRepo, error) {
+	token := GetAPIToken()
+
+	if token == "" {
+		return nil, errors.New("Unable to find GitHub API token.\n\nVisit https://docs.dependencies.io/github for more information.")
 	}
+
+	return &GitHubRepo{
+		apiToken: token,
+	}, nil
 }
 
 func (repo *GitHubRepo) CheckRequirements() error {

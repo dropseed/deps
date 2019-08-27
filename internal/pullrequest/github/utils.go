@@ -99,5 +99,5 @@ func GetAPIToken() string {
 		return s
 	}
 
-	panic("Unable to find GitHub API token")
+	return ""
 }
