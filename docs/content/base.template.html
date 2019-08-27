@@ -54,7 +54,7 @@
         <div class="container md:flex md:items-center">
             <div class="md:w-1/4 mb-2 md:mb-0">
                 <a href="/" class="flex items-center no-underline text-lg"><img src="/assets/img/dependencies-logo.svg"
-                        alt="Dependencies.io logo" class="h-6 inline-block pr-2"> <span class="font-medium">Dependencies.io</span>&nbsp;Docs</a>
+                        alt="Dependencies.io logo" class="h-6 inline-block pr-2"> <span class="font-mono">dependencies.io</span></a>
             </div>
             <div class="md:w-1/2">
                 {% if docsearch_api_key is defined -%}
@@ -71,7 +71,7 @@
         <div class="md:w-3/4 lg:w-1/2 mr-auto content">
             {% block content %}{% endblock %}
         </div>
-        <div class="md:w-1/4 md:pt-16">
+        <div class="md:w-1/4">
             {% include "_sidebar.html" %}
         </div>
     </div>
