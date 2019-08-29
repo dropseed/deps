@@ -19,8 +19,21 @@ p {
     @apply list-disc ml-8 mb-8;
 }
 
+.content li {
+    @apply pb-1;
+}
+
 .content ol {
     @apply list-decimal ml-8 mb-8;
+}
+
+.btn {
+    @apply px-6 py-2 bg-blue-500 text-white no-underline rounded shadow mt-1 inline-block;
+    transition: transform .2s ease, background-color .2s ease !important;
+}
+.btn:hover {
+    @apply bg-blue-400;
+    transform: translateY(-2px) !important;
 }
 
 blockquote {

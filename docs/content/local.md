@@ -1,12 +1,12 @@
 # Using deps locally
 
-Running deps on your machine is the best way to...
+You can use deps locally for free and without setting up an API token!
+
+Running it on your machine is the best way to...
 
 - Test advanced configuration without committing to your repo
 - Make one-off updates
-- See how deps works before setting up CI
-
-You can use deps locally for free and without setting up an API token!
+- See how deps works *before* setting up CI
 
 ## Installing
 
@@ -18,7 +18,9 @@ $ curl https://www.dependencies.io/install.sh | bash -s -- -b $HOME/bin
 
 ## Checking for dependency updates
 
-With `deps` in your `$PATH`, you can check a repo for dependency updates:
+With `deps` in your `$PATH`, you can check a repo for dependency updates.
+You'll get an interactive prompt where you can choose and install updates one-by-one:
+
 ```sh
 $ cd project
 $ deps run

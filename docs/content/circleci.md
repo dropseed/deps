@@ -5,13 +5,20 @@ description: Examples and instructions for setting up deps in CircleCI
 
 # CircleCI
 
-1. Set your environment variables in a [context](https://circleci.com/docs/2.0/contexts/)
-1. Add a deps workflow and accompanying jobs to your `.circleci/config.yml`
+## 1. Set your environment variables
+
+For deps variables that should be kept secret (such as `GITHUB_TOKEN`) you'll want to use a [context](https://circleci.com/docs/2.0/contexts/).
+
+Other env vars for changing basic settings can be put directly in `.circleci/config.yml`.
+
+## 2. Add a deps workflow triggered by cron
 
 This example shows two different languages in use,
 each running in their own container.
 
 The `--type` option is used to run the specific language updates in their respective containers.
+
+> Note: CircleCI is supported by [CI autoconfigure](/ci/#autoconfigure).
 
 ```yaml
 version: 2

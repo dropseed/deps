@@ -1,0 +1,7 @@
+#!/bin/sh -ex
+
+echo "# JavaScript" > content/javascript.md
+curl -s https://raw.githubusercontent.com/dropseed/deps-js/master/README.md?d=$(date +%s) | tail -n +2 >> content/javascript.md
+
+echo "# Python" > content/python.md
+curl -s https://raw.githubusercontent.com/dropseed/deps-python/master/README.md?d=$(date +%s) | tail -n +2 >> content/python.md
