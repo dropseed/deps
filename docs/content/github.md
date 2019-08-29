@@ -36,3 +36,29 @@ you can use those same credentials for deps if you want!
     - `DEPS_GITHUB_APP_KEY` - base64 encoded private key
     - `DEPS_GITHUB_APP_ID` - your app ID
     - `DEPS_GITHUB_APP_INSTALLATION_ID` - the ID for the installation in your org
+
+## Pull request settings
+
+When working with a GitHub repo,
+there are a few settings you can use to determine what your PRs look like.
+
+```yaml
+version: 3
+dependencies:
+- type: python
+  settings:
+    github_labels: ["automerge"]
+    github_base_branch: test
+    github_assignees: ["user1"]
+    github_milestone: 1
+```
+
+If you don't need a `deps.yml` then you can also configure these settings via environment variables.
+This is an easy way to put settings directly in your CI config.
+
+Note that they'll need to be in the format of a JSON-encoded string,
+with an uppercase name prefixed by `DEPS_SETTING_`.
+
+```sh
+$ DEPS_SETTING_GITHUB_LABELS='["automerge"]' deps ci
+```
