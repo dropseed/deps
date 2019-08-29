@@ -157,7 +157,7 @@ func (pr *PullRequest) CreateOrUpdate() error {
 
 	labels := pr.Config.GetSetting("github_labels")
 	assignees := pr.Config.GetSetting("github_assignees")
-	milestone := pr.Config.GetSetting("github_assignees")
+	milestone := pr.Config.GetSetting("github_milestone")
 
 	fmt.Printf("Preparing to open GitHub pull request for %v\n", pr.RepoFullName)
 
