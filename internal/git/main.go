@@ -86,6 +86,16 @@ func GitHost() string {
 		return GITLAB
 	}
 
+	// More generic matching (github.example.com, etc. but could also accidently match gitlab.example.com/org/github-api)
+
+	if strings.Contains(remote, "github") {
+		return GITHUB
+	}
+
+	if strings.Contains(remote, "gitlab") {
+		return GITLAB
+	}
+
 	return ""
 }
 
