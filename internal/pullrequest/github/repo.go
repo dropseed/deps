@@ -32,7 +32,7 @@ func (repo *GitHubRepo) CheckRequirements() error {
 	return nil
 }
 
-func (repo *GitHubRepo) PreparePush() {
+func (repo *GitHubRepo) Autoconfigure() {
 	output.Debug("Writing GitHub token to ~/.netrc")
 	echo := fmt.Sprintf("echo -e \"machine github.com\n  login x-access-token\n  password %s\" >> ~/.netrc", repo.apiToken)
 	cmd := exec.Command("sh", "-c", echo)

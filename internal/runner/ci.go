@@ -9,11 +9,10 @@ import (
 	"time"
 
 	"github.com/dropseed/deps/internal/billing"
+	"github.com/dropseed/deps/internal/ci"
 	"github.com/dropseed/deps/internal/git"
 	"github.com/dropseed/deps/internal/output"
 	"github.com/dropseed/deps/internal/pullrequest"
-	"github.com/dropseed/deps/internal/pullrequest/github"
-	"github.com/dropseed/deps/internal/pullrequest/gitlab"
 )
 
 type updateResult struct {
@@ -36,28 +35,20 @@ func CI(autoconfigure bool, types []string) error {
 		return errors.New("git status must be clean to run deps ci")
 	}
 
-	gitHost := gitHost()
-	var repo pullrequest.RepoAdapter
-	if gitHost == GITHUB {
-		repo, err = github.NewRepoFromEnv()
-		if err != nil {
-			return err
-		}
-	} else if gitHost == GITLAB {
-		repo, err = gitlab.NewRepoFromEnv()
-		if err != nil {
-			return err
-		}
-	} else {
-		return errors.New("Repo not found or not supported")
+	repo, err := pullrequest.NewRepo()
+	if err != nil {
+		return err
 	}
+
+	ciProvider := ci.NewCIProvider()
+	// can be nil
 
 	if err := repo.CheckRequirements(); err != nil {
 		return err
 	}
 
 	if autoconfigure {
-		if err := autoconfigureRepo(repo); err != nil {
+		if err := autoconfigureRepo(repo, ciProvider); err != nil {
 			return err
 		}
 	}
@@ -65,7 +56,7 @@ func CI(autoconfigure bool, types []string) error {
 	output.Debug("Fetching all branches so we can check for existing updates")
 	git.Fetch()
 
-	startingBranch := getCurrentBranch()
+	startingBranch := getCurrentBranch(ciProvider)
 
 	git.Checkout(startingBranch)
 
@@ -174,7 +165,7 @@ func CI(autoconfigure bool, types []string) error {
 	return nil
 }
 
-func autoconfigureRepo(repo pullrequest.RepoAdapter) error {
+func autoconfigureRepo(repo pullrequest.RepoAdapter, ci ci.CIProvider) error {
 
 	if cmd := exec.Command("git", "config", "user.name", "deps"); cmd != nil {
 		output.Event("Autoconfigure: %s", strings.Join(cmd.Args, " "))
@@ -194,51 +185,25 @@ func autoconfigureRepo(repo pullrequest.RepoAdapter) error {
 		}
 	}
 
-	if circleci := os.Getenv("CIRCLECI"); circleci != "" {
-		// CircleCI uses ssh clones by default,
-		// so try to switch to https
-
-		if cmd := exec.Command("git", "config", "--global", "--remove-section", "url.ssh://git@github.com"); cmd != nil {
-			output.Event("Autoconfigure: %s", strings.Join(cmd.Args, " "))
-			cmd.Stdout = os.Stdout
-			cmd.Stderr = os.Stderr
-			cmd.Run() // Don't worry about an error
-		}
-
-		originalOrigin := git.GitRemote()
-		if updatedOrigin := git.GitRemoteToHTTPS(originalOrigin); originalOrigin != updatedOrigin {
-			if cmd := exec.Command("git", "remote", "set-url", "origin", updatedOrigin); cmd != nil {
-				output.Event("Autoconfigure: %s", strings.Join(cmd.Args, " "))
-				cmd.Stdout = os.Stdout
-				cmd.Stderr = os.Stderr
-				if err := cmd.Run(); err != nil {
-					return err
-				}
-			}
+	if ci != nil {
+		if err := ci.Autoconfigure(); err != nil {
+			return err
 		}
 	}
 
-	repo.PreparePush()
+	repo.Autoconfigure()
 
 	return nil
 }
 
-func getCurrentBranch() string {
+func getCurrentBranch(ci ci.CIProvider) string {
 	branch := git.CurrentRef()
 
 	// CI environments may be checking out a specific ref,
 	// so use the variables they provide to see if we get a different branch name
-	if b := os.Getenv("TRAVIS_PULL_REQUEST_BRANCH"); b != "" {
+
+	if b := ci.Branch(); b != "" {
 		branch = b
-	}
-	if b := os.Getenv("TRAVIS_BRANCH"); b != "" {
-		branch = b
-	}
-	if b := os.Getenv("CIRCLE_BRANCH"); b != "" {
-		branch = b
-	}
-	if b := os.Getenv("GITHUB_REF"); strings.HasPrefix(b, "refs/heads/") {
-		branch = b[11:]
 	}
 
 	if branch == "" {
@@ -270,14 +235,9 @@ func runUpdate(update *Update, base, head string) error {
 		return err
 	}
 
-	var pr pullrequest.PullrequestAdapter
-	gitHost := gitHost()
-
-	if gitHost == GITHUB {
-		pr, err = github.NewPullrequest(base, head, outputDeps, update.dependencyConfig)
-		if err != nil {
-			return err
-		}
+	pr, err := pullrequest.NewPullrequest(base, head, outputDeps, update.dependencyConfig)
+	if err != nil {
+		return err
 	}
 
 	if !git.IsDirty() {

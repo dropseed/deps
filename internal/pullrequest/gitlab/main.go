@@ -2,14 +2,12 @@ package gitlab
 
 import (
 	"github.com/dropseed/deps/internal/schema"
-
-	"github.com/dropseed/deps/internal/pullrequest"
 )
 
 // MergeRequest stores additional GitLab specific data
 type MergeRequest struct {
 	// directly use the properties of base Pullrequest
-	*pullrequest.Pullrequest
+	// *pullrequest.Pullrequest
 	ProjectAPIURL string
 	APIToken      string
 }
