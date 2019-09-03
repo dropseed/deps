@@ -68,37 +68,6 @@ func getBranchPrefix() string {
 	return fmt.Sprintf("%sdeps%s", branchPrefix, branchSeparator)
 }
 
-func GitHost() string {
-	// or can maybe tell from github actions env var too or gitlab pipeline, but both should have remote as well
-	if override := os.Getenv("DEPS_GIT_HOST"); override != "" {
-		return override
-	}
-
-	remote := GitRemote()
-
-	// TODO https://user:pass@
-
-	if strings.HasPrefix(remote, "https://github.com/") || strings.HasPrefix(remote, "git@github.com:") {
-		return GITHUB
-	}
-
-	if strings.HasPrefix(remote, "https://gitlab.com/") || strings.HasPrefix(remote, "git@gitlab.com:") {
-		return GITLAB
-	}
-
-	// More generic matching (github.example.com, etc. but could also accidently match gitlab.example.com/org/github-api)
-
-	if strings.Contains(remote, "github") {
-		return GITHUB
-	}
-
-	if strings.Contains(remote, "gitlab") {
-		return GITLAB
-	}
-
-	return ""
-}
-
 func GitRemote() string {
 	cmd := exec.Command("git", "remote", "get-url", "origin")
 	remote, err := cmd.CombinedOutput()
