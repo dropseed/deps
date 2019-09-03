@@ -134,10 +134,6 @@ func (pr *MergeRequest) getMergeRequestOptions() map[string]interface{} {
 	pullrequestMap["target_branch"] = base
 	pullrequestMap["description"] = pr.Body
 
-	if assignee := pr.Config.GetSetting("gitlab_assignee_id"); assignee != nil {
-		pullrequestMap["assignee_id"] = assignee
-	}
-
 	if labels := pr.Config.GetSetting("gitlab_labels"); labels != nil {
 		labelStrings := []string{}
 		for _, l := range labels.([]interface{}) {
@@ -146,21 +142,21 @@ func (pr *MergeRequest) getMergeRequestOptions() map[string]interface{} {
 		pullrequestMap["labels"] = strings.Join(labelStrings, ",")
 	}
 
-	// TODO is it really supposed to be milestone ID instead of IID? How are you supposed to know that?!
-	// if milestoneIdEnv := env.GetSetting("GITLAB_MILESTONE_ID", ""); milestoneIdEnv != nil {
-	//     var err error
-	//     pullrequestMap["milestone_id"], err = strconv.ParseInt(milestoneIdEnv, 10, 32)
-	//     if err != nil {
-	//         return err
-	//     }
-	// }
-
-	if targetProjectID := pr.Config.GetSetting("gitlab_target_project_id"); targetProjectID != nil {
-		pullrequestMap["target_project_id"] = targetProjectID
+	otherFields := []string{
+		"assignee_id",
+		"assignee_ids",
+		"target_project_id",
+		"milestone_id",
+		"remove_source_branch",
+		"allow_collaboration",
+		"allow_maintainer_to_push",
+		"squash",
 	}
 
-	if removeSourceBranch := pr.Config.GetSetting("gitlab_remove_source_branch"); removeSourceBranch != nil {
-		pullrequestMap["remove_source_branch"] = removeSourceBranch
+	for _, f := range otherFields {
+		if s := pr.Config.GetSetting(fmt.Sprintf("gitlab_%s", f)); s != nil {
+			pullrequestMap[f] = s
+		}
 	}
 
 	return pullrequestMap
