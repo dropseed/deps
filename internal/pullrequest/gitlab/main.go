@@ -3,9 +3,11 @@ package gitlab
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"regexp"
 	"strings"
 
 	"github.com/dropseed/deps/internal/config"
@@ -44,52 +46,79 @@ func NewMergeRequest(base string, head string, deps *schema.Dependencies, cfg *c
 	}, nil
 }
 
-// // Create will create the merge request on GitLab
-func (pr *MergeRequest) CreateOrUpdate() error {
-	fmt.Printf("Preparing to open GitLab merge request for %v\n", pr.ProjectAPIURL)
-
+func (pr *MergeRequest) request(verb string, url string, input []byte) (*http.Response, string, error) {
 	client := &http.Client{}
 
-	pullrequestMap := pr.getMergeRequestOptions()
-	fmt.Printf("%+v\n", pullrequestMap)
-	pullrequestData, _ := json.Marshal(pullrequestMap)
-
-	url := pr.ProjectAPIURL + "/merge_requests"
-	output.Debug("Creating merge request at %s", url)
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(pullrequestData))
+	req, err := http.NewRequest(verb, url, bytes.NewBuffer(input))
 	if err != nil {
-		return err
+		return nil, "", err
 	}
+
 	req.Header.Add("PRIVATE-TOKEN", pr.APIToken)
 	req.Header.Add("User-Agent", "deps")
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return err
+		return nil, "", err
 	}
-
-	// TODO if it exists already, we need to update it
-
-	if resp.StatusCode != 201 {
-		return fmt.Errorf("failed to create merge request: %+v", resp)
-	}
-
-	fmt.Printf("Successfully created GitLab merge request for %v\n", pr.ProjectAPIURL)
 
 	body, err := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
+	return resp, string(body), err
+}
+
+// // Create will create the merge request on GitLab
+func (pr *MergeRequest) CreateOrUpdate() error {
+	output.Debug("Preparing to open GitLab merge request for %v\n", pr.ProjectAPIURL)
+
+	pullrequestMap := pr.getMergeRequestOptions()
+	output.Debug("%+v\n", pullrequestMap)
+	pullrequestData, _ := json.Marshal(pullrequestMap)
+
+	url := pr.ProjectAPIURL + "/merge_requests"
+	output.Debug("Creating merge request at %s", url)
+
+	resp, body, err := pr.request("POST", url, pullrequestData)
 	if err != nil {
 		return err
 	}
 
-	var data map[string]interface{}
-	if err := json.Unmarshal(body, &data); err != nil {
-		return err
+	if resp.StatusCode == 201 {
+		output.Event("Successfully created GitLab merge request for %v\n", pr.ProjectAPIURL)
+		return nil
+	} else if resp.StatusCode == 409 {
+		output.Event("Merge request already exists")
+		var data map[string][]string
+		if err := json.Unmarshal([]byte(body), &data); err != nil {
+			return err
+		}
+
+		if message, hasMessage := data["message"]; hasMessage {
+			pattern := regexp.MustCompile("!(\\d+)")
+			matches := pattern.FindStringSubmatch(message[0])
+			// finds !18 and 18...
+			if len(matches) != 2 {
+				return errors.New("Unable to find ID for existing merge request to update")
+			}
+			mrID := matches[1]
+			return pr.update(mrID, pullrequestData)
+		}
 	}
 
-	fmt.Printf("%+v", data)
+	return fmt.Errorf("Failed to create merge request: %s", body)
+}
 
+func (pr *MergeRequest) update(iid string, data []byte) error {
+	url := pr.ProjectAPIURL + "/merge_requests/" + iid
+	resp, body, err := pr.request("PUT", url, data)
+	if err != nil {
+		return err
+	}
+	if resp.StatusCode >= 400 {
+		return fmt.Errorf("Error updating merge request:\n\n%s", body)
+	}
+	output.Success("Updated merge request %s", iid)
 	return nil
 }
 
