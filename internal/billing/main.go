@@ -1,4 +1,4 @@
-package runner
+package billing
 
 import (
 	"bytes"
@@ -13,11 +13,11 @@ import (
 
 const appBaseURL = "https://3.dependencies.io"
 
-type authorizer struct {
+type API struct {
 	token string
 }
 
-func newAuthorizer() (*authorizer, error) {
+func NewAPI() (*API, error) {
 	// TODO will later be able to also check a DEPS_KEY for
 	// users not connected to hosted service
 
@@ -25,12 +25,12 @@ func newAuthorizer() (*authorizer, error) {
 	if token == "" {
 		return nil, fmt.Errorf("DEPS_TOKEN must be set. Ask your team admin or log in to %s to get your token.", appBaseURL)
 	}
-	return &authorizer{
+	return &API{
 		token: token,
 	}, nil
 }
 
-func (auth *authorizer) validate() error {
+func (api *API) Validate() error {
 	client := &http.Client{}
 
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/usage/", appBaseURL), nil)
@@ -38,7 +38,7 @@ func (auth *authorizer) validate() error {
 		return err
 	}
 
-	req.Header.Add("Authorization", "token "+auth.token)
+	req.Header.Add("Authorization", "token "+api.token)
 	req.Header.Add("User-Agent", "deps")
 	req.Header.Set("Content-Type", "application/json")
 
@@ -59,7 +59,7 @@ func (auth *authorizer) validate() error {
 	return nil
 }
 
-func (auth *authorizer) incrementUsage(quantity int) error {
+func (api *API) IncrementUsage(quantity int) error {
 	inputJSON, err := json.Marshal(map[string]int{
 		"quantity": quantity,
 	})
@@ -74,7 +74,7 @@ func (auth *authorizer) incrementUsage(quantity int) error {
 		return err
 	}
 
-	req.Header.Add("Authorization", "token "+auth.token)
+	req.Header.Add("Authorization", "token "+api.token)
 	req.Header.Add("User-Agent", "deps")
 	req.Header.Set("Content-Type", "application/json")
 

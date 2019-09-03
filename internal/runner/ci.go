@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dropseed/deps/internal/billing"
 	"github.com/dropseed/deps/internal/git"
 	"github.com/dropseed/deps/internal/output"
 	"github.com/dropseed/deps/internal/pullrequest"
@@ -21,12 +22,12 @@ type updateResult struct {
 
 func CI(autoconfigure bool, types []string) error {
 
-	auth, err := newAuthorizer()
+	api, err := billing.NewAPI()
 	if err != nil {
 		return err
 	}
 
-	if err := auth.validate(); err != nil {
+	if err := api.Validate(); err != nil {
 		return err
 	}
 
@@ -155,7 +156,7 @@ func CI(autoconfigure bool, types []string) error {
 	}
 
 	if len(successfulUpdates) > 0 {
-		if err := auth.incrementUsage(len(successfulUpdates)); err != nil {
+		if err := api.IncrementUsage(len(successfulUpdates)); err != nil {
 			return err
 		}
 	}
