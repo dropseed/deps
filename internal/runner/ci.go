@@ -13,6 +13,7 @@ import (
 	"github.com/dropseed/deps/internal/output"
 	"github.com/dropseed/deps/internal/pullrequest"
 	"github.com/dropseed/deps/internal/pullrequest/github"
+	"github.com/dropseed/deps/internal/pullrequest/gitlab"
 )
 
 type updateResult struct {
@@ -39,6 +40,11 @@ func CI(autoconfigure bool, types []string) error {
 	var repo pullrequest.RepoAdapter
 	if gitHost == GITHUB {
 		repo, err = github.NewRepoFromEnv()
+		if err != nil {
+			return err
+		}
+	} else if gitHost == GITLAB {
+		repo, err = gitlab.NewRepoFromEnv()
 		if err != nil {
 			return err
 		}
@@ -297,35 +303,4 @@ func runUpdate(update *Update, base, head string) error {
 	}
 
 	return nil
-}
-
-func gitHost() string {
-	// or can maybe tell from github actions env var too or gitlab pipeline, but both should have remote as well
-	if override := os.Getenv("DEPS_GIT_HOST"); override != "" {
-		return override
-	}
-
-	remote := git.GitRemote()
-
-	// TODO https://user:pass@
-
-	if strings.HasPrefix(remote, "https://github.com/") || strings.HasPrefix(remote, "git@github.com:") {
-		return GITHUB
-	}
-
-	if strings.HasPrefix(remote, "https://gitlab.com/") || strings.HasPrefix(remote, "git@gitlab.com:") {
-		return GITLAB
-	}
-
-	// More generic matching (github.example.com, etc. but could also accidently match gitlab.example.com/org/github-api)
-
-	if strings.Contains(remote, "github") {
-		return GITHUB
-	}
-
-	if strings.Contains(remote, "gitlab") {
-		return GITLAB
-	}
-
-	return ""
 }
