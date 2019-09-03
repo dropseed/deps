@@ -13,8 +13,8 @@ type GitHubRepo struct {
 	apiToken string
 }
 
-func NewRepoFromEnv() (*GitHubRepo, error) {
-	token := GetAPIToken()
+func NewRepo() (*GitHubRepo, error) {
+	token := getAPIToken()
 
 	if token == "" {
 		return nil, errors.New("Unable to find GitHub API token.\n\nVisit https://docs.dependencies.io/github for more information.")
@@ -32,7 +32,7 @@ func (repo *GitHubRepo) CheckRequirements() error {
 	return nil
 }
 
-func (repo *GitHubRepo) PreparePush() {
+func (repo *GitHubRepo) Autoconfigure() {
 	output.Debug("Writing GitHub token to ~/.netrc")
 	echo := fmt.Sprintf("echo -e \"machine github.com\n  login x-access-token\n  password %s\" >> ~/.netrc", repo.apiToken)
 	cmd := exec.Command("sh", "-c", echo)

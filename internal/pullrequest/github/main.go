@@ -12,26 +12,24 @@ import (
 	"github.com/dropseed/deps/internal/schema"
 
 	"github.com/dropseed/deps/internal/output"
-	"github.com/dropseed/deps/internal/pullrequest"
 )
 
 // PullRequest stores additional GitHub specific data
 type PullRequest struct {
-	// directly use the properties of base Pullrequest
-	*pullrequest.Pullrequest
+	Base         string
+	Head         string
+	Title        string
+	Body         string
+	Dependencies *schema.Dependencies
+	Config       *config.Dependency
+
 	RepoOwnerName string
 	RepoName      string
 	RepoFullName  string
 	APIToken      string
 }
 
-// NewPullrequestFromDependenciesEnv creates a PullRequest
-func NewPullrequest(base string, head string, deps *schema.Dependencies, cfg *config.Dependency) (*PullRequest, error) {
-	prBase, err := pullrequest.NewPullrequest(base, head, deps, cfg)
-	if err != nil {
-		return nil, err
-	}
-
+func NewPullRequest(base string, head string, deps *schema.Dependencies, cfg *config.Dependency) (*PullRequest, error) {
 	fullName, err := getRepoFullName()
 	if err != nil {
 		return nil, err
@@ -41,11 +39,16 @@ func NewPullrequest(base string, head string, deps *schema.Dependencies, cfg *co
 	repo := parts[1]
 
 	return &PullRequest{
-		Pullrequest:   prBase,
+		Base:          base,
+		Head:          head,
+		Title:         deps.Title,
+		Body:          deps.Description,
+		Dependencies:  deps,
+		Config:        cfg,
 		RepoOwnerName: owner,
 		RepoName:      repo,
 		RepoFullName:  fullName,
-		APIToken:      GetAPIToken(),
+		APIToken:      getAPIToken(),
 	}, nil
 }
 

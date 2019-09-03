@@ -1,7 +1,6 @@
 package runner
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -9,49 +8,6 @@ import (
 	"github.com/dropseed/deps/internal/config"
 	"github.com/dropseed/deps/internal/output"
 )
-
-const COLLECTOR = "collector"
-const ACTOR = "actor"
-
-func getConfig() (*config.Config, error) {
-	configPath := config.FindFilename("", config.DefaultFilenames...)
-
-	if configPath != "" {
-		cfg, err := config.NewConfigFromPath(configPath)
-		if err != nil {
-			return nil, err
-		}
-
-		cfg.Compile()
-
-		return cfg, nil
-	}
-
-	output.Event("No local config found, detecting your dependencies automatically")
-	// should we always check for inferred? and could let them know what they
-	// don't have in theirs?
-	// dump both to yaml, use regular diff tool and highlighting?
-	cfg, err := config.InferredConfigFromDir(".")
-	if err != nil {
-		return nil, err
-	}
-
-	inferred, err := cfg.DumpYAML()
-	if err != nil {
-		return nil, err
-	}
-	println("---")
-	println(inferred)
-	println("---")
-
-	cfg.Compile()
-
-	if len(cfg.Dependencies) < 1 {
-		return nil, errors.New("no dependencies found")
-	}
-
-	return cfg, nil
-}
 
 func organizeUpdates(updates Updates) (Updates, Updates, Updates, error) {
 	newUpdates := Updates{}      // PRs for these
