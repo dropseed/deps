@@ -3,6 +3,7 @@ package runner
 import (
 	"fmt"
 
+	"github.com/dropseed/deps/internal/config"
 	"github.com/dropseed/deps/internal/git"
 	"github.com/dropseed/deps/internal/output"
 
@@ -15,7 +16,7 @@ func Local() error {
 		output.Warning("You have uncommitted changes! We recommend you have a clean git status before running deps locally, so that you can easily track what changed.\n")
 	}
 
-	cfg, err := getConfig()
+	cfg, err := config.FindOrInfer()
 	if err != nil {
 		return err
 	}

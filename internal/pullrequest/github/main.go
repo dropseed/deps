@@ -16,7 +16,6 @@ import (
 
 // PullRequest stores additional GitHub specific data
 type PullRequest struct {
-	// directly use the properties of base Pullrequest
 	Base         string
 	Head         string
 	Title        string
@@ -30,8 +29,7 @@ type PullRequest struct {
 	APIToken      string
 }
 
-// NewPullrequestFromDependenciesEnv creates a PullRequest
-func NewPullrequest(base string, head string, deps *schema.Dependencies, cfg *config.Dependency) (*PullRequest, error) {
+func NewPullRequest(base string, head string, deps *schema.Dependencies, cfg *config.Dependency) (*PullRequest, error) {
 	fullName, err := getRepoFullName()
 	if err != nil {
 		return nil, err
@@ -50,7 +48,7 @@ func NewPullrequest(base string, head string, deps *schema.Dependencies, cfg *co
 		RepoOwnerName: owner,
 		RepoName:      repo,
 		RepoFullName:  fullName,
-		APIToken:      GetAPIToken(),
+		APIToken:      getAPIToken(),
 	}, nil
 }
 

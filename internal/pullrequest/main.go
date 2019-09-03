@@ -1,36 +1,58 @@
 package pullrequest
 
 import (
+	"errors"
 	"os"
 	"strings"
 
+	"github.com/dropseed/deps/internal/config"
 	"github.com/dropseed/deps/internal/git"
+	"github.com/dropseed/deps/internal/pullrequest/github"
+	"github.com/dropseed/deps/internal/pullrequest/gitlab"
+	"github.com/dropseed/deps/internal/schema"
 )
-
-// Pullrequest stores the basic data
-// type Pullrequest struct {
-// 	Base         string
-// 	Head         string
-// 	Title        string
-// 	Body         string
-// 	Dependencies *schema.Dependencies
-// 	Config       *config.Dependency
-// }
-
-// // NewPullrequest creates a Pullrequest using env variables
-// func NewPullrequest(base string, head string, deps *schema.Dependencies, cfg *config.Dependency) (*Pullrequest, error) {
-// 	return &Pullrequest{
-// 		Base:         base,
-// 		Head:         head,
-// 		Title:        deps.Title,
-// 		Body:         deps.Description,
-// 		Dependencies: deps,
-// 		Config:       cfg,
-// 	}, nil
-// }
 
 const GITHUB = "github"
 const GITLAB = "gitlab"
+
+// PullrequestAdapter implements the basic Pullrequest functions
+type PullrequestAdapter interface {
+	CreateOrUpdate() error
+}
+
+type RepoAdapter interface {
+	CheckRequirements() error
+	Autoconfigure()
+	// NewPullrequest(*schema.Dependencies, string) PullrequestAdapter
+}
+
+func NewRepo() (RepoAdapter, error) {
+	gitHost := gitHost()
+
+	if gitHost == GITHUB {
+		return github.NewRepo()
+	}
+
+	if gitHost == GITLAB {
+		return gitlab.NewRepo()
+	}
+
+	return nil, errors.New("Repo not found or not supported")
+}
+
+func NewPullrequest(base string, head string, deps *schema.Dependencies, cfg *config.Dependency) (PullrequestAdapter, error) {
+	gitHost := gitHost()
+
+	if gitHost == GITHUB {
+		return github.NewPullRequest(base, head, deps, cfg)
+	}
+
+	if gitHost == GITLAB {
+		return gitlab.NewMergeRequest(base, head, deps, cfg)
+	}
+
+	return nil, errors.New("Repo not found or not supported")
+}
 
 func gitHost() string {
 	// or can maybe tell from github actions env var too or gitlab pipeline, but both should have remote as well

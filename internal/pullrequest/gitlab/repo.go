@@ -2,14 +2,13 @@ package gitlab
 
 import (
 	"errors"
-	"os"
 )
 
 type GitLabRepo struct {
 	apiToken string
 }
 
-func NewRepoFromEnv() (*GitLabRepo, error) {
+func NewRepo() (*GitLabRepo, error) {
 	token := getAPIToken()
 
 	if token == "" {
@@ -29,20 +28,4 @@ func (repo *GitLabRepo) CheckRequirements() error {
 }
 
 func (repo *GitLabRepo) Autoconfigure() {
-}
-
-func getAPIToken() string {
-	if s := os.Getenv("DEPS_GITLAB_TOKEN"); s != "" {
-		return s
-	}
-
-	if s := os.Getenv("GITLAB_TOKEN"); s != "" {
-		return s
-	}
-
-	// if s := os.Getenv("CI_JOB_TOKEN"); s != "" {
-	// 	return s
-	// }
-
-	return ""
 }

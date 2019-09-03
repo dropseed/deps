@@ -1,125 +1,138 @@
 package gitlab
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"strings"
+
+	"github.com/dropseed/deps/internal/config"
+	"github.com/dropseed/deps/internal/output"
 	"github.com/dropseed/deps/internal/schema"
 )
 
 // MergeRequest stores additional GitLab specific data
 type MergeRequest struct {
-	// directly use the properties of base Pullrequest
-	// *pullrequest.Pullrequest
+	Base         string
+	Head         string
+	Title        string
+	Body         string
+	Dependencies *schema.Dependencies
+	Config       *config.Dependency
+
 	ProjectAPIURL string
 	APIToken      string
 }
 
-// NewPullrequestFromDependenciesEnv creates a PullRequest
-func NewPullrequestFromDependenciesEnv(deps *schema.Dependencies, branch string) (*MergeRequest, error) {
-	return nil, nil
-	// 	prBase, err := pullrequest.NewPullrequestFromEnv(deps, branch)
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
+func NewMergeRequest(base string, head string, deps *schema.Dependencies, cfg *config.Dependency) (*MergeRequest, error) {
+	apiURL, err := getProjectAPIURL()
+	if err != nil {
+		return nil, err
+	}
 
-	// 	return &MergeRequest{
-	// 		Pullrequest:   prBase,
-	// 		ProjectAPIURL: os.Getenv("GITLAB_API_URL"),
-	// 		APIToken:      os.Getenv("GITLAB_API_TOKEN"),
-	// 	}, nil
-	// }
+	return &MergeRequest{
+		Base:          base,
+		Head:          head,
+		Title:         deps.Title,
+		Body:          deps.Description,
+		Dependencies:  deps,
+		Config:        cfg,
+		ProjectAPIURL: apiURL,
+		APIToken:      getAPIToken(),
+	}, nil
 }
 
 // // Create will create the merge request on GitLab
 func (pr *MergeRequest) CreateOrUpdate() error {
-	// 	fmt.Printf("Preparing to open GitLab merge request for %v\n", pr.ProjectAPIURL)
+	fmt.Printf("Preparing to open GitLab merge request for %v\n", pr.ProjectAPIURL)
 
-	// 	client := &http.Client{}
+	client := &http.Client{}
 
-	// 	var base string
-	// 	if base = env.GetSetting("GITLAB_TARGET_BRANCH", ""); base == "" {
-	// 		base = pr.DefaultBaseBranch
-	// 	}
+	pullrequestMap := pr.getMergeRequestOptions()
+	fmt.Printf("%+v\n", pullrequestMap)
+	pullrequestData, _ := json.Marshal(pullrequestMap)
 
-	// 	pullrequestMap := make(map[string]interface{})
-	// 	pullrequestMap["title"] = pr.Title
-	// 	pullrequestMap["source_branch"] = pr.Branch
-	// 	pullrequestMap["target_branch"] = base
-	// 	pullrequestMap["description"] = pr.Body
+	url := pr.ProjectAPIURL + "/merge_requests"
+	output.Debug("Creating merge request at %s", url)
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(pullrequestData))
+	if err != nil {
+		return err
+	}
+	req.Header.Add("PRIVATE-TOKEN", pr.APIToken)
+	req.Header.Add("User-Agent", "deps")
+	req.Header.Set("Content-Type", "application/json")
 
-	// 	if assigneeIIEnv := env.GetSetting("GITLAB_ASSIGNEE_ID", ""); assigneeIIEnv != "" {
-	// 		var err error
-	// 		pullrequestMap["assignee_id"], err = strconv.ParseInt(assigneeIIEnv, 10, 32)
-	// 		if err != nil {
-	// 			return err
-	// 		}
-	// 	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
 
-	// 	if labelsEnv := env.GetSetting("GITLAB_LABELS", ""); labelsEnv != "" {
-	// 		var labels *[]string
-	// 		if err := json.Unmarshal([]byte(labelsEnv), &labels); err != nil {
-	// 			return err
-	// 		}
-	// 		pullrequestMap["labels"] = strings.Join(*labels, ",")
-	// 	}
+	// TODO if it exists already, we need to update it
 
-	// 	// TODO is it really supposed to be milestone ID instead of IID? How are you supposed to know that?!
-	// 	// if milestoneIdEnv := env.GetSetting("GITLAB_MILESTONE_ID", ""); milestoneIdEnv != "" {
-	// 	//     var err error
-	// 	//     pullrequestMap["milestone_id"], err = strconv.ParseInt(milestoneIdEnv, 10, 32)
-	// 	//     if err != nil {
-	// 	//         return err
-	// 	//     }
-	// 	// }
+	if resp.StatusCode != 201 {
+		return fmt.Errorf("failed to create merge request: %+v", resp)
+	}
 
-	// 	if targetProjectIDEnv := env.GetSetting("GITLAB_TARGET_PROJECT_ID", ""); targetProjectIDEnv != "" {
-	// 		var err error
-	// 		pullrequestMap["target_project_id"], err = strconv.ParseInt(targetProjectIDEnv, 10, 32)
-	// 		if err != nil {
-	// 			return err
-	// 		}
-	// 	}
+	fmt.Printf("Successfully created GitLab merge request for %v\n", pr.ProjectAPIURL)
 
-	// 	if removeSourceBranchEnv := env.GetSetting("GITLAB_REMOVE_SOURCE_BRANCH", ""); removeSourceBranchEnv != "" {
-	// 		var removeSourceBranch *bool
-	// 		if err := json.Unmarshal([]byte(removeSourceBranchEnv), &removeSourceBranch); err != nil {
-	// 			return err
-	// 		}
-	// 		pullrequestMap["remove_source_branch"] = *removeSourceBranch
-	// 	}
+	body, err := ioutil.ReadAll(resp.Body)
+	resp.Body.Close()
+	if err != nil {
+		return err
+	}
 
-	// 	fmt.Printf("%+v\n", pullrequestMap)
-	// 	pullrequestData, _ := json.Marshal(pullrequestMap)
+	var data map[string]interface{}
+	if err := json.Unmarshal(body, &data); err != nil {
+		return err
+	}
 
-	// 	req, err := http.NewRequest("POST", pr.ProjectAPIURL+"/merge_requests", bytes.NewBuffer(pullrequestData))
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// 	req.Header.Add("PRIVATE-TOKEN", pr.APIToken)
-	// 	req.Header.Add("User-Agent", "dependencies.io pullrequest")
-	// 	req.Header.Set("Content-Type", "application/json")
-
-	// 	resp, err := client.Do(req)
-	// 	if err != nil {
-	// 		return err
-	// 	}
-
-	// 	if resp.StatusCode != 201 {
-	// 		return fmt.Errorf("failed to create merge request: %+v", resp)
-	// 	}
-
-	// 	fmt.Printf("Successfully created GitLab merge request for %v\n", pr.ProjectAPIURL)
-
-	// 	body, err := ioutil.ReadAll(resp.Body)
-	// 	resp.Body.Close()
-	// 	if err != nil {
-	// 		return err
-	// 	}
-
-	// 	var data map[string]interface{}
-	// 	if err := json.Unmarshal(body, &data); err != nil {
-	// 		return err
-	// 	}
-	// 	pr.Action.Name = fmt.Sprintf("MR !%v", int(data["iid"].(float64)))
-	// 	pr.Action.Metadata["gitlab_merge_request"] = data
+	fmt.Printf("%+v", data)
 
 	return nil
+}
+
+func (pr *MergeRequest) getMergeRequestOptions() map[string]interface{} {
+	base := pr.Base
+	if target := pr.Config.GetSetting("gitlab_target_branch"); target != nil {
+		base = target.(string)
+	}
+
+	pullrequestMap := make(map[string]interface{})
+	pullrequestMap["title"] = pr.Title
+	pullrequestMap["source_branch"] = pr.Head
+	pullrequestMap["target_branch"] = base
+	pullrequestMap["description"] = pr.Body
+
+	if assignee := pr.Config.GetSetting("gitlab_assignee_id"); assignee != nil {
+		pullrequestMap["assignee_id"] = assignee
+	}
+
+	if labels := pr.Config.GetSetting("gitlab_labels"); labels != nil {
+		labelStrings := []string{}
+		for _, l := range labels.([]interface{}) {
+			labelStrings = append(labelStrings, l.(string))
+		}
+		pullrequestMap["labels"] = strings.Join(labelStrings, ",")
+	}
+
+	// TODO is it really supposed to be milestone ID instead of IID? How are you supposed to know that?!
+	// if milestoneIdEnv := env.GetSetting("GITLAB_MILESTONE_ID", ""); milestoneIdEnv != nil {
+	//     var err error
+	//     pullrequestMap["milestone_id"], err = strconv.ParseInt(milestoneIdEnv, 10, 32)
+	//     if err != nil {
+	//         return err
+	//     }
+	// }
+
+	if targetProjectID := pr.Config.GetSetting("gitlab_target_project_id"); targetProjectID != nil {
+		pullrequestMap["target_project_id"] = targetProjectID
+	}
+
+	if removeSourceBranch := pr.Config.GetSetting("gitlab_remove_source_branch"); removeSourceBranch != nil {
+		pullrequestMap["remove_source_branch"] = removeSourceBranch
+	}
+
+	return pullrequestMap
 }

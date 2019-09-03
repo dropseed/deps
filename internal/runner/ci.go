@@ -3,13 +3,11 @@ package runner
 import (
 	"errors"
 	"fmt"
-	"os"
-	"os/exec"
-	"strings"
 	"time"
 
 	"github.com/dropseed/deps/internal/billing"
 	"github.com/dropseed/deps/internal/ci"
+	"github.com/dropseed/deps/internal/config"
 	"github.com/dropseed/deps/internal/git"
 	"github.com/dropseed/deps/internal/output"
 	"github.com/dropseed/deps/internal/pullrequest"
@@ -41,16 +39,19 @@ func CI(autoconfigure bool, types []string) error {
 	}
 
 	ciProvider := ci.NewCIProvider()
-	// can be nil
 
 	if err := repo.CheckRequirements(); err != nil {
 		return err
 	}
 
 	if autoconfigure {
-		if err := autoconfigureRepo(repo, ciProvider); err != nil {
+		ci.BaseAutoconfigure()
+
+		if err := ciProvider.Autoconfigure(); err != nil {
 			return err
 		}
+
+		repo.Autoconfigure()
 	}
 
 	output.Debug("Fetching all branches so we can check for existing updates")
@@ -67,7 +68,7 @@ func CI(autoconfigure bool, types []string) error {
 		return errors.New("You cannot run deps ci on a deps branch")
 	}
 
-	cfg, err := getConfig()
+	cfg, err := config.FindOrInfer()
 	if err != nil {
 		return err
 	}
@@ -117,7 +118,7 @@ func CI(autoconfigure bool, types []string) error {
 				update: update,
 				err:    err,
 			})
-			output.Success("Update succeeded: %v", err)
+			output.Success("Update succeeded: %v", update.title)
 		}
 	}
 
@@ -134,7 +135,7 @@ func CI(autoconfigure bool, types []string) error {
 				update: update,
 				err:    err,
 			})
-			output.Success("Update succeeded: %v", err)
+			output.Success("Update succeeded: %v", update.title)
 		}
 	}
 
@@ -161,37 +162,6 @@ func CI(autoconfigure bool, types []string) error {
 	if len(failedUpdates) > 0 {
 		return fmt.Errorf("%d errors", len(failedUpdates))
 	}
-
-	return nil
-}
-
-func autoconfigureRepo(repo pullrequest.RepoAdapter, ci ci.CIProvider) error {
-
-	if cmd := exec.Command("git", "config", "user.name", "deps"); cmd != nil {
-		output.Event("Autoconfigure: %s", strings.Join(cmd.Args, " "))
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		if err := cmd.Run(); err != nil {
-			return err
-		}
-	}
-
-	if cmd := exec.Command("git", "config", "user.email", "bot@dependencies.io"); cmd != nil {
-		output.Event("Autoconfigure: %s", strings.Join(cmd.Args, " "))
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		if err := cmd.Run(); err != nil {
-			return err
-		}
-	}
-
-	if ci != nil {
-		if err := ci.Autoconfigure(); err != nil {
-			return err
-		}
-	}
-
-	repo.Autoconfigure()
 
 	return nil
 }
