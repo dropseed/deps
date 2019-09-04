@@ -2,9 +2,9 @@ package gitlab
 
 import (
 	"errors"
-	"fmt"
-	"net/url"
 	"os"
+
+	"github.com/dropseed/deps/internal/ci/gitlabci"
 )
 
 func getAPIToken() string {
@@ -36,10 +36,8 @@ func getProjectAPIURL() (string, error) {
 		return s, nil
 	}
 
-	// GitLab CI support
-	if base := os.Getenv("CI_API_V4_URL"); base != "" {
-		slug := url.PathEscape(os.Getenv("CI_PROJECT_PATH_SLUG"))
-		return fmt.Sprintf("%s/projects/%s", base, slug), nil
+	if gitlabciURL := gitlabci.GetProjectAPIURL(); gitlabciURL != "" {
+		return gitlabciURL, nil
 	}
 
 	// TODO otherwise from git remote?

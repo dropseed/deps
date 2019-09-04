@@ -1,6 +1,8 @@
 package gitlabci
 
 import (
+	"fmt"
+	"net/url"
 	"os"
 )
 
@@ -18,6 +20,14 @@ func (gitlab *GitLabCI) Autoconfigure() error {
 func (gitlab *GitLabCI) Branch() string {
 	if b := os.Getenv("CI_COMMIT_REF_NAME"); b != "" {
 		return b
+	}
+	return ""
+}
+
+func GetProjectAPIURL() string {
+	if base := os.Getenv("CI_API_V4_URL"); base != "" {
+		path := url.PathEscape(os.Getenv("CI_PROJECT_PATH"))
+		return fmt.Sprintf("%s/projects/%s", base, path)
 	}
 	return ""
 }
