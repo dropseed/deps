@@ -26,7 +26,7 @@ type RepoAdapter interface {
 	// NewPullrequest(*schema.Dependencies, string) PullrequestAdapter
 }
 
-func NewRepo() (RepoAdapter, error) {
+func NewRepo() RepoAdapter {
 	gitHost := gitHost()
 
 	if gitHost == GITHUB {
@@ -37,7 +37,7 @@ func NewRepo() (RepoAdapter, error) {
 		return gitlab.NewRepo()
 	}
 
-	return nil, errors.New("Repo not found or not supported")
+	return nil
 }
 
 func NewPullrequest(base string, head string, deps *schema.Dependencies, cfg *config.Dependency) (PullrequestAdapter, error) {

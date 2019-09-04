@@ -3,6 +3,7 @@ package git
 import (
 	"bytes"
 	"fmt"
+	"net/url"
 	"os"
 	"os/exec"
 	"regexp"
@@ -77,6 +78,15 @@ func GitRemote() string {
 	s := string(remote)
 	s = strings.TrimSpace(s)
 	return s
+}
+
+func GitRemoteHostname() string {
+	remote := GitRemote()
+	parsed, err := url.Parse(remote)
+	if err != nil {
+		panic(err)
+	}
+	return parsed.Hostname()
 }
 
 func GitRemoteToHTTPS(original string) string {

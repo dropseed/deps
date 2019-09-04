@@ -33,11 +33,10 @@ func CI(autoconfigure bool, types []string) error {
 		return errors.New("git status must be clean to run deps ci")
 	}
 
-	repo, err := pullrequest.NewRepo()
-	if err != nil {
-		return err
+	repo := pullrequest.NewRepo()
+	if repo == nil {
+		return errors.New("Repo not found or not supported")
 	}
-
 	ciProvider := ci.NewCIProvider()
 
 	if err := repo.CheckRequirements(); err != nil {

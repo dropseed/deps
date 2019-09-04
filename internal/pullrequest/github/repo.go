@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 
+	"github.com/dropseed/deps/internal/git"
 	"github.com/dropseed/deps/internal/output"
 )
 
@@ -13,28 +14,23 @@ type GitHubRepo struct {
 	apiToken string
 }
 
-func NewRepo() (*GitHubRepo, error) {
-	token := getAPIToken()
-
-	if token == "" {
-		return nil, errors.New("Unable to find GitHub API token.\n\nVisit https://docs.dependencies.io/github for more information.")
-	}
-
+func NewRepo() *GitHubRepo {
 	return &GitHubRepo{
-		apiToken: token,
-	}, nil
+		apiToken: getAPIToken(),
+	}
 }
 
 func (repo *GitHubRepo) CheckRequirements() error {
 	if repo.apiToken == "" {
-		return errors.New("GitHub API token not found")
+		return errors.New("Unable to find GitHub API token.\n\nVisit https://docs.dependencies.io/github for more information.")
 	}
 	return nil
 }
 
 func (repo *GitHubRepo) Autoconfigure() {
 	output.Debug("Writing GitHub token to ~/.netrc")
-	echo := fmt.Sprintf("echo -e \"machine github.com\n  login x-access-token\n  password %s\" >> ~/.netrc", repo.apiToken)
+	hostname := git.GitRemoteHostname()
+	echo := fmt.Sprintf("echo -e \"machine %s\n  login x-access-token\n  password %s\" >> ~/.netrc", hostname, repo.apiToken)
 	cmd := exec.Command("sh", "-c", echo)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

@@ -23,6 +23,14 @@ func getAPIToken() string {
 	return ""
 }
 
+func getAPIUsername() string {
+	if s := os.Getenv("DEPS_GITLAB_USERNAME"); s != "" {
+		return s
+	}
+
+	return ""
+}
+
 func getProjectAPIURL() (string, error) {
 	if s := os.Getenv("DEPS_GITLAB_PROJECT_API_URL"); s != "" {
 		return s, nil

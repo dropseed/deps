@@ -69,6 +69,12 @@ func TestGitRemoteToHTTPS(t *testing.T) {
 	}
 }
 
+func TestGitRemoteHostname(t *testing.T) {
+	if GitRemoteHostname() != "github.com" {
+		t.Fail()
+	}
+}
+
 // func TestGetDepsBranches(t *testing.T) {
 // 	branches := GetDepsBranches()
 // 	for _, b := range branches {
