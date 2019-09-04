@@ -28,7 +28,7 @@ func getAPIUsername() string {
 		return s
 	}
 
-	return ""
+	return "gitlab-ci-token"
 }
 
 func getProjectAPIURL() (string, error) {
