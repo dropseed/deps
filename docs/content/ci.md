@@ -21,7 +21,7 @@ and changing the git remote from ssh to https.
 
 To disable the automatic configuration (if you have other requirements or want to do it yourself) use `deps ci --manual`.
 
-For specifics on what is configured and how, you can [read the code here](https://github.com/dropseed/deps/blob/master/internal/runner/ci.go#L170).
+For specifics on what is configured and how, you can [read the code here](https://github.com/dropseed/deps/search?l=Go&q=autoconfigure).
 
 ## Filtering by type
 
