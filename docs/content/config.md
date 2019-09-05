@@ -1,6 +1,6 @@
 # deps.yml
 
-
+A `deps.yml` is only required if you need to make changes beyond what deps detects automatically.
 
 ```yaml
 version: 3  # required!

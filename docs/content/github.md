@@ -5,17 +5,11 @@ description: "Examples and instructions for setting up deps in GitHub"
 
 # GitHub
 
-To use deps on a GitHub repo,
-you'll need to make sure it has permission to commit and push from CI.
-
-Most CI provders use read-only access for the normal cloning and testing. The easiest way to give deps write-access is with a personal access token --
+The easiest way to give deps write-access is with a personal access token --
 either from your personal account or a bot account that your company already has set up.
 
 You can also create or use an existing internal GitHub App.
 The setup is more involved but offers a different way to manage permissions and repo access.
-
-> Note: If your CI is already configured with write-access and you have others tools that commit back to the repo,
-you can use those same credentials for deps if you want!
 
 ## Personal access token
 

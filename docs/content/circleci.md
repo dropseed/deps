@@ -8,8 +8,9 @@ description: Examples and instructions for setting up deps in CircleCI
 ## 1. Set your environment variables
 
 For deps variables that should be kept secret (such as `GITHUB_TOKEN`) you'll want to use a [context](https://circleci.com/docs/2.0/contexts/).
+You can get your `DEPS_TOKEN` from [3.dependencies.io](https://3.dependencies.io).
 
-Other env vars for changing basic settings can be put directly in `.circleci/config.yml`.
+[![CircleCI context for deps](/assets/img/screenshots/circleci-context.png)](/assets/img/screenshots/circleci-context.png)
 
 ## 2. Add a deps workflow triggered by cron
 

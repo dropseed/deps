@@ -5,8 +5,10 @@ description: "Examples and instructions for setting up deps in GitLab"
 
 # GitLab
 
-The standard way to give deps access to your repo is with a *personal access token*.
+The standard way to give deps write-access to your repo is with a *personal access token*.
 You can use your personal account to do this, or a "bot" account that your team has.
+
+## Personal access token
 
 1. Log in with the account you want deps to use (this will be the author of deps pull requests)
 1. Give it access to the repo you're setting up
