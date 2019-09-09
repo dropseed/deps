@@ -5,6 +5,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/dropseed/deps/internal/ci/bitbucketpipelines"
 	"github.com/dropseed/deps/internal/ci/circleci"
 	"github.com/dropseed/deps/internal/ci/generic"
 	"github.com/dropseed/deps/internal/ci/githubactions"
@@ -31,11 +32,25 @@ func NewCIProvider() CIProvider {
 	if gitlabci.Is() {
 		return &gitlabci.GitLabCI{}
 	}
+	if bitbucketpipelines.Is() {
+		return &bitbucketpipelines.BitbucketPipelines{}
+	}
 	return &generic.GenericCI{}
 }
 
 func BaseAutoconfigure() {
-	if cmd := exec.Command("git", "config", "user.name", "deps"); cmd != nil {
+
+	gitName := "deps"
+	gitEmail := "bot@dependencies.io"
+
+	if s := os.Getenv("DEPS_GIT_NAME"); s != "" {
+		gitName = s
+	}
+	if s := os.Getenv("DEPS_GIT_EMAIL"); s != "" {
+		gitEmail = s
+	}
+
+	if cmd := exec.Command("git", "config", "user.name", gitName); cmd != nil {
 		output.Event("Autoconfigure: %s", strings.Join(cmd.Args, " "))
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
@@ -44,7 +59,7 @@ func BaseAutoconfigure() {
 		}
 	}
 
-	if cmd := exec.Command("git", "config", "user.email", "bot@dependencies.io"); cmd != nil {
+	if cmd := exec.Command("git", "config", "user.email", gitEmail); cmd != nil {
 		output.Event("Autoconfigure: %s", strings.Join(cmd.Args, " "))
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr

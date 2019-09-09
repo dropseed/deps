@@ -7,6 +7,7 @@ import (
 
 	"github.com/dropseed/deps/internal/config"
 	"github.com/dropseed/deps/internal/git"
+	"github.com/dropseed/deps/internal/pullrequest/bitbucket"
 	"github.com/dropseed/deps/internal/pullrequest/github"
 	"github.com/dropseed/deps/internal/pullrequest/gitlab"
 	"github.com/dropseed/deps/internal/schema"
@@ -14,6 +15,7 @@ import (
 
 const GITHUB = "github"
 const GITLAB = "gitlab"
+const BITBUCKET = "bitbucket"
 
 // PullrequestAdapter implements the basic Pullrequest functions
 type PullrequestAdapter interface {
@@ -37,6 +39,10 @@ func NewRepo() RepoAdapter {
 		return gitlab.NewRepo()
 	}
 
+	if gitHost == BITBUCKET {
+		return bitbucket.NewRepo()
+	}
+
 	return nil
 }
 
@@ -49,6 +55,10 @@ func NewPullrequest(base string, head string, deps *schema.Dependencies, cfg *co
 
 	if gitHost == GITLAB {
 		return gitlab.NewMergeRequest(base, head, deps, cfg)
+	}
+
+	if gitHost == BITBUCKET {
+		return bitbucket.NewPullRequest(base, head, deps, cfg)
 	}
 
 	return nil, errors.New("Repo not found or not supported")
@@ -72,6 +82,10 @@ func gitHost() string {
 		return GITLAB
 	}
 
+	if strings.HasPrefix(remote, "https://bitbucket.org") || strings.HasPrefix(remote, "git@bitbucket.org:") {
+		return BITBUCKET
+	}
+
 	// More generic matching (github.example.com, etc. but could also accidently match gitlab.example.com/org/github-api)
 
 	if strings.Contains(remote, "github") {
@@ -80,6 +94,10 @@ func gitHost() string {
 
 	if strings.Contains(remote, "gitlab") {
 		return GITLAB
+	}
+
+	if strings.Contains(remote, "bitbucket") {
+		return BITBUCKET
 	}
 
 	return ""
