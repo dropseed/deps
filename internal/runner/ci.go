@@ -181,6 +181,10 @@ func getCurrentBranch(ci ci.CIProvider) string {
 		panic(errors.New("Unable to determine base branch"))
 	}
 
+	if branch == "HEAD" {
+		panic(errors.New("Unable to determine base branch, only got HEAD"))
+	}
+
 	return branch
 }
 
