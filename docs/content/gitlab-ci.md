@@ -29,6 +29,7 @@ deps-js:
   only: [schedules]
   script:
     - curl https://www.dependencies.io/install.sh | bash -s -- -b $HOME/bin
+    - yarn install
     - $HOME/bin/deps ci --type js
 
 deps-python:
@@ -36,5 +37,6 @@ deps-python:
   only: [schedules]
   script:
     - curl https://www.dependencies.io/install.sh | bash -s -- -b $HOME/bin
+    - pipenv sync --dev
     - $HOME/bin/deps ci --type python
 ```

@@ -33,6 +33,7 @@ jobs:
     steps:
       - checkout
       - run: curl https://www.dependencies.io/install.sh | bash -s -- -b $HOME/bin
+      - run: pipenv sync --dev
       - run: $HOME/bin/deps ci --type python
   deps-node:
     docker:
@@ -40,6 +41,7 @@ jobs:
     steps:
       - checkout
       - run: curl https://www.dependencies.io/install.sh | bash -s -- -b $HOME/bin
+      - run: yarn install
       - run: $HOME/bin/deps ci --type js
 
 workflows:
