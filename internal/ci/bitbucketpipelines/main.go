@@ -17,6 +17,9 @@ func (gitlab *BitbucketPipelines) Autoconfigure() error {
 }
 
 func (gitlab *BitbucketPipelines) Branch() string {
+	if s := os.Getenv("BITBUCKET_BRANCH"); s != "" {
+		return s
+	}
 	return ""
 }
 
