@@ -5,17 +5,11 @@
                 "dependencies": {
                     "pullrequest": {
                         "source": "go",
-                        "constraint": "0.1.0",
-                        "latest": {
-                            "name":  "0.1.0"
-                        }
+                        "constraint": "0.1.0"
                     },
                     "requests": {
                         "source": "pip",
-                        "constraint": "0.1.0",
-                        "latest": {
-                            "name":  "0.1.0"
-                        }
+                        "constraint": "0.1.0"
                     }
                 }
             },
@@ -23,18 +17,11 @@
                 "dependencies": {
                     "pullrequest": {
                         "source": "go",
-                        "constraint": "0.3.0",
-                        "latest": {
-                            "name": "0.3.0",
-                            "content": "Third release"
-                        }
+                        "constraint": "0.3.0"
                     },
                     "requests": {
                         "source": "pip",
-                        "constraint": "0.3.0",
-                        "latest": {
-                            "name": "0.3.0"
-                        }
+                        "constraint": "0.3.0"
                     }
                 }
             }

@@ -1,27 +1,4 @@
-## Overview
-
 The following dependencies have been updated by [dependencies.io](https://www.dependencies.io/):
 
 - `pullrequest` in `requirements.txt` from "0.1.0" to "0.3.0"
 - `requests` in `requirements.txt` from "0.1.0" to "0.3.0"
-
-## Details
-
-### `pullrequest`
-
-This dependency is located in `requirements.txt` and was updated from "0.1.0" to "0.3.0".
-
-<details>
-<summary>0.3.0</summary>
-
-Third release
-
-</details>
-
----
-
-### `requests`
-
-This dependency is located in `requirements.txt` and was updated from "0.1.0" to "0.3.0".
-
-<small>*We didn't find any content for 0.3.0. Feel free to open an issue at https://github.com/dropseed/support to suggest any improvements.*</small>

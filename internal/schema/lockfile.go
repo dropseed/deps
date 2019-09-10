@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"sort"
-	"strings"
 )
 
 type Lockfile struct {
@@ -129,36 +128,28 @@ func (lockfile *Lockfile) changesByType() map[string]*LockfileChanges {
 // GetSummaryLine returns a summary line for a bulleted markdown list
 func (lockfile *Lockfile) GetSummaryLine(lockfilePath string) (string, error) {
 	changesByType := lockfile.changesByType()
-	additional := ""
-	if direct, found := changesByType["direct"]; found && len(direct.Updated) > 0 {
-		additional = fmt.Sprintf(" (including %d updated direct dependencies)", len(direct.Updated))
-	}
-	return fmt.Sprintf("- `%v` was updated%v", lockfilePath, additional), nil
-}
 
-// GetBodyContent compiles the long-form content for changes to the lockfile
-func (lockfile *Lockfile) GetBodyContent(lockfilePath string) (string, error) {
-	changesByType := lockfile.changesByType()
+	subitems := ""
 
-	contentParts := []string{}
+	numTransitive := 0
+	numDirect := 0
 
-	contentParts = append(contentParts, "### "+lockfilePath)
-
-	if transitive, found := changesByType["transitive"]; found {
-		contentParts = append(contentParts, fmt.Sprintf("%d transitive dependencies were updated, %d were added, and %d removed. View the git diff for more details about exactly what changed.", len(transitive.Updated), len(transitive.Added), len(transitive.Removed)))
+	if transitive, found := changesByType["transitive"]; found && len(transitive.Updated) > 0 {
+		numTransitive = len(transitive.Updated)
 	}
 
 	if direct, found := changesByType["direct"]; found && len(direct.Updated) > 0 {
-		contentParts = append(contentParts, fmt.Sprintf("The following %d direct dependencies were updated:", len(direct.Updated)))
+		numDirect = len(direct.Updated)
 
 		sort.Strings(direct.Updated) // sort first to get predictable order
 		for _, name := range direct.Updated {
 			currentDep := lockfile.Current.Dependencies[name]
 			dep := lockfile.Updated.Dependencies[name]
-			versionContent := dep.GetMarkdownContentForVersion(name, dep.Version)
-			contentParts = append(contentParts, fmt.Sprintf("#### `%s` was updated from %s to %s\n\n%s", name, currentDep.Version.Name, dep.Version.Name, versionContent))
+			subitems += fmt.Sprintf("\n  - `%s` was updated from %s to %s", name, currentDep.Version.Name, dep.Version.Name)
 		}
 	}
 
-	return strings.Join(contentParts, "\n\n"), nil
+	parens := fmt.Sprintf(" (including %d direct and %d transitive dependencies)", numDirect, numTransitive)
+
+	return fmt.Sprintf("- `%s` was updated%s%s", lockfilePath, parens, subitems), nil
 }

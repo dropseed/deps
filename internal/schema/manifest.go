@@ -76,37 +76,3 @@ func (manifest *Manifest) GetSummaryLineForDependencyName(name, manifestPath str
 	updatedDependency := manifest.Updated.Dependencies[name]
 	return fmt.Sprintf("- `%v` in `%v` from \"%v\" to \"%v\"", name, manifestPath, currentDependency.Constraint, updatedDependency.Constraint), nil
 }
-
-// func (manifest *Manifest) GetSummaryLine(manifestPath string) (string, error) {
-// 	if len(manifest.Updated.Dependencies) == 1 {
-// 		// for nam
-// 		// currentDependency := manifest.Current.Dependencies[name]
-// 		// updatedDependency := manifest.Updated.Dependencies[name]
-// 		// return fmt.Sprintf("- `%v` in `%v` from \"%v\" to \"%v\"", name, manifestPath, currentDependency.Constraint, updatedDependency.Constraint), nil
-// 		return "update single manifest dep", nil
-// 	}
-// 	// update x, y , z in manifestPath
-// 	return "update multiple manifest deps", nil
-// }
-
-// GetBodyContentForDependencyName compiles the markdown content for this dependency update
-func (manifest *Manifest) GetBodyContentForDependencyName(name, manifestPath string) (string, error) {
-	// TODO add notes
-
-	currentDependency := manifest.Current.Dependencies[name]
-	updatedDependency := manifest.Updated.Dependencies[name]
-
-	subject := fmt.Sprintf(
-		"### `%s`\n\nThis dependency is located in `%s` and was updated from \"%s\" to \"%s\".",
-		name,
-		manifestPath,
-		currentDependency.Constraint,
-		updatedDependency.Constraint,
-	)
-
-	// TODO figure out
-	// content := "\n\n" + updatedDependency.GetMarkdownContentForVersion(name, updatedDependency.Constraint)
-	content := ""
-
-	return subject + content, nil
-}

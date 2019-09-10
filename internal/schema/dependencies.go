@@ -192,7 +192,6 @@ func (s *Dependencies) generateDescription() string {
 	}
 
 	summaryLines := []string{}
-	contentParts := []string{}
 
 	if foundLockfiles {
 		lines, err := getSummaryLinesForLockfiles(lockfiles)
@@ -200,12 +199,6 @@ func (s *Dependencies) generateDescription() string {
 			panic(err)
 		}
 		summaryLines = append(summaryLines, lines...)
-
-		parts, err := getBodyPartsForLockfiles(lockfiles)
-		if err != nil {
-			panic(err)
-		}
-		contentParts = append(contentParts, parts...)
 	}
 
 	if foundManifests {
@@ -214,16 +207,9 @@ func (s *Dependencies) generateDescription() string {
 			panic(err)
 		}
 		summaryLines = append(summaryLines, lines...)
-
-		parts, err := getBodyPartsForManifests(manifests)
-		if err != nil {
-			panic(err)
-		}
-		contentParts = append(contentParts, parts...)
 	}
 
-	summaryHeader := "## Overview\n\nThe following dependencies have been updated by [dependencies.io](https://www.dependencies.io/):\n\n"
-	bodyHeader := "\n\n## Details\n\n"
+	summaryHeader := "The following dependencies have been updated by [dependencies.io](https://www.dependencies.io/):\n\n"
 
 	notes := "" // TODO use go template instead
 	// notes := env.GetSetting("pullrequest_notes", "")
@@ -231,7 +217,7 @@ func (s *Dependencies) generateDescription() string {
 	// 	notes = notes + "\n\n---\n\n"
 	// }
 
-	final := notes + summaryHeader + strings.Join(summaryLines, "\n") + bodyHeader + strings.Join(contentParts, "\n\n---\n\n") + "\n"
+	final := notes + summaryHeader + strings.Join(summaryLines, "\n") + "\n"
 
 	if len(final) > maxBodyLength {
 		final = final[:maxBodyLength]
@@ -259,27 +245,6 @@ func getSummaryLinesForLockfiles(lockfiles map[string]*Lockfile) ([]string, erro
 		summaries = append(summaries, s)
 	}
 	return summaries, nil
-}
-
-func getBodyPartsForLockfiles(lockfiles map[string]*Lockfile) ([]string, error) {
-	parts := make([]string, 0, len(lockfiles))
-
-	// iterate using the sorted keys instead of unpredictable map
-	keys := []string{}
-	for path := range lockfiles {
-		keys = append(keys, path)
-	}
-	sort.Strings(keys)
-
-	for _, lockfilePath := range keys {
-		lockfile := lockfiles[lockfilePath]
-		s, err := lockfile.GetBodyContent(lockfilePath)
-		if err != nil {
-			return nil, err
-		}
-		parts = append(parts, s)
-	}
-	return parts, nil
 }
 
 func getSummaryLinesForManifests(manifests map[string]*Manifest) ([]string, error) {
@@ -315,38 +280,6 @@ func getSummaryLinesForManifests(manifests map[string]*Manifest) ([]string, erro
 		}
 	}
 	return summaries, nil
-}
-
-func getBodyPartsForManifests(manifests map[string]*Manifest) ([]string, error) {
-	parts := []string{}
-
-	// iterate using the sorted keys instead of unpredictable map
-	keys := []string{}
-	for path := range manifests {
-		keys = append(keys, path)
-	}
-	sort.Strings(keys)
-
-	for _, manifestPath := range keys {
-		manifest := manifests[manifestPath]
-
-		// iterate using the sorted keys instead of unpredictable map
-		keys := []string{}
-		for name := range manifest.Updated.Dependencies {
-			keys = append(keys, name)
-		}
-		sort.Strings(keys)
-
-		for _, dependencyName := range keys {
-			depBody, err := manifest.GetBodyContentForDependencyName(dependencyName, manifestPath)
-			if err != nil {
-				return nil, err
-			}
-			parts = append(parts, depBody)
-		}
-	}
-
-	return parts, nil
 }
 
 func (dependencies *Dependencies) getUpdateID() string {
