@@ -51,6 +51,6 @@ Create a daily or weekly schedule to run your new deps pipeline.
 ## 4. Test the pipeline manually
 
 If you want to test your new pipeline without waiting for the schedule,
-just navigate to the commit view and click "run pipeline".
+just navigate to the branches view and click "run pipeline".
 
 [![Bitbucket pipeline manual run for deps](/assets/img/screenshots/bitbucket-pipeline-manual.png)](/assets/img/screenshots/bitbucket-pipeline-manual.png)
