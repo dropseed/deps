@@ -48,6 +48,8 @@ func newUpdatesFromDependencies(dependencies *schema.Dependencies, dependencyCon
 
 			updates.add(&updateDependencies, dependencyConfig)
 		}
+	} else {
+		output.Event("Lockfile updates disbled")
 	}
 
 	if *dependencyConfig.ManifestUpdates.Enabled {
@@ -87,6 +89,8 @@ func newUpdatesFromDependencies(dependencies *schema.Dependencies, dependencyCon
 				updates.add(&updateDependencies, dependencyConfig)
 			}
 		}
+	} else {
+		output.Event("Manifest updates disbled")
 	}
 
 	return updates, nil
