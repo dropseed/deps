@@ -7,7 +7,7 @@ output based on specified input.
 ## Installing deps on your machine
 
 ```sh
-$ curl https://www.dependencies.io/install.sh | bash -s 2.5.0-beta.1
+$ curl https://deps.app/install.sh | bash -s 2.5.0-beta.1
 ```
 
 Or, you can download binaries manually from the [releases on

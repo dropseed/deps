@@ -13,7 +13,7 @@ Running it on your machine is the best way to...
 To install `deps`,
 [manually download a release](https://github.com/dropseed/deps/releases) or use the following auto-install script:
 ```sh
-$ curl https://www.dependencies.io/install.sh | bash -s -- -b $HOME/bin
+$ curl https://deps.app/install.sh | bash -s -- -b $HOME/bin
 ```
 
 ## Checking for dependency updates

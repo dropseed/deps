@@ -12,7 +12,7 @@ The basic steps for using `deps ci` are generally the same, regardless of provid
 
 ## 2. Add a scheduled job to run deps
 
-- Use the install script to get the latest version (`curl https://www.dependencies.io/install.sh | bash -s -- -b $HOME/bin`)
+- Use the install script to get the latest version (`curl https://deps.app/install.sh | bash -s -- -b $HOME/bin`)
 - Run the `deps ci` command
 
 ## 3. Add a `deps.yml` (optional)
