@@ -1,2 +1,2 @@
 #!/bin/sh -e
-godownloader .goreleaser.yml > install.sh
+godownloader .goreleaser.yml > docs/content/install.sh
