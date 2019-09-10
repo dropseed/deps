@@ -89,18 +89,20 @@ func CI(autoconfigure bool, types []string) error {
 	output.Event("%d existing updates", len(existingUpdates))
 
 	// TODO this is also because collectors may have done some crap and not cleaned up
-	output.Event("Temporarily saving your uncommitted changes in a git stash")
-	stashed := git.Stash(fmt.Sprintf("Deps save before update"))
+	if git.IsDirty() {
+		output.Event("Temporarily saving your uncommitted changes in a git stash")
+		stashed := git.Stash(fmt.Sprintf("Deps save before update"))
 
-	// Stash pop needs to happen last (so be added first)
-	defer func() {
-		if stashed {
-			output.Event("Putting original uncommitted changes back")
-			if err := git.StashPop(); err != nil {
-				output.Error("Error putting stash back: %v", err)
+		// Stash pop needs to happen last (so be added first)
+		defer func() {
+			if stashed {
+				output.Event("Putting original uncommitted changes back")
+				if err := git.StashPop(); err != nil {
+					output.Error("Error putting stash back: %v", err)
+				}
 			}
-		}
-	}()
+		}()
+	}
 
 	output.Event("Performing %d new updates on %s", len(newUpdates), startingBranch)
 
