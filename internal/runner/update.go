@@ -6,7 +6,7 @@ import (
 	"github.com/dropseed/deps/internal/component"
 	"github.com/dropseed/deps/internal/config"
 	"github.com/dropseed/deps/internal/git"
-	"github.com/dropseed/deps/internal/schema"
+	"github.com/dropseed/deps/pkg/schema"
 )
 
 // Update contains relevant data for a potential dependency update

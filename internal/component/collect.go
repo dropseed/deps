@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/dropseed/deps/internal/output"
-	"github.com/dropseed/deps/internal/schema"
+	"github.com/dropseed/deps/pkg/schema"
 )
 
 func (r *Runner) Collect(inputPath string) (*schema.Dependencies, error) {

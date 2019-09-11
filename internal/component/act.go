@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/dropseed/deps/internal/output"
-	"github.com/dropseed/deps/internal/schema"
+	"github.com/dropseed/deps/pkg/schema"
 )
 
 func (r *Runner) Act(inputDependencies *schema.Dependencies) (*schema.Dependencies, error) {

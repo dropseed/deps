@@ -9,7 +9,7 @@ import (
 
 	"github.com/dropseed/deps/internal/config"
 	"github.com/dropseed/deps/internal/output"
-	"github.com/dropseed/deps/internal/schema"
+	"github.com/dropseed/deps/pkg/schema"
 )
 
 type PullRequest struct {

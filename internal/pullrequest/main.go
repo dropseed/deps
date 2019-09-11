@@ -10,7 +10,7 @@ import (
 	"github.com/dropseed/deps/internal/pullrequest/bitbucket"
 	"github.com/dropseed/deps/internal/pullrequest/github"
 	"github.com/dropseed/deps/internal/pullrequest/gitlab"
-	"github.com/dropseed/deps/internal/schema"
+	"github.com/dropseed/deps/pkg/schema"
 )
 
 const GITHUB = "github"

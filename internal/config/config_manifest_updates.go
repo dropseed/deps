@@ -3,7 +3,7 @@ package config
 import (
 	"regexp"
 
-	"github.com/dropseed/deps/internal/schema"
+	"github.com/dropseed/deps/pkg/schema"
 )
 
 type ManifestUpdates struct {

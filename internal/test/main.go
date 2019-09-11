@@ -11,7 +11,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/dropseed/deps/internal/schema"
+	"github.com/dropseed/deps/pkg/schema"
 
 	"github.com/dropseed/deps/internal/component"
 	"github.com/dropseed/deps/internal/output"
