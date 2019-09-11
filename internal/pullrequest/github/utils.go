@@ -94,10 +94,5 @@ func getAPIToken() string {
 		return token
 	}
 
-	// Used by GitHub Actions
-	if s := os.Getenv("GITHUB_TOKEN"); s != "" {
-		return s
-	}
-
 	return ""
 }

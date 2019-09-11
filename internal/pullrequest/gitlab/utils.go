@@ -12,14 +12,6 @@ func getAPIToken() string {
 		return s
 	}
 
-	if s := os.Getenv("GITLAB_TOKEN"); s != "" {
-		return s
-	}
-
-	// if s := os.Getenv("CI_JOB_TOKEN"); s != "" {
-	// 	return s
-	// }
-
 	return ""
 }
 
