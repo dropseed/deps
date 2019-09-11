@@ -14,8 +14,7 @@ You can use your personal account to do this, or a "bot" account that your team 
 1. Give it access to the repo you're setting up
 1. [Generate a new token](https://gitlab.com/profile/personal_access_tokens) with the `write_repository` and `api` scopes
     [![GitLab personal access token settings for deps](/assets/img/screenshots/gitlab-personal-access-token.png)](/assets/img/screenshots/gitlab-personal-access-token.png)
-1. Set the required environment variables in your CI
-    - `GITLAB_TOKEN` or `DEPS_GITLAB_TOKEN`
+1. Set the `DEPS_GITLAB_TOKEN` environment variable in your CI
 
 ## Merge request settings
 

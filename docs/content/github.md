@@ -16,8 +16,7 @@ The setup is more involved but offers a different way to manage permissions and 
 1. Log in with the account you want deps to use (this will be the author of deps pull requests)
 1. Give it access to the repo you're setting up
 1. [Generate a new token](https://github.com/settings/tokens) with the `repo` scope
-1. Set the required environment variables in your CI
-    - `GITHUB_TOKEN` or `DEPS_GITHUB_TOKEN`
+1. Set the `DEPS_GITHUB_TOKEN` environment variable in your CI
 
 ## GitHub App
 

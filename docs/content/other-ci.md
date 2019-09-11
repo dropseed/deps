@@ -8,7 +8,7 @@ The basic steps for using `deps ci` are generally the same, regardless of provid
 ## 1. Set the environment variables
 
 - `DEPS_TOKEN` from [3.dependencies.io](https://3.dependencies.io)
-- Credentials for your git host (ex. `GITHUB_TOKEN`)
+- Credentials for your git host (ex. `DEPS_GITHUB_TOKEN`)
 
 ## 2. Add a scheduled job to run deps
 

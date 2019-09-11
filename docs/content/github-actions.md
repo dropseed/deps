@@ -37,5 +37,5 @@ jobs:
     - run: $HOME/bin/deps ci
       env:
         DEPS_TOKEN: ${{ secrets.DEPS_TOKEN }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        DEPS_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
