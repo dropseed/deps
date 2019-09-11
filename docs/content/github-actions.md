@@ -16,7 +16,7 @@ You can get your `DEPS_TOKEN` from [3.dependencies.io](https://3.dependencies.io
 A example of using deps with Python dependencies.
 You can put your deps workflow in its own file,
 such as `.github/workflows/deps.yml`.
-You will need the `DEPS_TOKEN` and `GITHUB_TOKEN` at a minimum.
+You will need the `DEPS_TOKEN` and `DEPS_GITHUB_TOKEN` at a minimum.
 
 ```yaml
 name: deps
