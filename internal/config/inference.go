@@ -42,11 +42,11 @@ var patterns = []inferencePattern{
 		Type:    "js",
 		UseDir:  true,
 	},
-	// inferencePattern{
-	// 	Pattern: regexp.MustCompile("^composer.json$"),
-	// 	Type:    "php",
-	// 	UseDir:  true,
-	// },
+	inferencePattern{
+		Pattern: regexp.MustCompile("^composer.json$"),
+		Type:    "php",
+		UseDir:  true,
+	},
 	// inferencePattern{
 	// 	Pattern: regexp.MustCompile("^Dockerfile.*$"),
 	// 	Type:    "dockerfile",
