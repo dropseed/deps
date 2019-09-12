@@ -8,3 +8,6 @@ curl -s https://raw.githubusercontent.com/dropseed/deps-python/master/README.md?
 
 echo "# PHP" > content/php.md
 curl -s https://raw.githubusercontent.com/dropseed/deps-php/master/README.md?d=$(date +%s) | tail -n +2 >> content/php.md
+
+echo "# Git" > content/git.md
+curl -s https://raw.githubusercontent.com/dropseed/deps-git/master/README.md?d=$(date +%s) | tail -n +2 >> content/git.md
