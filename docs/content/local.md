@@ -1,17 +1,15 @@
 # Using deps locally
 
-You can use deps locally for free and without setting up an API token!
+Running `deps` on your own machine is the best way to...
 
-Running it on your machine is the best way to...
-
-- Test advanced configuration without committing to your repo
-- Make one-off updates
 - See how deps works *before* setting up CI
+- Make one-off updates
+- Test advanced configuration without committing to your repo
 
 ## Installing
 
 To install `deps`,
-[manually download a release](https://github.com/dropseed/deps/releases) or use the following auto-install script:
+[manually download a release](https://github.com/dropseed/deps/releases) or use the auto-install script:
 ```sh
 $ curl https://deps.app/install.sh | bash -s -- -b $HOME/bin
 ```
