@@ -74,5 +74,9 @@ func (md *ManifestDependency) Validate() error {
 func (manifest *Manifest) GetSummaryLineForDependencyName(name, manifestPath string) (string, error) {
 	currentDependency := manifest.Current.Dependencies[name]
 	updatedDependency := manifest.Updated.Dependencies[name]
-	return fmt.Sprintf("- `%v` in `%v` from \"%v\" to \"%v\"", name, manifestPath, currentDependency.Constraint, updatedDependency.Constraint), nil
+	inManifest := ""
+	if manifestPath != "" {
+		inManifest = fmt.Sprintf(" in `%s`", manifestPath)
+	}
+	return fmt.Sprintf("- `%s`%s from \"%s\" to \"%s\"", dependencyNameForDisplay(name), inManifest, currentDependency.Constraint, updatedDependency.Constraint), nil
 }

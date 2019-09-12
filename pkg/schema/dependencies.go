@@ -136,7 +136,11 @@ func (s *Dependencies) generateTitle() string {
 				dep := dependencies[name]
 				installed := manifest.Current.Dependencies[name].Constraint
 				updated := dep.Constraint
-				return fmt.Sprintf("Update %v in %v from %v to %v", name, manifestPath, installed, updated)
+				inManifest := ""
+				if manifestPath != "" {
+					inManifest = fmt.Sprintf(" in %s", manifestPath)
+				}
+				return fmt.Sprintf("Update %s%s from %s to %s", dependencyNameForDisplay(name), inManifest, installed, updated)
 			}
 
 			// more than 1 dependency

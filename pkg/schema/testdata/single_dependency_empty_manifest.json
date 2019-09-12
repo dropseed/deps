@@ -1,0 +1,22 @@
+{
+    "manifests": {
+        "": {
+            "current": {
+                "dependencies": {
+                    "https://github.com/dropseed/pullrequest.git": {
+                        "source": "go",
+                        "constraint": "0.1.0"
+                    }
+                }
+            },
+            "updated": {
+                "dependencies": {
+                    "https://github.com/dropseed/pullrequest.git": {
+                        "source": "go",
+                        "constraint": "0.3.0"
+                    }
+                }
+            }
+        }
+    }
+}

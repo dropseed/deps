@@ -31,6 +31,16 @@ func TestGenerateTitleWithSingleDependency(t *testing.T) {
 	}
 }
 
+func TestGenerateTitleWithSingleDependencyNoManifestName(t *testing.T) {
+	title, err := generateTitleFromFilename("./testdata/single_dependency_empty_manifest.json")
+	if err != nil {
+		t.Error(err)
+	}
+	if title != "Update dropseed/pullrequest from 0.1.0 to 0.3.0" {
+		t.Error("Title does not match expected: ", title)
+	}
+}
+
 // func TestGenerateTitleWithTwoDependencies(t *testing.T) {
 // 	title, err := generateTitleFromFilename("./testdata/two_dependencies.json")
 // 	if err != nil {
@@ -95,6 +105,20 @@ func TestGenerateBodyWithSingleDependency(t *testing.T) {
 		t.Error(err)
 	}
 	expected, err := ioutil.ReadFile("./testdata/single_body.txt")
+	if err != nil {
+		panic(err)
+	}
+	if body != string(expected) {
+		t.Error("Body does not match expected: ", body)
+	}
+}
+
+func TestGenerateBodyWithSingleDependencyEmptyManifest(t *testing.T) {
+	body, err := generateBodyFromFilename("./testdata/single_dependency_empty_manifest.json")
+	if err != nil {
+		t.Error(err)
+	}
+	expected, err := ioutil.ReadFile("./testdata/single_body_empty_manifest.txt")
 	if err != nil {
 		panic(err)
 	}
