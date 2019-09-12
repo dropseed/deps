@@ -59,6 +59,8 @@ func Run() error {
 		return err
 	}
 
+	runner.Env = append(runner.Env, "DEPS_TEST=true")
+
 	if err := runner.Install(); err != nil {
 		return err
 	}

@@ -20,7 +20,7 @@ func (r *Runner) Install() error {
 
 	cmd := exec.Command("sh", "-c", command)
 	cmd.Dir = r.Path
-	cmd.Env = r.Env
+	cmd.Env = append(os.Environ(), r.Env...)
 	if output.IsDebug() {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
