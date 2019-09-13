@@ -1,6 +1,7 @@
 package runner
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/dropseed/deps/internal/config"
@@ -12,8 +13,13 @@ import (
 
 // Local runs a full interactive update process
 func Local() error {
+	if git.HasStagedChanges() {
+		return errors.New("You can't have staged changes while running this command. Please commit or unstage them.")
+	}
+
 	if git.IsDirty() {
-		output.Warning("You have uncommitted changes! We recommend you have a clean git status before running deps locally, so that you can easily track what changed.\n")
+		output.Warning("You have uncommitted changes! We are going to stage them so that we can tell the difference between changes. They will be unstaged when this command exits.\n")
+		git.Add()
 	}
 
 	cfg, err := config.FindOrInfer()
@@ -24,6 +30,12 @@ func Local() error {
 	allUpdates, err := collectUpdates(cfg, []string{})
 	if err != nil {
 		return err
+	}
+
+	if git.HasStagedChanges() || git.IsDirty() {
+		output.Debug("Restoring the state of your repo before updates were collected")
+		git.Checkout(".")
+		git.Unstage()
 	}
 
 	newUpdates, _, _, err := organizeUpdates(allUpdates)

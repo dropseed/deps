@@ -220,7 +220,8 @@ func runUpdate(update *Update, base, head string) error {
 		return nil
 	}
 
-	git.AddCommit(outputDeps.Title)
+	git.Add()
+	git.Commit(outputDeps.Title)
 	// TODO try adding more lines for dependency breakdown,
 	// especially on lockfiles
 

@@ -122,10 +122,19 @@ func CurrentRef() string {
 	return strings.TrimSpace(string(out))
 }
 
-func AddCommit(message string) {
+func Add() {
 	if err := run("add", "."); err != nil {
 		panic(err)
 	}
+}
+
+func Unstage() {
+	if err := run("reset", "."); err != nil {
+		panic(err)
+	}
+}
+
+func Commit(message string) {
 	if err := run("commit", "-m", message); err != nil {
 		panic(err)
 	}
@@ -182,6 +191,16 @@ func Fetch() {
 	if err := run("fetch"); err != nil {
 		panic(err)
 	}
+}
+
+func HasStagedChanges() bool {
+	cmd := exec.Command("git", "diff", "--name-only", "--staged")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		panic(err)
+	}
+	cleaned := strings.TrimSpace(string(out))
+	return cleaned != ""
 }
 
 func IsDirty() bool {
