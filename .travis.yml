@@ -1,10 +1,20 @@
 language: go
-install:
-  - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-  - dep ensure -vendor-only
-script:
-  - echo "skipping..."
-  # - go test -v ./...
-  # - go install ./cmd/deps && cd example-component && deps dev test && cd ..
-after_success:
-  - test -n "$TRAVIS_TAG" && curl -sL https://git.io/goreleaser | bash
+
+jobs:
+  include:
+
+  - name: test
+    install:
+    - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+    - dep ensure -vendor-only
+    script: echo "No tests..."
+    after_success: test -n "$TRAVIS_TAG" && curl -sL https://git.io/goreleaser | bash
+
+  - name: deps
+    if: branch = master AND type = cron
+    git:
+      depth: false  # required for existing deps branches to be available
+    install:
+    - cd docs && scripts/install
+    - curl https://deps.app/install.sh | bash -s -- -b $HOME/bin
+    script: deps ci
