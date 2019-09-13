@@ -123,4 +123,25 @@ dependencies:
 
 ## Settings
 
-TODO - as env vars or config settings
+Most components have `settings` to further specify how they work.
+
+```yaml
+version: 3
+dependencies:
+- type: js
+  settings:
+    github_labels:
+    - dependencies
+    - automerge
+```
+
+Settings can be more complex types and will be passed to the component as `DEPS_SETTING_{NAME}={JSON encoded value}`.
+
+If you do *not* have a `deps.yml`,
+you can also pass settings manually
+(and for every component)
+by using an env variable in your CI.
+This is an easy way to apply the same GitHub PR labels to all updates, for example:
+```sh
+$ DEPS_SETTING_GITHUB_LABELS='["automerge"]' deps ci
+```
