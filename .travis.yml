@@ -1,9 +1,8 @@
-language: go
-
 jobs:
   include:
 
   - name: test
+    language: go
     install:
     - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
     - dep ensure -vendor-only
@@ -11,6 +10,7 @@ jobs:
     after_success: test -n "$TRAVIS_TAG" && curl -sL https://git.io/goreleaser | bash
 
   - name: deps
+    language: python
     if: branch = master AND type = cron
     git:
       depth: false  # required for existing deps branches to be available
