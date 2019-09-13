@@ -15,6 +15,6 @@ jobs:
     git:
       depth: false  # required for existing deps branches to be available
     install:
-    - cd docs && scripts/install
+    - cd docs && scripts/install && cd ..
     - curl https://deps.app/install.sh | bash -s -- -b $HOME/bin
     script: deps ci
