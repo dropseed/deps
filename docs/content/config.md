@@ -12,12 +12,45 @@ dependencies:
 
 *Note, this can also be named `.deps.yml` instead of `deps.yml`.*
 
+## Lockfile updates
+
+Most modern dependency managers have the concept of a "lockfile" (yarn.lock).
+This is how you save the *exact* version of your direct and transitive dependencies that your app should be using.
+
+**When your lockfile is outdated,
+deps will send you a single pull request that updates the entire lockfile.**
+This single pull request will include in-range updates to all of your direct *and* transitive dependencies.
+
+[![Lockfile update pull request made by deps](/assets/img/screenshots/deps-lockfile-pr.png)](/assets/img/screenshots/deps-lockfile-pr.png)
+
+To disable lockfile updates, you can set `enabled: false` in your `deps.yml`.
+
+```yaml
+version: 3
+dependencies:
+- type: js
+  lockfile_updates:
+    enabled: false
+```
+
+### Examples of lockfiles
+
+- `yarn.lock` in Yarn
+- `package-lock.json` in npm
+- `Pipfile.lock` in Pipenv
+- `composer.lock` in Composer
+- `Gemfile.lock` in Bundler
+- `Cargo.lock` in Cargo
+
 ## Manifest updates
 
 A manifest is where you define your *direct* dependencies (like in `package.json`).
 
 **When an out-of-range update is available for a direct dependency,
 you'll get a pull request suggesting a new constraint to use.**
+In-range updates will be delivered as [lockfile updates](#lockfile-updates).
+
+[![Manifest update pull request made by deps](/assets/img/screenshots/deps-manifest-pr.png)](/assets/img/screenshots/deps-manifest-pr.png)
 
 You can disable manifest updates entirely:
 
@@ -74,33 +107,6 @@ dependencies:
       group: true
     - name: .*
 ```
-
-## Lockfile updates
-
-Most modern dependency managers have the concept of a "lockfile" (yarn.lock).
-This is how you save the *exact* version of your direct and transitive dependencies that your app should be using.
-
-**Whenever your lockfile is out of date,
-deps will send you a single pull request that updates the entire lockfile.**
-
-To disable lockfile updates, you can set `enabled: false` in your `deps.yml`.
-
-```yaml
-version: 3
-dependencies:
-- type: js
-  lockfile_updates:
-    enabled: false
-```
-
-### Examples of lockfiles
-
-- `yarn.lock` in Yarn
-- `package-lock.json` in npm
-- `Pipfile.lock` in Pipenv
-- `composer.lock` in Composer
-- `Gemfile.lock` in Bundler
-- `Cargo.lock` in Cargo
 
 ## Injecting commands (hooks)
 
