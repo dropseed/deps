@@ -216,8 +216,7 @@ func runUpdate(update *Update, base, head string) error {
 	}
 
 	if !git.IsDirty() {
-		output.Event("No changes to commit, exiting update early")
-		return nil
+		return errors.New("Update didn't generate any changes to commit")
 	}
 
 	git.Add()
