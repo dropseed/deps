@@ -1,2 +1,3 @@
 #!/bin/sh -e
-./test
+./scripts/go-install
+# ./test
