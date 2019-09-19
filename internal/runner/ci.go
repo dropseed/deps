@@ -108,7 +108,7 @@ func CI(autoconfigure bool, types []string) error {
 
 	for _, update := range newUpdates {
 		output.Event("Running update: %s", update.title)
-		if err := runUpdate(update, startingBranch, update.branch); err != nil {
+		if err := runUpdate(update, startingBranch, update.branch, false); err != nil {
 			failedUpdates = append(failedUpdates, &updateResult{
 				update: update,
 				err:    err,
@@ -125,7 +125,7 @@ func CI(autoconfigure bool, types []string) error {
 
 	for _, update := range outdatedUpdates {
 		output.Event("Updating outdated update: %s", update.title)
-		if err := runUpdate(update, update.branch, update.branch); err != nil {
+		if err := runUpdate(update, update.branch, update.branch, true); err != nil {
 			failedUpdates = append(failedUpdates, &updateResult{
 				update: update,
 				err:    err,
@@ -188,7 +188,7 @@ func getCurrentBranch(ci ci.CIProvider) string {
 	return branch
 }
 
-func runUpdate(update *Update, base, head string) error {
+func runUpdate(update *Update, base, head string, allowEmpty bool) error {
 	git.Checkout(base)
 
 	if base == head {
@@ -216,6 +216,11 @@ func runUpdate(update *Update, base, head string) error {
 	}
 
 	if !git.IsDirty() {
+		if allowEmpty {
+			output.Event("No new changes to commit")
+			return nil
+		}
+
 		return errors.New("Update didn't generate any changes to commit")
 	}
 
