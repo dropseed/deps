@@ -11,6 +11,7 @@ import (
 // Dependency is a path + type in dependencies.yml
 type Dependency struct {
 	Type string `mapstructure:"type" yaml:"type" json:"type"`
+	// Version should be a git ref that is checked out/pulled
 	// Version         string                 `mapstructure:"version,omitempty" yaml:"version,omitempty" json:"version,omitempty"`
 	Path            string                 `mapstructure:"path,omitempty" yaml:"path,omitempty" json:"path,omitempty"`
 	Env             map[string]string      `mapstructure:"env,omitempty" yaml:"env,omitempty" json:"env"`
