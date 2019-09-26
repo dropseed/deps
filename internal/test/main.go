@@ -15,6 +15,7 @@ import (
 
 	"github.com/dropseed/deps/internal/component"
 	"github.com/dropseed/deps/internal/output"
+	"github.com/dropseed/deps/internal/schemaext"
 )
 
 var UpdateOutputData = false
@@ -202,8 +203,10 @@ func getDiff(a string, b string, args ...string) string {
 
 func compare(given, expected *schema.Dependencies) error {
 	if LooseOutputDataComparison {
-		if given.UpdateID != expected.UpdateID {
-			return fmt.Errorf("Update IDs don't match: %s != %s", given.UpdateID, expected.UpdateID)
+		givenID := schemaext.UpdateIDForDeps(given)
+		expectedID := schemaext.UpdateIDForDeps(expected)
+		if givenID != expectedID {
+			return fmt.Errorf("Update IDs don't match: %s != %s", givenID, expectedID)
 		}
 	} else {
 		if match, err := schemasMatchExactly(given, expected); err != nil {

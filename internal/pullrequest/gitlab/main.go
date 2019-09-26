@@ -12,6 +12,7 @@ import (
 
 	"github.com/dropseed/deps/internal/config"
 	"github.com/dropseed/deps/internal/output"
+	"github.com/dropseed/deps/internal/schemaext"
 	"github.com/dropseed/deps/pkg/schema"
 )
 
@@ -37,8 +38,8 @@ func NewMergeRequest(base string, head string, deps *schema.Dependencies, cfg *c
 	return &MergeRequest{
 		Base:          base,
 		Head:          head,
-		Title:         deps.Title,
-		Body:          deps.Description,
+		Title:         schemaext.TitleForDeps(deps),
+		Body:          schemaext.DescriptionForDeps(deps),
 		Dependencies:  deps,
 		Config:        cfg,
 		ProjectAPIURL: apiURL,

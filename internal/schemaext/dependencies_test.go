@@ -1,21 +1,23 @@
-package schema
+package schemaext
 
 import (
 	"io/ioutil"
 	"testing"
+
+	"github.com/dropseed/deps/pkg/schema"
 )
 
 func generateTitleFromFilename(filename string) (string, error) {
-	dependencies, err := NewDependenciesFromJSONPath(filename)
+	dependencies, err := schema.NewDependenciesFromJSONPath(filename)
 	if err != nil {
 		return "", err
 	}
 
-	return dependencies.generateTitle(), nil
+	return TitleForDeps(dependencies), nil
 }
 
 func TestMalformedJSON(t *testing.T) {
-	_, err := NewDependenciesFromJSONContent([]byte("{not a json}"))
+	_, err := schema.NewDependenciesFromJSONContent([]byte("{not a json}"))
 	if err == nil {
 		t.FailNow()
 	}
@@ -92,11 +94,11 @@ func TestGenerateTitleWithSingleDependencyNoManifestName(t *testing.T) {
 // }
 
 func generateBodyFromFilename(filename string) (string, error) {
-	dependencies, err := NewDependenciesFromJSONPath(filename)
+	dependencies, err := schema.NewDependenciesFromJSONPath(filename)
 	if err != nil {
 		return "", err
 	}
-	return dependencies.generateDescription(), nil
+	return DescriptionForDeps(dependencies), nil
 }
 
 func TestGenerateBodyWithSingleDependency(t *testing.T) {

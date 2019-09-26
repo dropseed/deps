@@ -11,6 +11,7 @@ import (
 	"github.com/dropseed/deps/internal/git"
 	"github.com/dropseed/deps/internal/output"
 	"github.com/dropseed/deps/internal/pullrequest"
+	"github.com/dropseed/deps/internal/schemaext"
 )
 
 type updateResult struct {
@@ -225,7 +226,7 @@ func runUpdate(update *Update, base, head string, allowEmpty bool) error {
 	}
 
 	git.Add()
-	git.Commit(outputDeps.Title)
+	git.Commit(schemaext.TitleForDeps(outputDeps))
 	// TODO try adding more lines for dependency breakdown,
 	// especially on lockfiles
 
