@@ -1,6 +1,9 @@
 package schemaext
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 func dependencyNameForDisplay(name string) string {
 
@@ -27,4 +30,11 @@ func dependencyNameForDisplay(name string) string {
 	}
 
 	return name
+}
+
+func optionalMarkdownLink(s, url string) string {
+	if url == "" {
+		return s
+	}
+	return fmt.Sprintf("[%s](%s)", s, url)
 }

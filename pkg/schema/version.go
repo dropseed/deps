@@ -4,7 +4,6 @@ import "errors"
 
 type Version struct {
 	Name string `json:"name"`
-	Link string `json:"link,omitempty"`
 }
 
 func (v *Version) Validate() error {

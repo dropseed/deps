@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sort"
 
+	"github.com/dropseed/deps/internal/changelogs"
 	"github.com/dropseed/deps/pkg/schema"
 )
 
@@ -49,5 +50,14 @@ func getSummaryLineForDependencyName(manifest *schema.Manifest, name, manifestPa
 	if manifestPath != "" {
 		inManifest = fmt.Sprintf(" in `%s`", manifestPath)
 	}
-	return fmt.Sprintf("- `%s`%s from \"%s\" to \"%s\"", dependencyNameForDisplay(name), inManifest, currentDependency.Constraint, updatedDependency.Constraint), nil
+
+	cf := &changelogs.ChangelogFinder{
+		Source:     updatedDependency.Source,
+		Dependency: name,
+		Repo:       updatedDependency.Repo,
+		Version:    updatedDependency.Constraint,
+	}
+	updatedURL := cf.FindURL()
+
+	return fmt.Sprintf("- `%s`%s from \"%s\" to \"%s\"", dependencyNameForDisplay(name), inManifest, currentDependency.Constraint, optionalMarkdownLink(updatedDependency.Constraint, updatedURL)), nil
 }
