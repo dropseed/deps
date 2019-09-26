@@ -69,7 +69,7 @@ func (updates Updates) prompt() error {
 			break
 		}
 
-		items = append(items, "Skip")
+		items = append(items, "Done")
 
 		prompt := promptui.Select{
 			Label: fmt.Sprintf("Choose an update to make"),
@@ -83,7 +83,7 @@ func (updates Updates) prompt() error {
 		}
 
 		if i+1 == len(items) {
-			// Chose to skip
+			// Chose to quit
 			break
 		}
 
