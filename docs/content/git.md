@@ -21,6 +21,14 @@ dependencies:
           # (which means latest version will be the last tag)
           semver: false
 
+      https://github.com/dropseed/deps-git.git:
+        replace_in_files:
+        - filename: file.txt
+          pattern: deps-git (\S+)
+          # use a semver range to limit updates
+          # https://github.com/blang/semver#ranges
+          range: "< 1.0.0"
+
       https://github.com/getsentry/sentry-javascript.git:
         replace_in_files:
         - filename: file.txt
