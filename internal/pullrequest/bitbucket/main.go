@@ -45,6 +45,10 @@ func NewPullRequest(base string, head string, deps *schema.Dependencies, cfg *co
 	}, nil
 }
 
+func (pr *PullRequest) GetSetting(name string) interface{} {
+	return pr.Config.GetSettingForSchema(name, pr.Dependencies)
+}
+
 func (pr *PullRequest) request(verb string, url string, input []byte) (*http.Response, string, error) {
 	client := &http.Client{}
 
@@ -93,7 +97,7 @@ func (pr *PullRequest) CreateOrUpdate() error {
 
 func (pr *PullRequest) getPullRequestOptions() map[string]interface{} {
 	base := pr.Base
-	if target := pr.Config.GetSetting("bitbucket_destination"); target != nil {
+	if target := pr.GetSetting("bitbucket_destination"); target != nil {
 		base = target.(string)
 	}
 
@@ -117,7 +121,7 @@ func (pr *PullRequest) getPullRequestOptions() map[string]interface{} {
 	}
 
 	for _, f := range otherFields {
-		if s := pr.Config.GetSetting(fmt.Sprintf("bitbucket_%s", f)); s != nil {
+		if s := pr.GetSetting(fmt.Sprintf("bitbucket_%s", f)); s != nil {
 			pullrequestMap[f] = s
 		}
 	}

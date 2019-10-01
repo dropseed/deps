@@ -54,6 +54,10 @@ func NewPullRequest(base string, head string, deps *schema.Dependencies, cfg *co
 	}, nil
 }
 
+func (pr *PullRequest) GetSetting(name string) interface{} {
+	return pr.Config.GetSettingForSchema(name, pr.Dependencies)
+}
+
 func (pr *PullRequest) request(verb string, url string, input []byte) (*http.Response, string, error) {
 	client := &http.Client{}
 
@@ -83,7 +87,7 @@ func (pr *PullRequest) pullsURL() string {
 
 func (pr *PullRequest) getCreateJSONData() ([]byte, error) {
 	base := pr.Base
-	if override := pr.Config.GetSetting("github_base_branch"); override != nil {
+	if override := pr.GetSetting("github_base_branch"); override != nil {
 		base = override.(string)
 	}
 
@@ -160,9 +164,9 @@ func (pr *PullRequest) getExisting() (map[string]interface{}, error) {
 func (pr *PullRequest) CreateOrUpdate() error {
 	// check the optional settings now, before actually creating the PR (which we'll have to update)
 
-	labels := pr.Config.GetSetting("github_labels")
-	assignees := pr.Config.GetSetting("github_assignees")
-	milestone := pr.Config.GetSetting("github_milestone")
+	labels := pr.GetSetting("github_labels")
+	assignees := pr.GetSetting("github_assignees")
+	milestone := pr.GetSetting("github_milestone")
 
 	fmt.Printf("Preparing to open GitHub pull request for %v\n", pr.RepoFullName)
 
