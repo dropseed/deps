@@ -1,8 +1,6 @@
 package config
 
 import (
-	"encoding/json"
-	"io/ioutil"
 	"testing"
 )
 
@@ -13,22 +11,6 @@ func compareToYAML(t *testing.T, config *Config, expected string) {
 	}
 	if expected != dumped {
 		print(dumped)
-		t.FailNow()
-	}
-}
-
-func compareToJSON(t *testing.T, config *Config, path string) {
-	config.Compile()
-	j, err := json.MarshalIndent(config, "", "  ")
-	if err != nil {
-		t.Error(err)
-	}
-	f, err := ioutil.ReadFile(path)
-	if err != nil {
-		t.Error(err)
-	}
-	if string(j)+"\n" != string(f) {
-		println(string(j))
 		t.FailNow()
 	}
 }
@@ -56,14 +38,10 @@ dependencies:
     - name: django-braces
       enabled: false
     - name: django-.*
-      versions: Y.Y.Y
     - name: django
-      versions: L.Y.Y
     - name: .*
-      versions: Y.Y.Y
 `
 	compareToYAML(t, config, expected)
-	compareToJSON(t, config, "./testdata/v2_full.json")
 }
 
 func TestMinimal(t *testing.T) {
@@ -78,7 +56,6 @@ dependencies:
   path: requirements.txt
 `
 	compareToYAML(t, config, expected)
-	compareToJSON(t, config, "./testdata/v2_minimal.json")
 }
 
 func TestConfigFromMap(t *testing.T) {
