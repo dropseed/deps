@@ -28,13 +28,22 @@ func (dependency *Dependency) Compile() {
 	}
 
 	// set defaults
+	if dependency.Settings == nil {
+		dependency.Settings = Settings{}
+	}
 	if dependency.LockfileUpdates.Enabled == nil {
 		t := true
 		dependency.LockfileUpdates.Enabled = &t
 	}
+	if dependency.LockfileUpdates.Settings == nil {
+		dependency.LockfileUpdates.Settings = Settings{}
+	}
 	if dependency.ManifestUpdates.Enabled == nil {
 		t := true
 		dependency.ManifestUpdates.Enabled = &t
+	}
+	if dependency.ManifestUpdates.Settings == nil {
+		dependency.ManifestUpdates.Settings = Settings{}
 	}
 
 	// if no filters then set the default 1
