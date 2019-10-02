@@ -126,7 +126,9 @@ func CI(autoconfigure bool, types []string) error {
 
 	for _, update := range outdatedUpdates {
 		output.Event("Updating outdated update: %s", update.title)
-		if err := runUpdate(update, update.branch, update.branch, true); err != nil {
+		// TODO if update.branch already exists, maybe base could be
+		// determined from what it originally branched off of?
+		if err := runUpdate(update, startingBranch, update.branch, true); err != nil {
 			failedUpdates = append(failedUpdates, &updateResult{
 				update: update,
 				err:    err,
@@ -189,19 +191,18 @@ func getCurrentBranch(ci ci.CIProvider) string {
 	return branch
 }
 
-func runUpdate(update *Update, base, head string, allowEmpty bool) error {
-	git.Checkout(base)
-
-	if base == head {
-		// PR back to the main branch
-		// (setting or env var?)
-		base = "master"
+func runUpdate(update *Update, base, head string, existingUpdate bool) error {
+	if existingUpdate {
+		// go straight to it
+		git.Checkout(head)
 	} else {
+		// create a branch for it
+		git.Checkout(base)
 		git.Branch(head)
 	}
 
 	defer func() {
-		// Theres should only be uncommitted changes if we're bailing early
+		// There should only be uncommitted changes if we're bailing early
 		git.ResetAndClean()
 		git.CheckoutLast()
 	}()
@@ -217,7 +218,7 @@ func runUpdate(update *Update, base, head string, allowEmpty bool) error {
 	}
 
 	if !git.IsDirty() {
-		if allowEmpty {
+		if existingUpdate {
 			output.Event("No new changes to commit")
 			return nil
 		}
