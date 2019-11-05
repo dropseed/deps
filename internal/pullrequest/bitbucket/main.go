@@ -9,6 +9,7 @@ import (
 
 	"github.com/dropseed/deps/internal/config"
 	"github.com/dropseed/deps/internal/output"
+	"github.com/dropseed/deps/internal/schemaext"
 	"github.com/dropseed/deps/pkg/schema"
 )
 
@@ -34,14 +35,18 @@ func NewPullRequest(base string, head string, deps *schema.Dependencies, cfg *co
 	return &PullRequest{
 		Base:          base,
 		Head:          head,
-		Title:         deps.Title,
-		Body:          deps.Description,
+		Title:         schemaext.TitleForDeps(deps),
+		Body:          schemaext.DescriptionForDeps(deps),
 		Dependencies:  deps,
 		Config:        cfg,
 		ProjectAPIURL: apiURL,
 		APIUsername:   getAPIUsername(),
 		APIPassword:   getAPIPassword(),
 	}, nil
+}
+
+func (pr *PullRequest) GetSetting(name string) interface{} {
+	return pr.Config.GetSettingForSchema(name, pr.Dependencies)
 }
 
 func (pr *PullRequest) request(verb string, url string, input []byte) (*http.Response, string, error) {
@@ -92,7 +97,7 @@ func (pr *PullRequest) CreateOrUpdate() error {
 
 func (pr *PullRequest) getPullRequestOptions() map[string]interface{} {
 	base := pr.Base
-	if target := pr.Config.GetSetting("bitbucket_destination"); target != nil {
+	if target := pr.GetSetting("bitbucket_destination"); target != nil {
 		base = target.(string)
 	}
 
@@ -116,7 +121,7 @@ func (pr *PullRequest) getPullRequestOptions() map[string]interface{} {
 	}
 
 	for _, f := range otherFields {
-		if s := pr.Config.GetSetting(fmt.Sprintf("bitbucket_%s", f)); s != nil {
+		if s := pr.GetSetting(fmt.Sprintf("bitbucket_%s", f)); s != nil {
 			pullrequestMap[f] = s
 		}
 	}

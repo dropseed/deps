@@ -3,6 +3,8 @@ package runner
 import (
 	"fmt"
 
+	"github.com/dropseed/deps/internal/schemaext"
+
 	"github.com/dropseed/deps/internal/component"
 	"github.com/dropseed/deps/internal/config"
 	"github.com/dropseed/deps/internal/git"
@@ -21,17 +23,19 @@ type Update struct {
 }
 
 func NewUpdate(deps *schema.Dependencies, cfg *config.Dependency) *Update {
-	if err := deps.ValidateAndCompile(); err != nil {
+	if err := deps.Validate(); err != nil {
 		panic(err)
 	}
 
-	branch := git.GetBranchName(fmt.Sprintf("%s-%s", deps.UpdateID, deps.UniqueID))
+	updateID := schemaext.UpdateIDForDeps(deps)
+	uniqueID := schemaext.UniqueIDForDeps(deps)
+	branch := git.GetBranchName(fmt.Sprintf("%s-%s", updateID, uniqueID))
 
 	update := Update{
 		dependencies:     deps,
 		dependencyConfig: cfg,
-		id:               deps.UpdateID,
-		title:            deps.Title,
+		id:               updateID,
+		title:            schemaext.TitleForDeps(deps),
 		branch:           branch,
 	}
 

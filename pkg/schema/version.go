@@ -4,8 +4,7 @@ import "errors"
 
 type Version struct {
 	Name string `json:"name"`
-	// Constraint string `json:"constraint,omitempty"`
-	Content string `json:"content,omitempty"`
+	Link string `json:"link,omitempty"`
 }
 
 func (v *Version) Validate() error {
@@ -14,10 +13,3 @@ func (v *Version) Validate() error {
 	}
 	return nil
 }
-
-// func (v *Version) AsConstraint() string {
-// 	if v.Constraint != "" {
-// 		return v.Constraint
-// 	}
-// 	return v.Name
-// }

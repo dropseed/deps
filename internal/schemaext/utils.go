@@ -1,4 +1,4 @@
-package schema
+package schemaext
 
 import "strings"
 

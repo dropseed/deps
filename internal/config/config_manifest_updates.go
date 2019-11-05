@@ -7,9 +7,9 @@ import (
 )
 
 type ManifestUpdates struct {
-	Enabled *bool     `mapstructure:"enabled,omitempty" yaml:"enabled,omitempty" json:"enabled,omitempty"`
-	Filters []*Filter `mapstructure:"filters,omitempty" yaml:"filters,omitempty" json:"filters,omitempty"`
-	// ConstraintPrefix string    `mapstructure:"constraint_prefix,omitempty" yaml:"constraint_prefix,omitempty" json:"constraint_prefix,omitempty"`
+	Enabled  *bool     `mapstructure:"enabled,omitempty" yaml:"enabled,omitempty" json:"enabled,omitempty"`
+	Settings Settings  `mapstructure:"settings,omitempty" yaml:"settings,omitempty" json:"settings"`
+	Filters  []*Filter `mapstructure:"filters,omitempty" yaml:"filters,omitempty" json:"filters,omitempty"`
 }
 
 type Filter struct {

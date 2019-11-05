@@ -20,6 +20,7 @@ const BITBUCKET = "bitbucket"
 // PullrequestAdapter implements the basic Pullrequest functions
 type PullrequestAdapter interface {
 	CreateOrUpdate() error
+	GetSetting(string) interface{}
 }
 
 type RepoAdapter interface {

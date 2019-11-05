@@ -12,6 +12,7 @@ import (
 
 	"github.com/dropseed/deps/internal/config"
 	"github.com/dropseed/deps/internal/output"
+	"github.com/dropseed/deps/internal/schemaext"
 	"github.com/dropseed/deps/pkg/schema"
 )
 
@@ -37,13 +38,17 @@ func NewMergeRequest(base string, head string, deps *schema.Dependencies, cfg *c
 	return &MergeRequest{
 		Base:          base,
 		Head:          head,
-		Title:         deps.Title,
-		Body:          deps.Description,
+		Title:         schemaext.TitleForDeps(deps),
+		Body:          schemaext.DescriptionForDeps(deps),
 		Dependencies:  deps,
 		Config:        cfg,
 		ProjectAPIURL: apiURL,
 		APIToken:      getAPIToken(),
 	}, nil
+}
+
+func (pr *MergeRequest) GetSetting(name string) interface{} {
+	return pr.Config.GetSettingForSchema(name, pr.Dependencies)
 }
 
 func (pr *MergeRequest) request(verb string, url string, input []byte) (*http.Response, string, error) {
@@ -124,7 +129,7 @@ func (pr *MergeRequest) update(iid string, data []byte) error {
 
 func (pr *MergeRequest) getMergeRequestOptions() map[string]interface{} {
 	base := pr.Base
-	if target := pr.Config.GetSetting("gitlab_target_branch"); target != nil {
+	if target := pr.GetSetting("gitlab_target_branch"); target != nil {
 		base = target.(string)
 	}
 
@@ -134,7 +139,7 @@ func (pr *MergeRequest) getMergeRequestOptions() map[string]interface{} {
 	pullrequestMap["target_branch"] = base
 	pullrequestMap["description"] = pr.Body
 
-	if labels := pr.Config.GetSetting("gitlab_labels"); labels != nil {
+	if labels := pr.GetSetting("gitlab_labels"); labels != nil {
 		labelStrings := []string{}
 		for _, l := range labels.([]interface{}) {
 			labelStrings = append(labelStrings, l.(string))
@@ -154,7 +159,7 @@ func (pr *MergeRequest) getMergeRequestOptions() map[string]interface{} {
 	}
 
 	for _, f := range otherFields {
-		if s := pr.Config.GetSetting(fmt.Sprintf("gitlab_%s", f)); s != nil {
+		if s := pr.GetSetting(fmt.Sprintf("gitlab_%s", f)); s != nil {
 			pullrequestMap[f] = s
 		}
 	}

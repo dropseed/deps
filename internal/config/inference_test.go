@@ -7,13 +7,11 @@ func TestInference(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if len(config.Dependencies) != 6 {
+	if len(config.Dependencies) != 5 {
 		t.FailNow()
 	}
 	expected := `version: 3
 dependencies:
-- type: dockerfile
-  path: Dockerfile-dev
 - type: python
   path: Pipfile
 - type: python
@@ -30,7 +28,7 @@ dependencies:
 		t.Error(err)
 	}
 	if expected != dumped {
-		print(dumped)
+		println(dumped)
 		t.FailNow()
 	}
 }

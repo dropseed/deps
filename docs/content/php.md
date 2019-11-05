@@ -1,9 +1,6 @@
 # PHP
 
-Currently supports:
-
-- `composer.json`
-- `composer.lock`
+Supports `composer.json` and `composer.lock`.
 
 ## Example `deps.yml`
 
