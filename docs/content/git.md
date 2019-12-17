@@ -37,6 +37,34 @@ dependencies:
           tag_prefix: raven-js@
           # include semver pre-releases
           prereleases: true
+
+      https://github.com/libevent/libevent.git:
+        replace_in_files:
+        - filename: file.txt
+          pattern: libevent (\S+)
+          # filter tags to those that match a specific pattern, and use the captured
+          # group as the version name (i.e. you'll get "2.1.10" instead of "release-2.1.10")
+          tag_filter:
+            matching: 'release-(\S+)-stable'
+            output_as: '$1'
+
+      https://github.com/libevent/libevent.git:
+        replace_in_files:
+        - filename: file.txt
+          pattern: libevent (\S+)
+          # filter tags to those that match a specific pattern, and use the
+          # full tag name as the version
+          tag_filter:
+            matching: 'release-\S+-stable'
+
+      https://github.com/curl/curl.git:
+        replace_in_files:
+        - filename: file.txt
+          pattern: curl==(\S+)
+
+          tag_filter:
+            matching: 'curl-(\d+)_(\d+)_(\d+)'
+            sort_as: '$1.$2.$3'  # sort as a semver-compatible version, without affecting output
 ```
 
 ## Support
