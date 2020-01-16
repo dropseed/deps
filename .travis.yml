@@ -11,6 +11,7 @@ jobs:
 
   - name: deps
     language: python
+    node_js: [10]
     if: branch = master AND type = cron
     git:
       depth: false  # required for existing deps branches to be available
