@@ -8,6 +8,13 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - uses: actions/setup-go@v1
+    - name: Set GOPATH
+      # temporary fix
+      # see https://github.com/actions/setup-go/issues/14
+      run: |
+          echo "##[set-env name=GOPATH;]$(dirname $GITHUB_WORKSPACE)"
+          echo "##[add-path]$(dirname $GITHUB_WORKSPACE)/bin"
+      shell: bash
     - name: Install dependencies
       run: |
         mkdir -p /home/runner/go/bin
