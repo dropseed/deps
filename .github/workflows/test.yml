@@ -17,7 +17,7 @@ jobs:
       shell: bash
     - name: Install dependencies
       run: |
-        mkdir bin
+        mkdir $GOBIN
         curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
         ./scripts/install
     - name: Test
