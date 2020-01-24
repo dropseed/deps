@@ -10,6 +10,7 @@ jobs:
     - uses: actions/setup-go@v1
     - name: Install dependencies
       run: |
+        mkdir -p /home/runner/go/bin
         curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
         ./scripts/install
     - name: Test
