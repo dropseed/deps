@@ -1,0 +1,25 @@
+name: test
+
+on:
+  push:
+    tags: ["*"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - run: git fetch --prune --unshallow
+    - uses: actions/setup-go@v1
+    - name: Install dependencies
+      run: |
+        curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+        ./scripts/install
+
+    - name: Run GoReleaser
+      uses: goreleaser/goreleaser-action@v1
+      with:
+        version: latest
+        args: release --rm-dist
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
