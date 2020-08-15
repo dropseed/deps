@@ -31,6 +31,12 @@ func organizeUpdates(updates Updates) (Updates, Updates, Updates, error) {
 		outdatedUpdates.printOverview()
 	}
 
+	if len(existingUpdates) > 0 {
+		fmt.Println()
+		output.Event("%d existing updates", len(existingUpdates))
+		existingUpdates.printOverview()
+	}
+
 	if len(newUpdates) > 0 {
 		fmt.Println()
 		output.Event("%d new updates to be made", len(newUpdates))
