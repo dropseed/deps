@@ -1,2 +1,2 @@
-#!/bin/sh -e
-dep ensure -vendor-only
+#!/bin/sh -ex
+go mod download

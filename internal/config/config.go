@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 	"reflect"
 
-	yaml "github.com/algobardo/yaml"
 	"github.com/dropseed/deps/internal/output"
 	"github.com/mitchellh/mapstructure"
+	yaml "gopkg.in/yaml.v2"
 )
 
 var DefaultFilenames = []string{

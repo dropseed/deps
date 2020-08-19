@@ -9,8 +9,8 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/algobardo/yaml"
 	"github.com/dropseed/deps/internal/config"
+	"gopkg.in/yaml.v2"
 )
 
 var directoryNamesToSkip = map[string]bool{

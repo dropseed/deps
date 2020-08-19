@@ -5,8 +5,8 @@ import (
 	"os"
 	"reflect"
 
-	"github.com/algobardo/yaml"
 	"github.com/mitchellh/mapstructure"
+	"gopkg.in/yaml.v2"
 )
 
 var DefaultFilenames = []string{

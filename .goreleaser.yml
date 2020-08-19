@@ -17,12 +17,12 @@ builds:
   binary: deps
   env:
   - CGO_ENABLED=0
-archive:
-  format: tar.gz
-  name_template: '{{ .Binary }}_{{.Version}}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{
-    .Arm }}{{ end }}'
-  files:
-  - LICENSE*
-  - README*
+archives:
+  - format: tar.gz
+    name_template: '{{ .Binary }}_{{.Version}}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{
+      .Arm }}{{ end }}'
+    files:
+    - LICENSE*
+    - README*
 snapshot:
   name_template: SNAPSHOT-{{ .Commit }}
