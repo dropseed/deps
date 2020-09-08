@@ -83,11 +83,11 @@ func getAPIToken() string {
 		}
 
 		tr := http.DefaultTransport
-		itr, err := ghinstallation.New(tr, appID, installationID, keyBytes)
+		itr, err := ghinstallation.New(tr, int64(appID), int64(installationID), keyBytes)
 		if err != nil {
 			panic(err)
 		}
-		token, err := itr.Token()
+		token, err := itr.Token(nil)
 		if err != nil {
 			panic(err)
 		}
