@@ -77,7 +77,7 @@ func TitleForDeps(s *schema.Dependencies) string {
 				installed := manifest.Current.Dependencies[name].Constraint
 				updated := dep.Constraint
 				inManifest := ""
-				if manifestPath != "" {
+				if manifestPath != "" && manifestPath != "." && manifestPath != "/" {
 					inManifest = fmt.Sprintf(" in %s", manifestPath)
 				}
 				return fmt.Sprintf("Update %s%s from %s to %s", dependencyNameForDisplay(name), inManifest, installed, updated)

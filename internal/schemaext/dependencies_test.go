@@ -28,7 +28,7 @@ func TestGenerateTitleWithSingleDependency(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if title != "Update pullrequest in / from 0.1.0 to 0.3.0" {
+	if title != "Update pullrequest from 0.1.0 to 0.3.0" {
 		t.Error("Title does not match expected: ", title)
 	}
 }
