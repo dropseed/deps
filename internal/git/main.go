@@ -213,6 +213,16 @@ func IsDirty() bool {
 	return cleaned != ""
 }
 
+func Status() string {
+	cmd := exec.Command("git", "status")
+	status, err := cmd.CombinedOutput()
+	if err != nil {
+		panic(err)
+	}
+	s := string(status)
+	return s
+}
+
 func run(args ...string) error {
 	cmdString := fmt.Sprintf("git %s", strings.Join(args, " "))
 	output.Debug(cmdString)
