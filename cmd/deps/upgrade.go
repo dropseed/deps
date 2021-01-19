@@ -5,9 +5,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var runCmd = &cobra.Command{
-	Use:   "run",
-	Short: "Run deps on the current directory",
+var upgradeCmd = &cobra.Command{
+	Use:     "upgrade",
+	Aliases: []string{"update"},
+	Short:   "Locally upgrade deps in the current directory",
 	Run: func(cmd *cobra.Command, args []string) {
 		if err := runner.Local(); err != nil {
 			printErrAndExitFailure(err)
@@ -16,5 +17,5 @@ var runCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(runCmd)
+	rootCmd.AddCommand(upgradeCmd)
 }
