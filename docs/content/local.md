@@ -21,7 +21,7 @@ You'll get an interactive prompt where you can choose and install updates one-by
 
 ```sh
 $ cd project
-$ deps run
+$ deps upgrade
 
 > No local config found, detecting your dependencies automatically
 ---
@@ -47,7 +47,7 @@ Use the arrow keys to navigate: ↓ ↑ → ←
     Skip
 ```
 
-Using `deps run` will perform the same steps as `deps ci`,
+Using `deps upgrade` will perform the same steps as `deps ci`,
 but it will *not* commit changes or create pull requests.
 
 If your dependencies were not found automatically,
