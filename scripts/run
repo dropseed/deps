@@ -1,0 +1,2 @@
+#!/bin/sh -e
+go run ./cmd/deps $@
