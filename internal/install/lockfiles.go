@@ -52,6 +52,8 @@ type lockfile struct {
 func (lf *lockfile) Install() error {
 	output.Event("Installing %s", lf.RelPath())
 	cmd := exec.Command("sh", "-c", lf.installCmd)
+	cmd.Dir = path.Dir(lf.Path) // Could be down a directory, so make sure we run the command as if we're there
+	cmd.Env = os.Environ()
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {

@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path"
 
 	"github.com/dropseed/deps/internal/cache"
+	"github.com/dropseed/deps/internal/git"
 	"github.com/dropseed/deps/internal/install"
 	"github.com/dropseed/deps/internal/output"
 )
@@ -101,15 +103,17 @@ func (manager *lagManager) SaveLockfileIdentifier(path, id string) error {
 }
 
 func IdentifierForFile(p string) string {
-	fileInfo, err := os.Stat(p)
+	// Can't use mtime because git changes it on checkout etc.
+	cmd := exec.Command("git", "hash-object", p)
+	out, err := cmd.Output()
 	if err != nil {
 		panic(err)
 	}
-	return fileInfo.ModTime().String()
+	return string(out)
 }
 
 func Run(dir string) error {
-	if _, err := os.Stat(".git"); os.IsNotExist(err) {
+	if git.RepoRoot() == "" {
 		return nil
 	}
 
