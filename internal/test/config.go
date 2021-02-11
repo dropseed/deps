@@ -3,22 +3,15 @@ package test
 import (
 	"errors"
 	"io"
-	"io/ioutil"
 	"os"
 	"path"
 	"reflect"
-	"strings"
+	"regexp"
 
 	"github.com/dropseed/deps/internal/config"
+	"github.com/dropseed/deps/internal/filefinder"
 	"gopkg.in/yaml.v2"
 )
-
-var directoryNamesToSkip = map[string]bool{
-	".git":         true,
-	"node_modules": true,
-	"env":          true,
-	"vendor":       true,
-}
 
 type Config struct {
 	Tests []*Test `yaml:"tests"`
@@ -102,14 +95,17 @@ func NewConfigFromReader(reader io.Reader) (*Config, error) {
 }
 
 func findTestConfigs(dir string) ([]*Config, error) {
-	configPaths := findTestConfigPaths(dir, 0)
+	patterns := map[string]*regexp.Regexp{
+		"tests_config": regexp.MustCompile("^deps_tests?\\.ya?ml$"),
+	}
+	configPaths := filefinder.DeepFindInDir(dir, patterns, 4)
 
 	if len(configPaths) < 1 {
 		return nil, errors.New("no test config files found")
 	}
 
 	configs := []*Config{}
-	for _, p := range configPaths {
+	for p, _ := range configPaths {
 		config, err := NewConfigFromPath(p)
 		if err != nil {
 			return nil, err
@@ -118,43 +114,4 @@ func findTestConfigs(dir string) ([]*Config, error) {
 	}
 
 	return configs, nil
-}
-
-func findTestConfigPaths(dir string, depth int) []string {
-	if depth > 2 {
-		return []string{}
-	}
-
-	paths := []string{}
-
-	files, err := ioutil.ReadDir(dir)
-	if err != nil {
-		panic(err)
-	}
-
-	for _, f := range files {
-		name := f.Name()
-		p := path.Join(dir, name)
-
-		fileInfo, err := os.Stat(p)
-		if err != nil {
-			panic(err)
-		}
-
-		if fileInfo.IsDir() {
-			if directoryNamesToSkip[name] {
-				continue
-			}
-
-			paths = append(paths, findTestConfigPaths(p, depth+1)...)
-		} else if isConfigFile(name) {
-			paths = append(paths, p)
-		}
-	}
-
-	return paths
-}
-
-func isConfigFile(name string) bool {
-	return strings.HasPrefix(name, "deps_test") && (strings.HasSuffix(name, ".yml") || strings.HasSuffix(name, ".yaml"))
 }

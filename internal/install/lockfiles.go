@@ -1,48 +1,15 @@
 package install
 
 import (
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
 	"path/filepath"
 	"regexp"
 
+	"github.com/dropseed/deps/internal/filefinder"
 	"github.com/dropseed/deps/internal/output"
 )
-
-type lockfilePattern struct {
-	pattern    *regexp.Regexp
-	installCmd string
-}
-
-var lockfilePatterns = []lockfilePattern{
-	lockfilePattern{
-		pattern:    regexp.MustCompile("^yarn.lock$"),
-		installCmd: "yarn install",
-	},
-	lockfilePattern{
-		pattern:    regexp.MustCompile("^package-lock.json$"),
-		installCmd: "npm ci",
-	},
-	lockfilePattern{
-		pattern:    regexp.MustCompile("^Pipfile.lock$"),
-		installCmd: "pipenv sync --dev",
-	},
-	lockfilePattern{
-		pattern:    regexp.MustCompile("^poetry.lock$"),
-		installCmd: "poetry install",
-	},
-}
-
-const maxInferenceDepth = 2
-
-var directoryNamesToSkip = map[string]bool{
-	".git":         true,
-	"node_modules": true,
-	"env":          true,
-	"vendor":       true,
-}
 
 type lockfile struct {
 	Path       string
@@ -75,56 +42,24 @@ func (lf *lockfile) RelPath() string {
 }
 
 func FindLockfiles(dir string) []*lockfile {
-	return findLockfiles(dir, 1)
-}
-
-func findLockfiles(dir string, depth int) []*lockfile {
-	if depth > maxInferenceDepth {
-		return nil
+	patterns := map[string]*regexp.Regexp{
+		"yarn.lock":         regexp.MustCompile("^yarn\\.lock$"),
+		"package-lock.json": regexp.MustCompile("^package-lock\\.json$"),
+		"Pipfile.lock":      regexp.MustCompile("^Pipfile\\.lock$"),
+		"poetry.lock":       regexp.MustCompile("^poetry\\.lock$"),
 	}
-
-	files, err := ioutil.ReadDir(dir)
-	if err != nil {
-		panic(err)
+	commands := map[string]string{
+		"yarn.lock":         "yarn install",
+		"package-lock.json": "npm ci",
+		"Pipfile.lock":      "pipenv sync --dev",
+		"poetry.lock":       "poetry install",
 	}
-
 	lockfiles := []*lockfile{}
-
-	for _, f := range files {
-		name := f.Name()
-		p := path.Join(dir, name)
-
-		fileInfo, err := os.Stat(p)
-		if err != nil {
-			output.Debug("Error os.Stat: %v", err)
-			continue
-		}
-
-		if fileInfo.IsDir() {
-			if directoryNamesToSkip[name] {
-				continue
-			}
-
-			if dirDeps := findLockfiles(p, depth+1); dirDeps != nil {
-				lockfiles = append(lockfiles, dirDeps...)
-			}
-		} else if lockfile := lockfileMatchingPath(p); lockfile != nil {
-			lockfiles = append(lockfiles, lockfile)
-		}
+	for path, patternName := range filefinder.FindInDir(dir, patterns) {
+		lockfiles = append(lockfiles, &lockfile{
+			Path:       path,
+			installCmd: commands[patternName],
+		})
 	}
-
 	return lockfiles
-}
-
-func lockfileMatchingPath(p string) *lockfile {
-	basename := path.Base(p)
-	for _, lockfilePattern := range lockfilePatterns {
-		if lockfilePattern.pattern.MatchString(basename) {
-			return &lockfile{
-				Path:       p,
-				installCmd: lockfilePattern.installCmd,
-			}
-		}
-	}
-	return nil
 }
