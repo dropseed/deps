@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"strings"
 
 	"github.com/dropseed/deps/internal/cache"
 	"github.com/dropseed/deps/internal/git"
@@ -109,7 +110,7 @@ func IdentifierForFile(p string) string {
 	if err != nil {
 		panic(err)
 	}
-	return string(out)
+	return strings.TrimSpace(string(out))
 }
 
 func Run(dir string) error {
