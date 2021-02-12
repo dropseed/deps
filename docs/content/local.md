@@ -10,7 +10,7 @@ Running `deps` on your own machine is the best way to...
 
 To install `deps`,
 [manually download a release](https://github.com/dropseed/deps/releases) or use the auto-install script:
-```sh
+```console
 $ curl https://deps.app/install.sh | bash -s -- -b $HOME/bin
 ```
 
@@ -19,7 +19,7 @@ $ curl https://deps.app/install.sh | bash -s -- -b $HOME/bin
 With `deps` in your `$PATH`, you can check a repo for dependency updates.
 You'll get an interactive prompt where you can choose and install updates one-by-one:
 
-```sh
+```console
 $ cd project
 $ deps upgrade
 

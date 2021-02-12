@@ -148,6 +148,6 @@ you can also pass settings manually
 (and for every component)
 by using an env variable in your CI.
 This is an easy way to apply the same GitHub PR labels to all updates, for example:
-```sh
+```console
 $ DEPS_SETTING_GITHUB_LABELS='["automerge"]' deps ci
 ```

@@ -1,3 +1,4 @@
 /output
 /.venv
 /node_modules
+/.cache
