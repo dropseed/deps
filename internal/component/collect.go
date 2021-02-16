@@ -9,9 +9,9 @@ import (
 
 func (r *Runner) Collect(inputPath string) (*schema.Dependencies, error) {
 	if output.Verbosity > 0 {
-		output.Event("Collecting with %s", r.Given)
+		output.Event("Collecting with %s...", r.Given)
 	} else {
-		output.Event("Collecting with %s", r.GetName())
+		output.Event("Collecting with %s...", r.GetName())
 	}
 	output.Debug("Input path: %s", inputPath)
 
