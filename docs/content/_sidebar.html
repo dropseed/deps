@@ -1,52 +1,87 @@
 <ul class="mb-4">
-    <li><a class="inline-flex py-1 mb-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/">Overview</a></li>
-    <li><a class="inline-flex py-1 mb-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/local/">Local</a></li>
-    <li><a class="inline-flex py-1 mb-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/ci/">CI</a></li>
-    <li><a class="inline-flex py-1 mb-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/config/">deps.yml</a></li>
+    <li>
+        <a class="inline-flex items-center py-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/quickstart/">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="h-4 mr-2" viewBox="0 0 16 16">
+                <path fill-rule="evenodd"
+                    d="M14 2H2a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1zM2 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2z" />
+                <path fill-rule="evenodd"
+                    d="M6 9a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3A.5.5 0 0 1 6 9zM3.146 4.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 1 1-.708-.708L4.793 6.5 3.146 4.854a.5.5 0 0 1 0-.708z" />
+            </svg>
+            Quickstart
+        </a>
+    </li>
+    <li>
+        <a class="inline-flex items-center py-1 text-sm text-gray-600 no-underline hover:underline hover:text-black"
+            href="/config/">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
+                class="inline w-4 h-4 mr-2 fill-current">
+                <path
+                    d="M3.5 3.75a.25.25 0 01.25-.25h13.5a.25.25 0 01.25.25v10a.75.75 0 001.5 0v-10A1.75 1.75 0 0017.25 2H3.75A1.75 1.75 0 002 3.75v16.5c0 .966.784 1.75 1.75 1.75h7a.75.75 0 000-1.5h-7a.25.25 0 01-.25-.25V3.75z">
+                </path>
+                <path
+                    d="M6.25 7a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm-.75 4.75a.75.75 0 01.75-.75h4.5a.75.75 0 010 1.5h-4.5a.75.75 0 01-.75-.75zm16.28 4.53a.75.75 0 10-1.06-1.06l-4.97 4.97-1.97-1.97a.75.75 0 10-1.06 1.06l2.5 2.5a.75.75 0 001.06 0l5.5-5.5z">
+                </path>
+            </svg>
+            deps.yml
+        </a>
+    </li>
+    <li>
+        <a class="inline-flex items-center py-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/support/">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
+                class="inline w-4 h-4 mr-2 fill-current">
+                <path fill-rule="evenodd"
+                    d="M12 2.5a5.5 5.5 0 00-3.096 10.047 9.005 9.005 0 00-5.9 8.18.75.75 0 001.5.045 7.5 7.5 0 0114.993 0 .75.75 0 101.499-.044 9.005 9.005 0 00-5.9-8.181A5.5 5.5 0 0012 2.5zM8 8a4 4 0 118 0 4 4 0 01-8 0z">
+                </path>
+            </svg>
+            Support
+        </a>
+    </li>
+    <li><a class="inline-flex items-center py-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/local/">Local</a></li>
+    <li><a class="inline-flex items-center py-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/ci/">CI</a></li>
+
 </ul>
 
 <h3 class="mb-2 text-sm font-medium uppercase">CI Providers</h3>
 <ul class="mb-4">
-    <li><a class="inline-flex py-1 mb-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/circleci/">CircleCI</a></li>
-    <li><a class="inline-flex py-1 mb-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/travisci/">TravisCI</a></li>
-    <li><a class="inline-flex py-1 mb-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/gitlab-ci/">GitLab CI</a></li>
-    <li><a class="inline-flex py-1 mb-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/github-actions/">GitHub Actions</a></li>
-    <li><a class="inline-flex py-1 mb-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/bitbucket-pipelines/">Bitbucket Pipelines</a></li>
-    <li><a class="inline-flex py-1 mb-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/jenkins/">Jenkins</a></li>
-    <li><a class="inline-flex py-1 mb-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/other-ci/">Other</a></li>
+    <li><a class="inline-flex items-center py-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/github-actions/">GitHub Actions</a></li>
+    <li><a class="inline-flex items-center py-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/gitlab-ci/">GitLab CI</a></li>
+    <li><a class="inline-flex items-center py-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/bitbucket-pipelines/">Bitbucket Pipelines</a></li>
+    <li><a class="inline-flex items-center py-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/circleci/">CircleCI</a></li>
+    <li><a class="inline-flex items-center py-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/travisci/">TravisCI</a></li>
+    <li><a class="inline-flex items-center py-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/other-ci/">Other</a></li>
 </ul>
 
 <h3 class="mb-2 text-sm font-medium uppercase">Git Hosts</h3>
 <ul class="mb-4">
-    <li><a class="inline-flex py-1 mb-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/github/">GitHub</a></li>
-    <li><a class="inline-flex py-1 mb-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/gitlab/">GitLab</a></li>
-    <li><a class="inline-flex py-1 mb-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/bitbucket/">Bitbucket</a></li>
+    <li><a class="inline-flex items-center py-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/github/">GitHub</a></li>
+    <li><a class="inline-flex items-center py-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/gitlab/">GitLab</a></li>
+    <li><a class="inline-flex items-center py-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/bitbucket/">Bitbucket</a></li>
 </ul>
 
 <h3 class="mb-2 text-sm font-medium uppercase">Dependency Types</h3>
 <ul class="mb-4">
-    <li><a class="inline-flex py-1 mb-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/javascript/">JavaScript</a></li>
-    <li><a class="inline-flex py-1 mb-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/python/">Python</a></li>
-    <li><a class="inline-flex py-1 mb-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/php/">PHP</a></li>
-    <li><a class="inline-flex py-1 mb-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/git/">Git</a></li>
-    <li><a class="inline-flex py-1 mb-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/ruby/">Ruby*</a></li>
-    <li><a class="inline-flex py-1 mb-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/docker/">Docker*</a></li>
-    <li><a class="inline-flex py-1 mb-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/go/">Go*</a></li>
-    <li><a class="inline-flex py-1 mb-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/rust/">Rust*</a></li>
-    <li><a class="inline-flex py-1 mb-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/java/">Java*</a></li>
-    <li><a class="inline-flex py-1 mb-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/swift/">Swift*</a></li>
-    <li><a class="inline-flex py-1 mb-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/dotnet/">.NET*</a></li>
-    <li><a class="inline-flex py-1 mb-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/terraform/">Terraform*</a></li>
+    <li><a class="inline-flex items-center py-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/javascript/">JavaScript</a></li>
+    <li><a class="inline-flex items-center py-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/python/">Python</a></li>
+    <li><a class="inline-flex items-center py-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/php/">PHP</a></li>
+    <li><a class="inline-flex items-center py-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/git/">Git</a></li>
+    <li><a class="inline-flex items-center py-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/ruby/">Ruby*</a></li>
+    <li><a class="inline-flex items-center py-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/docker/">Docker*</a></li>
+    <li><a class="inline-flex items-center py-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/go/">Go*</a></li>
+    <li><a class="inline-flex items-center py-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/rust/">Rust*</a></li>
+    <li><a class="inline-flex items-center py-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/java/">Java*</a></li>
+    <li><a class="inline-flex items-center py-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/swift/">Swift*</a></li>
+    <li><a class="inline-flex items-center py-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/dotnet/">.NET*</a></li>
+    <li><a class="inline-flex items-center py-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="/terraform/">Terraform*</a></li>
 </ul>
 
 <!-- <h3 clmb-2 text-sm font-medium uppercase">Building</h3>
 <ul class="mb-4">
-    <li><a class="inline-flex py-1 mb-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="#">Overview</a></li>
-    <li><a class="inline-flex py-1 mb-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="#">Testing</a></li>
-    <li><a class="inline-flex py-1 mb-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="#">Schema</a></li>
+    <li><a class="inline-flex items-center py-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="#">Overview</a></li>
+    <li><a class="inline-flex items-center py-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="#">Testing</a></li>
+    <li><a class="inline-flex items-center py-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="#">Schema</a></li>
 </ul>
 
 <h3 class="mb-2 text-sm font-medium uppercase">Resources</h3>
 <ul class="mb-4">
-    <li><a class="inline-flex py-1 mb-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="#">v2 docs</a></li>
+    <li><a class="inline-flex items-center py-1 text-sm text-gray-600 no-underline hover:underline hover:text-black" href="#">v2 docs</a></li>
 </ul> -->

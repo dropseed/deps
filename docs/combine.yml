@@ -11,6 +11,7 @@ steps:
 
 variables:
   name: Deps
+  support_url: "https://www.dropseed.io/contact/"
   base_url:
     default: "https://docs.dependencies.io"
     from_env: URL  # netlify

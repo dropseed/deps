@@ -10,6 +10,12 @@ h5 { @apply pt-1 mb-1 font-medium; }
 .markdown ul {
     @apply pl-8 mb-4 list-disc;
 }
+.markdown ol {
+    @apply pl-8 mb-4 list-decimal;
+}
+.markdown li {
+    @apply mb-1;
+}
 
 p a, ul a {
     @apply text-blue-600;
@@ -18,7 +24,7 @@ p a:hover, ul a:hover {
     @apply underline;
 }
 a code {
-    @apply text-blue-600 bg-blue-50;
+    @apply text-gray-600 bg-blue-50;
     font-size: .95em;
     padding: 0 2px;
 }
@@ -28,8 +34,7 @@ p {
 }
 
 p code, li code {
-    background-color: #eef5f0;
-    color: #3c544a;
+    @apply text-gray-600 bg-blue-50;
     font-size: .95em;
     padding: 0 2px;
 }
