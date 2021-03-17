@@ -38,6 +38,11 @@ var patterns = []inferencePattern{
 		UseDir:  false,
 	},
 	inferencePattern{
+		Pattern: regexp.MustCompile("^poetry.lock$"),
+		Type:    "python",
+		UseDir:  false,
+	},
+	inferencePattern{
 		Pattern: regexp.MustCompile("^package.json$"),
 		Type:    "js",
 		UseDir:  true,
