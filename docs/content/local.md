@@ -66,6 +66,10 @@ or you need a more advanced configuration,
 
 ## Shell hook
 
+The optional deps shell hook will help ensure your local installations are actually accurate.
+After you change git branches or run git pull, it's easy to miss dependency changes that you actually need to install.
+The deps shell hook will run (quickly!) before every bash/zsh prompt and let you know if you forget to install dependency updates.
+
 ```bash
 # For ZSH, add this to the end of .zshrc
 eval "$(deps shellhook zsh)"
@@ -84,7 +88,7 @@ Updating 436b311..49c2cc3
 Fast-forward
  package-lock.json  |  47 ++---
 
-*** Run `deps install` to match package-json.lock ***
+[Run `deps install` to update poetry.lock]
 
 $ deps install
 ```

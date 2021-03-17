@@ -31,14 +31,13 @@ dependencies:
     enabled: false
 ```
 
-### Examples of lockfiles
+### Examples of supported lockfiles
 
-- `yarn.lock` in Yarn
-- `package-lock.json` in npm
-- `Pipfile.lock` in Pipenv
-- `composer.lock` in Composer
-- `Gemfile.lock` in Bundler
-- `Cargo.lock` in Cargo
+- `yarn.lock` in [Yarn](https://yarnpkg.com/)
+- `package-lock.json` in [npm](https://www.npmjs.com/)
+- `Pipfile.lock` in [Pipenv](https://docs.pipenv.org/)
+- `poetry.lock` in [poetry](https://python-poetry.org/)
+- `composer.lock` in [Composer](https://getcomposer.org/)
 
 ## Manifest updates
 
@@ -60,13 +59,13 @@ dependencies:
     enabled: false
 ```
 
-### Examples of manifests
+### Examples of supported manifests
 
-- `package.json` in npm
-- `Pipfile` in Pipenv
-- `composer.json` in Composer
-- `Gemfile` in Bundler
-- `Cargo.toml` in Cargo
+- `package.json` in [npm](https://www.npmjs.com/)
+- `Pipfile` in [Pipenv](https://docs.pipenv.org/)
+- `requirements.txt` in [Python/pip](https://pip.pypa.io/en/stable/user_guide/)
+- `pyproject.toml` in [poetry](https://python-poetry.org/)
+- `composer.json` in [Composer](https://getcomposer.org/)
 
 ### Disabling updates for a direct dependency
 
