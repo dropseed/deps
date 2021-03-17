@@ -1,6 +1,6 @@
 # deps.yml
 
-A `deps.yml` is only required if you need to make changes beyond what deps detects automatically.
+A `deps.yml` is only required if you need to make changes beyond what is configured automatically.
 
 ```yaml
 version: 3  # required!
@@ -9,8 +9,6 @@ dependencies:
   path: app/server/requirements.txt
 - type: js
 ```
-
-*Note, this can also be named `.deps.yml` instead of `deps.yml`.*
 
 ## Lockfile updates
 
