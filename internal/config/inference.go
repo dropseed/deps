@@ -12,6 +12,7 @@ func InferredConfigFromDir(dir string) (*Config, error) {
 	patterns := map[string]*regexp.Regexp{
 		"requirements.txt": regexp.MustCompile("^.*requirements.*\\.txt$"),
 		"Pipfile":          regexp.MustCompile("^Pipfile$"),
+		"poetry.lock":      regexp.MustCompile("^poetry\\.lock$"),
 		"package.json":     regexp.MustCompile("^package\\.json$"),
 		"composer.json":    regexp.MustCompile("^composer\\.json$"),
 	}
@@ -28,6 +29,13 @@ func InferredConfigFromDir(dir string) (*Config, error) {
 			UseDir: false,
 		},
 		"Pipfile": struct {
+			Name   string
+			UseDir bool
+		}{
+			Name:   "python",
+			UseDir: false,
+		},
+		"poetry.lock": struct {
 			Name   string
 			UseDir bool
 		}{
