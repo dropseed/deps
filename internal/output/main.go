@@ -16,12 +16,10 @@ func IsDebug() bool {
 
 func Event(f string, args ...interface{}) {
 	isTerm := terminal.IsTerminal(int(os.Stdout.Fd()))
-	if isTerm {
+	if isTerm && IsDebug() {
 		color.Set(color.FgMagenta)
 		print("> ")
 		color.Unset()
-	}
-	if isTerm && IsDebug() {
 		color.Set(color.Bold)
 	}
 	fmt.Printf(f+"\n", args...)
