@@ -3,6 +3,7 @@ package config
 import (
 	"path/filepath"
 	"regexp"
+	"sort"
 
 	"github.com/dropseed/deps/internal/filefinder"
 )
@@ -46,7 +47,17 @@ func InferredConfigFromDir(dir string) (*Config, error) {
 	}
 
 	dependencies := []*Dependency{}
-	for path, patternName := range filefinder.FindInDir(dir, patterns) {
+
+	// Have to sort these for YAML consistency
+	found := filefinder.FindInDir(dir, patterns)
+	foundPathsSorted := []string{}
+	for p := range found {
+		foundPathsSorted = append(foundPathsSorted, p)
+	}
+	sort.Strings(foundPathsSorted)
+
+	for _, path := range foundPathsSorted {
+		patternName := found[path]
 		depType := types[patternName]
 		dep := &Dependency{
 			Path: path,
