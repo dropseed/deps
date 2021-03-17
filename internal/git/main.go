@@ -223,6 +223,15 @@ func Status() string {
 	return s
 }
 
+func RepoRoot() string {
+	cmd := exec.Command("git", "rev-parse", "--show-toplevel")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return ""
+	}
+	return string(out)
+}
+
 func run(args ...string) error {
 	cmdString := fmt.Sprintf("git %s", strings.Join(args, " "))
 	output.Debug(cmdString)

@@ -53,9 +53,9 @@ func FindOrInfer() (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	println("---")
-	println(inferred)
-	println("---")
+	output.Unstyled("---")
+	output.Unstyled(inferred)
+	output.Unstyled("---")
 
 	cfg.Compile()
 

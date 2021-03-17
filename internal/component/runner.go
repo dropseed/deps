@@ -8,6 +8,7 @@ import (
 	"path"
 	"strings"
 
+	"github.com/dropseed/deps/internal/cache"
 	"github.com/dropseed/deps/internal/config"
 	"github.com/dropseed/deps/internal/git"
 
@@ -24,7 +25,6 @@ type Runner struct {
 }
 
 const DefaultRemotePrefix = "dropseed/deps-"
-const DefaultCacheDirName = "deps"
 
 func NewRunnerFromString(s string) (*Runner, error) {
 	runner, err := NewRunnerFromPath(s)
@@ -72,19 +72,7 @@ func newRunnerFromRemote(s string) (*Runner, error) {
 
 	output.Debug("Using component from %s", url)
 
-	userCache, err := os.UserCacheDir()
-	if err != nil {
-		return nil, err
-	}
-
-	depsCache := path.Join(userCache, DefaultCacheDirName)
-	output.Debug("Making deps cache at %s", depsCache)
-	if err := os.MkdirAll(depsCache, os.ModePerm); os.IsExist(err) {
-		output.Debug("Deps cache already exists")
-	} else if err != nil {
-		output.Debug("Error making deps cache")
-		return nil, err
-	}
+	depsCache := cache.GetCachePath()
 
 	cloneDirName := path.Base(url)
 	cloneDirName = strings.Replace(cloneDirName, ".git", "", -1)

@@ -57,3 +57,14 @@ func Success(f string, args ...interface{}) {
 	fmt.Printf(f+"\n", args...)
 	color.Unset()
 }
+
+func Subtle(f string, args ...interface{}) {
+	color.Set(color.Faint)
+	fmt.Printf(f+"\n", args...)
+	color.Unset()
+}
+
+func Unstyled(f string, args ...interface{}) {
+	color.Unset()
+	fmt.Printf(f+"\n", args...)
+}
