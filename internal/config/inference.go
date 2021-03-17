@@ -21,38 +21,23 @@ func InferredConfigFromDir(dir string) (*Config, error) {
 		Name   string
 		UseDir bool
 	}{
-		"requirements.txt": struct {
-			Name   string
-			UseDir bool
-		}{
+		"requirements.txt": {
 			Name:   "python",
 			UseDir: false,
 		},
-		"Pipfile": struct {
-			Name   string
-			UseDir bool
-		}{
+		"Pipfile": {
 			Name:   "python",
 			UseDir: false,
 		},
-		"poetry.lock": struct {
-			Name   string
-			UseDir bool
-		}{
+		"poetry.lock": {
 			Name:   "python",
 			UseDir: false,
 		},
-		"package.json": struct {
-			Name   string
-			UseDir bool
-		}{
+		"package.json": {
 			Name:   "js",
 			UseDir: true,
 		},
-		"composer.json": struct {
-			Name   string
-			UseDir bool
-		}{
+		"composer.json": {
 			Name:   "php",
 			UseDir: true,
 		},
