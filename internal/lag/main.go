@@ -152,17 +152,17 @@ func Run(dir string) error {
 	}
 
 	if len(laggingLockfiles) > 0 {
-		output.Warning("\nDeps: You have some dependencies that should be installed!\n")
+		paths := []string{}
 
 		for lockfilePath, lockfileID := range laggingLockfiles {
 			if lockfileID == "" {
-				output.Unstyled("- %s has not been installed with deps, so can't be tracked", lockfilePath)
+				paths = append(paths, "*"+lockfilePath)
 			} else {
-				output.Unstyled("- %s has been updated but not installed", lockfilePath)
+				paths = append(paths, lockfilePath)
 			}
 		}
 
-		output.Warning("\nRun `deps install`")
+		output.Subtle("\n[Run `deps install` to update %s]", strings.Join(paths, ", "))
 	}
 
 	return nil
