@@ -1,7 +1,6 @@
 [build]
-  publish = "output"
-  command = "npm install -g yarn && cd theme && yarn install && cd .. && combine build"
-
+publish = "docs/output"
+command = "npm install -g yarn && cd theme && yarn install && cd .. && combine build"
 
 [[redirects]]
   from = "/contact/"
