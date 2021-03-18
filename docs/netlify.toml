@@ -8,8 +8,8 @@ command = "npm install -g yarn && cd theme && yarn install && cd .. && combine b
     to = "/support/"
 
 [[redirects]]
-    to = "https://docs.dependencies.io/*"
-    from = "https://www.dependencies.io/:splat"
+    from = "https://docs.dependencies.io/*"
+    to = "https://www.dependencies.io/:splat"
     status = 301
     force = true
 
