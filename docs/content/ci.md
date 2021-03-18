@@ -1,3 +1,7 @@
+---
+title: Automate dependency updates in CI
+description: Use deps to automatically create and update pull requests on GitHub, GitLab, and Bitbucket.
+---
 # Using deps in CI
 
 Most CI systems have a cron or scheduled job function,
@@ -11,7 +15,14 @@ The basic steps for setting up `deps ci` are:
 - Add a scheduled job that installs and runs `deps ci`
 - Set any other required environment variables and secrets
 
-👈 Find the instructions for your repository host and CI in the menu.
+Supported CI providers:
+
+- [GitHub Actions](/github-actions/)
+- [GitLab CI](/gitlab-ci/)
+- [Bitbucket Pipelines](/bitbucket-pipelines/)
+- [CircleCI](/circleci/)
+- [TravisCI](/travisci/)
+- [Other](/other-ci/)
 
 ## Autoconfigure
 

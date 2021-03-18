@@ -1,3 +1,8 @@
+---
+title: Other CI providers
+description: Examples and instructions for setting up deps in other CI providers.
+---
+
 # Other CI providers
 
 Don't see what you need?

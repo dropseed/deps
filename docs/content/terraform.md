@@ -1,3 +1,8 @@
+---
+title: Terraform
+description: Automated updates and pull requests for Terraform dependencies.
+---
+
 # Terraform
 
 > This component is a work-in-progress while we port things over from dependencies.io v2.

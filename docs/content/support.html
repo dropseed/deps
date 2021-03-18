@@ -1,0 +1,35 @@
+{% extends "base.template.html" %}
+
+{% set title = "Support" %}
+{% set description = "Get help with the deps command line tool, through email or public GitHub issues." %}
+
+{% block content %}
+
+<h1>Contact Support</h1>
+<p class="text-gray-500">
+    Use the form below to submit a private support request and we'll follow up via email.
+    For public issues, see the <a href="https://github.com/dropseed/deps">dropseed/deps repo on GitHub</a>.
+</p>
+
+<div class="max-w-xl mt-8">
+    <form class="form" method="POST" name="contact" netlify>
+        <div class="my-4">
+            <input type="text" name="name" placeholder="Name" required
+                class="block w-full px-3 py-2 text-xl border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+        </div>
+        <div class="my-4">
+            <input type="email" name="email" placeholder="Email" required
+                class="block w-full px-3 py-2 text-xl border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+        </div>
+        <div class="my-4">
+            <textarea name="body"
+                class="block w-full px-3 py-2 text-xl border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                rows="10" required placeholder="Message"></textarea>
+        </div>
+        <div class="my-4" netlify-recaptcha></div>
+        <button type="submit"
+            class="block w-full px-8 py-2 text-xl text-white transition bg-blue-500 rounded shadow cursor-pointer hover:bg-blue-600 hover:translate-u">Send →</button>
+    </form>
+</div>
+
+{% endblock %}

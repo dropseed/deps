@@ -7,6 +7,6 @@ It will check your project for dependency updates and create pull requests for y
 
 # Quick install
 
-```sh
+```console
 $ curl https://deps.app/install.sh | bash -s -- -b $HOME/bin
 ```

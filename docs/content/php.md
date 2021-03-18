@@ -1,3 +1,8 @@
+---
+title: PHP
+description: Automated updates and pull requests for PHP dependencies.
+---
+
 # PHP
 
 Supports `composer.json` and `composer.lock`.

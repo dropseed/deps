@@ -44,6 +44,6 @@ This is an easy way to put settings directly in your CI config.
 Note that they'll need to be in the format of a JSON-encoded string,
 with an uppercase name prefixed by `DEPS_SETTING_`.
 
-```sh
+```console
 $ DEPS_SETTING_GITLAB_LABELS='["automerge"]' deps ci
 ```

@@ -1,3 +1,8 @@
+---
+title: Java
+description: Automated updates and pull requests for Java dependencies.
+---
+
 # Java
 
 > This component is a work-in-progress while we port things over from dependencies.io v2.

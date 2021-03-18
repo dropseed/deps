@@ -1,3 +1,8 @@
+---
+title: "Bitbucket"
+description: "Examples and instructions for setting up deps in Bitbucket"
+---
+
 # Bitbucket
 
 To give deps write-access to your repo and pull requests, you'll create an *app password*.
@@ -35,6 +40,6 @@ This is an easy way to put settings directly in your CI config.
 Note that they'll need to be in the format of a JSON-encoded string,
 with an uppercase name prefixed by `DEPS_SETTING_`.
 
-```sh
+```console
 $ DEPS_SETTING_BITBUCKET_CLOSE_SOURCE_BRANCH='true' deps ci
 ```

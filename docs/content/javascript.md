@@ -1,3 +1,8 @@
+---
+title: JavaScript
+description: Automated updates and pull requests for JavaScript dependencies.
+---
+
 # JavaScript
 
 Currently supports:

@@ -1,3 +1,8 @@
+---
+title: Rust
+description: Automated updates and pull requests for Rust dependencies.
+---
+
 # Rust
 
 > This component is a work-in-progress while we port things over from dependencies.io v2.

@@ -1,3 +1,8 @@
+---
+title: Go
+description: Automated updates and pull requests for Go dependencies.
+---
+
 # Go
 
 > This component is a work-in-progress while we port things over from dependencies.io v2.

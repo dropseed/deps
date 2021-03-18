@@ -6,7 +6,7 @@ output based on specified input.
 
 ## Installing deps on your machine
 
-```sh
+```console
 $ curl https://deps.app/install.sh | bash -s 2.5.0-beta.1
 ```
 
@@ -61,7 +61,7 @@ cases:
 ```
 
 Your file structure might look something like this:
-```sh
+```console
 example-component/tests/
 ├── actor
 │   ├── basic
@@ -83,7 +83,7 @@ example-component/tests/
 ## Running tests
 
 From the root of your repo:
-```sh
+```console
 $ deps dev test
 ```
 

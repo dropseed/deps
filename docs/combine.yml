@@ -1,16 +1,23 @@
 steps:
-  - run: "./node_modules/.bin/tailwind build ./content/assets/css/_tailwind.dev.css -c ./content/assets/css/_tailwind.config.js -o ./output/assets/css/main.css"
+  - run: "./theme/node_modules/.bin/parcel build theme/content/assets/_main.js --out-dir output/assets --out-file main.js"
+    watch: ["./theme/content/assets/_main.js"]
+  # Note how we're using a modified copy of _main.css from the site itself, not the theme
+  # (this is also run after JS so that purge uses JS too)
+  - run: "./theme/node_modules/.bin/tailwind build ./content/assets/_main.css -o ./output/assets/main.css -c ./theme/tailwind.config.js"
     watch:
-      - "./content/*/_tailwind.config.js"
-      - "./content/*/_tailwind.dev.css"
+      - "./theme/tailwind.config.js"
+      - "./content/assets/_main.css"
+  - run: "./theme/node_modules/.bin/pitchfork index output -c .content"
 
 variables:
-  base_url: https://docs.dependencies.io
-  support_url: https://www.dependencies.io/contact/
-  # docsearch_api_key:
-  #   from_env: DOCSEARCH_API_KEY
-  # docsearch_index_name: pullapprove
+  name: Deps
+  support_url: "/support/"
+  login_url: "https://3.dependencies.io/login/"
+  base_url:
+    default: "https://docs.dependencies.io"
+    from_env: URL  # netlify
   version:
+    default: "\"latest\""
     from_env: COMMIT_REF
   google_tag_manager_id:
     from_env: GOOGLE_TAG_MANAGER_ID

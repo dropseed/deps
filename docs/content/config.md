@@ -1,6 +1,11 @@
+---
+title: deps.yml
+description: Advanced configuration of automated dependency updates using deps.yml.
+---
+
 # deps.yml
 
-A `deps.yml` is only required if you need to make changes beyond what deps detects automatically.
+A `deps.yml` is only required if you need to make changes beyond what is configured automatically.
 
 ```yaml
 version: 3  # required!
@@ -9,8 +14,6 @@ dependencies:
   path: app/server/requirements.txt
 - type: js
 ```
-
-*Note, this can also be named `.deps.yml` instead of `deps.yml`.*
 
 ## Lockfile updates
 
@@ -33,14 +36,13 @@ dependencies:
     enabled: false
 ```
 
-### Examples of lockfiles
+### Examples of supported lockfiles
 
-- `yarn.lock` in Yarn
-- `package-lock.json` in npm
-- `Pipfile.lock` in Pipenv
-- `composer.lock` in Composer
-- `Gemfile.lock` in Bundler
-- `Cargo.lock` in Cargo
+- `yarn.lock` in [Yarn](https://yarnpkg.com/)
+- `package-lock.json` in [npm](https://www.npmjs.com/)
+- `Pipfile.lock` in [Pipenv](https://docs.pipenv.org/)
+- `poetry.lock` in [poetry](https://python-poetry.org/)
+- `composer.lock` in [Composer](https://getcomposer.org/)
 
 ## Manifest updates
 
@@ -62,13 +64,13 @@ dependencies:
     enabled: false
 ```
 
-### Examples of manifests
+### Examples of supported manifests
 
-- `package.json` in npm
-- `Pipfile` in Pipenv
-- `composer.json` in Composer
-- `Gemfile` in Bundler
-- `Cargo.toml` in Cargo
+- `package.json` in [npm](https://www.npmjs.com/)
+- `Pipfile` in [Pipenv](https://docs.pipenv.org/)
+- `requirements.txt` in [Python/pip](https://pip.pypa.io/en/stable/user_guide/)
+- `pyproject.toml` in [poetry](https://python-poetry.org/)
+- `composer.json` in [Composer](https://getcomposer.org/)
 
 ### Disabling updates for a direct dependency
 
@@ -148,6 +150,6 @@ you can also pass settings manually
 (and for every component)
 by using an env variable in your CI.
 This is an easy way to apply the same GitHub PR labels to all updates, for example:
-```sh
+```console
 $ DEPS_SETTING_GITHUB_LABELS='["automerge"]' deps ci
 ```
