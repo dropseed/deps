@@ -7,11 +7,11 @@ command = "npm install -g yarn && cd theme && yarn install && cd .. && combine b
     from = "/contact/"
     to = "/support/"
 
-# [[redirects]]
-#     to = "https://docs.dependencies.io/*"
-#     from = "/:splat"
-#     status = 301
-#     force = true
+[[redirects]]
+    to = "https://docs.dependencies.io/*"
+    from = "https://www.dependencies.io/:splat"
+    status = 301
+    force = true
 
 [[redirects]]
     from = "/github-redirect/*"
