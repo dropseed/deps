@@ -5,3 +5,18 @@ command = "npm install -g yarn && cd theme && yarn install && cd .. && combine b
 [[redirects]]
     from = "/contact/"
     to = "/support/"
+
+# [[redirects]]
+#     to = "https://docs.dependencies.io/*"
+#     from = "/:splat"
+#     status = 301
+#     force = true
+
+[[redirects]]
+    from = "/github-redirect/*"
+    to = "https://github.com/:splat"
+    status = 302
+
+[[redirects]]
+    from = "/apply/"
+    to = "https://www.dropseed.io/free/"
