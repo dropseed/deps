@@ -1,3 +1,8 @@
+---
+title: deps.yml
+description: Advanced configuration of automated dependency updates using deps.yml.
+---
+
 # deps.yml
 
 A `deps.yml` is only required if you need to make changes beyond what is configured automatically.

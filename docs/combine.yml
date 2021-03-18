@@ -3,15 +3,16 @@ steps:
     watch: ["./theme/content/assets/_main.js"]
   # Note how we're using a modified copy of _main.css from the site itself, not the theme
   # (this is also run after JS so that purge uses JS too)
-  - run: "./theme/node_modules/.bin/tailwind build ./content/assets/_main.css -o ./output/assets/main.css"
+  - run: "./theme/node_modules/.bin/tailwind build ./content/assets/_main.css -o ./output/assets/main.css -c ./theme/tailwind.config.js"
     watch:
-      - "./tailwind.config.js"
+      - "./theme/tailwind.config.js"
       - "./content/assets/_main.css"
   - run: "./theme/node_modules/.bin/pitchfork index output -c .content"
 
 variables:
   name: Deps
-  support_url: "https://www.dropseed.io/contact/"
+  support_url: "/support/"
+  login_url: "https://3.dependencies.io/login/"
   base_url:
     default: "https://docs.dependencies.io"
     from_env: URL  # netlify

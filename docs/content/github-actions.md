@@ -13,10 +13,11 @@ You can get your `DEPS_TOKEN` from [3.dependencies.io](https://3.dependencies.io
 
 ## 2. Add a deps workflow
 
-A example of using deps with Python dependencies.
-You can put your deps workflow in its own file,
-such as `.github/workflows/deps.yml`.
+Create a [workflow file](https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions) at `.github/workflows/deps.yml`
+
 You will need the `DEPS_TOKEN` and `DEPS_GITHUB_TOKEN` at a minimum.
+
+Here's an example for a Python project:
 
 ```yaml
 name: deps
@@ -39,3 +40,5 @@ jobs:
         DEPS_TOKEN: ${{ secrets.DEPS_TOKEN }}
         DEPS_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
+
+[You can also authenticate as a GitHub App, and customize your pull requests with labels, assignees, and more →](/github/)

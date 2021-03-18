@@ -1,9 +1,14 @@
+---
+title: Python
+description: Automated updates and pull requests for Python dependencies.
+---
+
 # Python
 
 Currently supports:
 
 - `Pipfile`
-- `Pipfile.lock`
+- `poetry.lock`
 - `requirements.txt` (filename doesn't matter)
 
 ## Example `deps.yml`
@@ -25,6 +30,12 @@ dependencies:
     # Default: ["default", "develop"]
     pipfilelock_sections:
     - default
+
+    # If your virtualenv is in a specific location that
+    # isn't found automatically
+    #
+    # Default: ""
+    pip_path: myenv/bin/pip
 ```
 
 ## Support

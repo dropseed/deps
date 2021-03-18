@@ -1,12 +1,9 @@
+---
+title: Using deps locally
+description: Interactively update dependencies with the deps command line tool.
+---
+
 # Using deps locally
-
-Running `deps` on your own machine is the best way to...
-
-- See how deps works *before* setting up CI
-- Make one-off updates
-- Test advanced configuration without committing to your repo
-
-You can use `deps` locally, set it up in CI, or both.
 
 Locally `deps` can:
 
@@ -14,7 +11,7 @@ Locally `deps` can:
 - Interactively upgrade dependencies (including out-of-range updates)
 - Tell you when to re-install (new yarn.lock after `git pull`, etc.)
 
-Setting up `deps` in CI will automatically create pull requests for new updates!
+[Setting up `deps` in CI](/ci/) will automatically create pull requests for new updates.
 
 ## Installing
 

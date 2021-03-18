@@ -1,3 +1,8 @@
+---
+title: Git
+description: Automated updates and pull requests for Git dependencies.
+---
+
 # Git
 
 This component allows you to track remote repositories (on GitHub or elsewhere) and do a find-and-replace in your repo when new tags are pushed.

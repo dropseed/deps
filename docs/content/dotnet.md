@@ -1,3 +1,8 @@
+---
+title: .NET
+description: Automated updates and pull requests for .NET dependencies.
+---
+
 # .NET
 
 > This component is a work-in-progress while we port things over from dependencies.io v2.

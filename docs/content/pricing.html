@@ -1,0 +1,262 @@
+{% extends "base.template.html" %}
+
+{% set title = "Pricing" %}
+{% set description = "Pricing for using the deps command line tool in CI." %}
+
+{% block content %}
+<h1>Pricing</h1>
+
+<p class="text-gray-600">
+    You can use deps locally for free,
+    but automating pull requests in CI requires a <code>DEPS_TOKEN</code>.
+</p>
+
+
+<div class="grid grid-cols-1 mt-8 lg:grid-cols-2 gap-x-4 gap-y-6">
+    <div class="p-6 border border-gray-200 rounded shadow-sm">
+        <h3 class="mb-4 text-xl font-medium">Non-commercial</h3>
+        <p>
+            <span class="text-4xl font-extrabold text-gray-900">Free</span>
+            <span class="text-base font-medium text-gray-500"></span>
+        </p>
+        <div class="mt-8 text-center">
+            <a href="https://www.dropseed.io/free/" data-tc=""
+                class="block w-full px-4 py-2 text-gray-600 bg-gray-300 rounded hover:bg-gray-200">Apply →</a>
+        </div>
+        <hr class="my-8 -mx-6 border-gray-200">
+        <p class="mt-4 mb-4 text-xs font-medium uppercase">What's Included</p>
+        <ul class="mb-4 text-sm text-gray-700">
+            <li class="pb-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    class="inline h-4 mb-1 mr-1 icon-check">
+                    <circle cx="12" cy="12" r="10" class="text-gray-200 fill-current"></circle>
+                    <path class="text-gray-500 fill-current"
+                        d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z">
+                    </path>
+                </svg> Up to 50 updates per month</li>
+            <li class="pb-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    class="inline h-4 mb-1 mr-1 icon-check">
+                    <circle cx="12" cy="12" r="10" class="text-gray-200 fill-current"></circle>
+                    <path class="text-gray-500 fill-current"
+                        d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z">
+                    </path>
+                </svg> Unlimited repositories</li>
+            <li class="pb-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    class="inline h-4 mb-1 mr-1 icon-check">
+                    <circle cx="12" cy="12" r="10" class="text-gray-200 fill-current"></circle>
+                    <path class="text-gray-500 fill-current"
+                        d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z">
+                    </path>
+                </svg> 7-day free trial</li>
+            <li class="pb-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    class="inline h-4 mb-1 mr-1 icon-check">
+                    <circle cx="12" cy="12" r="10" class="text-gray-200 fill-current"></circle>
+                    <path class="text-gray-500 fill-current"
+                        d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z">
+                    </path>
+                </svg> Public support via GitHub Issues</li>
+        </ul>
+    </div>
+    <div class="p-6 border border-gray-200 rounded shadow-sm">
+        <h3 class="mb-4 text-xl font-medium">Professional</h3>
+        <p>
+            <span class="text-4xl font-extrabold text-gray-900">$50</span>
+            <span class="text-base font-medium text-gray-500">/ month</span>
+        </p>
+        <div class="mt-8 text-center">
+            <a href="{{ login_url }}?utm_source=pricing&utm_medium=website&utm_content=professional_monthly" data-tc=""
+                class="block w-full px-4 py-2 text-white bg-blue-600 rounded shadow hover:bg-blue-500">Try it for
+                free →</a>
+        </div>
+        <hr class="my-8 -mx-6 border-gray-200">
+        <p class="mt-4 mb-4 text-xs font-medium uppercase">What's Included</p>
+        <ul class="mb-4 text-sm text-gray-800">
+            <li class="pb-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    class="inline h-4 mb-1 mr-1 icon-check">
+                    <circle cx="12" cy="12" r="10" class="text-green-500 fill-current"></circle>
+                    <path class="text-green-100 fill-current"
+                        d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z">
+                    </path>
+                </svg> Up to 50 updates per month</li>
+            <li class="pb-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    class="inline h-4 mb-1 mr-1 icon-check">
+                    <circle cx="12" cy="12" r="10" class="text-green-500 fill-current"></circle>
+                    <path class="text-green-100 fill-current"
+                        d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z">
+                    </path>
+                </svg> Unlimited repositories</li>
+            <li class="pb-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    class="inline h-4 mb-1 mr-1 icon-check">
+                    <circle cx="12" cy="12" r="10" class="text-green-500 fill-current"></circle>
+                    <path class="text-green-100 fill-current"
+                        d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z">
+                    </path>
+                </svg> 7-day free trial</li>
+            <li class="pb-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    class="inline h-4 mb-1 mr-1 icon-check">
+                    <circle cx="12" cy="12" r="10" class="text-green-500 fill-current"></circle>
+                    <path class="text-green-100 fill-current"
+                        d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z">
+                    </path>
+                </svg> Public support via GitHub Issues</li>
+            <li class="pb-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    class="inline h-4 mb-1 mr-1 icon-check">
+                    <circle cx="12" cy="12" r="10" class="text-green-500 fill-current"></circle>
+                    <path class="text-green-100 fill-current"
+                        d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z">
+                    </path>
+                </svg> Private support via email</li>
+            <li class="pb-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    class="inline h-4 mb-1 mr-1 icon-check">
+                    <circle cx="12" cy="12" r="10" class="text-green-500 fill-current"></circle>
+                    <path class="text-green-100 fill-current"
+                        d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z">
+                    </path>
+                </svg> Priority support (24hr response time)</li>
+            <li class="pb-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    class="inline h-4 mb-1 mr-1 icon-check">
+                    <circle cx="12" cy="12" r="10" class="text-green-500 fill-current"></circle>
+                    <path class="text-green-100 fill-current"
+                        d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z">
+                    </path>
+                </svg> Onboarding consultation</li>
+        </ul>
+    </div>
+    <div class="p-6 border border-gray-200 rounded shadow-sm">
+        <h3 class="mb-4 text-xl font-medium">Small Business</h3>
+        <p>
+            <span class="text-4xl font-extrabold text-gray-900">$100</span>
+            <span class="text-base font-medium text-gray-500">/ month</span>
+        </p>
+        <div class="mt-8 text-center">
+            <a href="{{ login_url }}?utm_source=pricing&utm_medium=website&utm_content=small_business_monthly" data-tc=""
+                class="block w-full px-4 py-2 text-white bg-blue-600 rounded shadow hover:bg-blue-500">Try it for
+                free →</a>
+        </div>
+        <hr class="my-8 -mx-6 border-gray-200">
+        <p class="mt-4 mb-4 text-xs font-medium uppercase">What's Included</p>
+        <ul class="mb-4 text-sm text-gray-800">
+            <li class="pb-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    class="inline h-4 mb-1 mr-1 icon-check">
+                    <circle cx="12" cy="12" r="10" class="text-green-500 fill-current"></circle>
+                    <path class="text-green-100 fill-current"
+                        d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z">
+                    </path>
+                </svg> Up to 400 updates per month</li>
+            <li class="pb-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    class="inline h-4 mb-1 mr-1 icon-check">
+                    <circle cx="12" cy="12" r="10" class="text-green-500 fill-current"></circle>
+                    <path class="text-green-100 fill-current"
+                        d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z">
+                    </path>
+                </svg> Unlimited repositories</li>
+            <li class="pb-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    class="inline h-4 mb-1 mr-1 icon-check">
+                    <circle cx="12" cy="12" r="10" class="text-green-500 fill-current"></circle>
+                    <path class="text-green-100 fill-current"
+                        d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z">
+                    </path>
+                </svg> 7-day free trial</li>
+            <li class="pb-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    class="inline h-4 mb-1 mr-1 icon-check">
+                    <circle cx="12" cy="12" r="10" class="text-green-500 fill-current"></circle>
+                    <path class="text-green-100 fill-current"
+                        d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z">
+                    </path>
+                </svg> Public support via GitHub Issues</li>
+            <li class="pb-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    class="inline h-4 mb-1 mr-1 icon-check">
+                    <circle cx="12" cy="12" r="10" class="text-green-500 fill-current"></circle>
+                    <path class="text-green-100 fill-current"
+                        d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z">
+                    </path>
+                </svg> Private support via email</li>
+            <li class="pb-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    class="inline h-4 mb-1 mr-1 icon-check">
+                    <circle cx="12" cy="12" r="10" class="text-green-500 fill-current"></circle>
+                    <path class="text-green-100 fill-current"
+                        d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z">
+                    </path>
+                </svg> Priority support (24hr response time)</li>
+            <li class="pb-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    class="inline h-4 mb-1 mr-1 icon-check">
+                    <circle cx="12" cy="12" r="10" class="text-green-500 fill-current"></circle>
+                    <path class="text-green-100 fill-current"
+                        d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z">
+                    </path>
+                </svg> Onboarding consultation</li>
+        </ul>
+    </div>
+    <div class="p-6 border border-gray-200 rounded shadow-sm">
+        <h3 class="mb-4 text-xl font-medium">Enterprise</h3>
+        <p>
+            <span class="text-4xl font-extrabold text-gray-900">Contact us</span>
+            <span class="text-base font-medium text-gray-500"></span>
+        </p>
+        <div class="mt-8 text-center">
+            <a href="/support/" data-tc=""
+                class="block w-full px-4 py-2 text-gray-600 bg-gray-300 rounded hover:bg-gray-200">Contact Us →</a>
+        </div>
+        <hr class="my-8 -mx-6 border-gray-200">
+        <p class="mt-4 mb-4 text-xs font-medium uppercase">What's Included</p>
+        <ul class="mb-4 text-sm text-gray-700">
+            <li class="pb-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    class="inline h-4 mb-1 mr-1 icon-check">
+                    <circle cx="12" cy="12" r="10" class="text-gray-200 fill-current"></circle>
+                    <path class="text-gray-500 fill-current"
+                        d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z">
+                    </path>
+                </svg> Custom usage agreement</li>
+            <li class="pb-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    class="inline h-4 mb-1 mr-1 icon-check">
+                    <circle cx="12" cy="12" r="10" class="text-gray-200 fill-current"></circle>
+                    <path class="text-gray-500 fill-current"
+                        d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z">
+                    </path>
+                </svg> Unlimited repositories</li>
+            <li class="pb-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    class="inline h-4 mb-1 mr-1 icon-check">
+                    <circle cx="12" cy="12" r="10" class="text-gray-200 fill-current"></circle>
+                    <path class="text-gray-500 fill-current"
+                        d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z">
+                    </path>
+                </svg> 7-day free trial</li>
+            <li class="pb-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    class="inline h-4 mb-1 mr-1 icon-check">
+                    <circle cx="12" cy="12" r="10" class="text-gray-200 fill-current"></circle>
+                    <path class="text-gray-500 fill-current"
+                        d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z">
+                    </path>
+                </svg> Public support via GitHub Issues</li>
+            <li class="pb-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    class="inline h-4 mb-1 mr-1 icon-check">
+                    <circle cx="12" cy="12" r="10" class="text-gray-200 fill-current"></circle>
+                    <path class="text-gray-500 fill-current"
+                        d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z">
+                    </path>
+                </svg> Private support via email</li>
+            <li class="pb-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    class="inline h-4 mb-1 mr-1 icon-check">
+                    <circle cx="12" cy="12" r="10" class="text-gray-200 fill-current"></circle>
+                    <path class="text-gray-500 fill-current"
+                        d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z">
+                    </path>
+                </svg> Priority support (24hr response time)</li>
+            <li class="pb-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    class="inline h-4 mb-1 mr-1 icon-check">
+                    <circle cx="12" cy="12" r="10" class="text-gray-200 fill-current"></circle>
+                    <path class="text-gray-500 fill-current"
+                        d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z">
+                    </path>
+                </svg> Onboarding consultation</li>
+            <li class="pb-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    class="inline h-4 mb-1 mr-1 icon-check">
+                    <circle cx="12" cy="12" r="10" class="text-gray-200 fill-current"></circle>
+                    <path class="text-gray-500 fill-current"
+                        d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z">
+                    </path>
+                </svg> PO and invoicing (annual only)</li>
+        </ul>
+    </div>
+</div>
+
+{% endblock %}

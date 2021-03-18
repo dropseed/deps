@@ -1,13 +1,13 @@
 #!/bin/sh -ex
 
-echo "# JavaScript" > content/javascript.md
+echo "---\ntitle: JavaScript\ndescription: Automated updates and pull requests for JavaScript dependencies.\n---\n\n# JavaScript" > content/javascript.md
 curl -s https://raw.githubusercontent.com/dropseed/deps-js/master/README.md?d=$(date +%s) | tail -n +2 >> content/javascript.md
 
-echo "# Python" > content/python.md
+echo "---\ntitle: Python\ndescription: Automated updates and pull requests for Python dependencies.\n---\n\n# Python" > content/python.md
 curl -s https://raw.githubusercontent.com/dropseed/deps-python/master/README.md?d=$(date +%s) | tail -n +2 >> content/python.md
 
-echo "# PHP" > content/php.md
+echo "---\ntitle: PHP\ndescription: Automated updates and pull requests for PHP dependencies.\n---\n\n# PHP" > content/php.md
 curl -s https://raw.githubusercontent.com/dropseed/deps-php/master/README.md?d=$(date +%s) | tail -n +2 >> content/php.md
 
-echo "# Git" > content/git.md
+echo "---\ntitle: Git\ndescription: Automated updates and pull requests for Git dependencies.\n---\n\n# Git" > content/git.md
 curl -s https://raw.githubusercontent.com/dropseed/deps-git/master/README.md?d=$(date +%s) | tail -n +2 >> content/git.md

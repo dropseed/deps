@@ -1,16 +1,19 @@
+---
+title: Quickstart
+description: See how the deps command line tools works, and automate your first pull request.
+---
+
 # Quickstart
 
 Follow these steps to see how deps works and get your first automated pull request.
 
 ## 1. Install deps locally
 
-Use the auto-install script:
+[Download a release manually](https://github.com/dropseed/deps/releases), or use the auto-install script:
 
 ```console
 $ curl https://deps.app/install.sh | bash -s -- -b $HOME/bin
 ```
-
-Or [manually download a release](https://github.com/dropseed/deps/releases) and put deps in your `PATH`.
 
 ## 2. Try deps upgrade
 
@@ -46,18 +49,18 @@ Use the arrow keys to navigate: ↓ ↑ → ←
 
 ## 3. Install deps in CI
 
-To automate pull requests, set up deps using the cron or scheduled job feature of your CI provider.
+To automate pull requests, use the `deps ci` command in a cron or scheduled job on your CI provider.
 How often the job runs will determine how often pull requests are created and updated.
 
-You will need a `DEPS_TOKEN` in order to run `deps ci`.
+You will need a `DEPS_TOKEN` in order to run `deps ci` ([see pricing](/pricing/)).
 
-If your repo is on GitHub, `deps init` will automatically help set up a GitHub Actions workflow!
+<!-- If your repo is on GitHub, `deps init` will automatically help set up a GitHub Actions workflow! -->
 
-Otherwise
+Supported CI providers:
 
-- GitLab CI
-- Bitbucket Pipelines
-- Bitbucket Pipelines
-
-
-deps init should set up ci for you here
+- [GitHub Actions](/github-actions/)
+- [GitLab CI](/gitlab-ci/)
+- [Bitbucket Pipelines](/bitbucket-pipelines/)
+- [CircleCI](/circleci/)
+- [TravisCI](/travisci/)
+- [Other](/other-ci/)

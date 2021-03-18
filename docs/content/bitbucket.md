@@ -1,3 +1,8 @@
+---
+title: "Bitbucket"
+description: "Examples and instructions for setting up deps in Bitbucket"
+---
+
 # Bitbucket
 
 To give deps write-access to your repo and pull requests, you'll create an *app password*.
