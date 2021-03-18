@@ -3,20 +3,20 @@ publish = "docs/output"
 command = "npm install -g yarn && cd theme && yarn install && cd .. && combine build"
 
 [[redirects]]
-    from = "/contact/"
-    to = "/support/"
+from = "/contact/"
+to = "/support/"
 
 [[redirects]]
-    from = "https://docs.dependencies.io/*"
-    to = "https://www.dependencies.io/:splat"
-    status = 301
-    force = true
+from = "https://docs.dependencies.io/*"
+to = "https://www.dependencies.io/:splat"
+status = 301
+force = true
 
 [[redirects]]
-    from = "/github-redirect/*"
-    to = "https://github.com/:splat"
-    status = 302
+from = "/github-redirect/*"
+to = "https://github.com/:splat"
+status = 302
 
 [[redirects]]
-    from = "/apply/"
-    to = "https://www.dropseed.io/free/"
+from = "/apply/"
+to = "https://www.dropseed.io/free/"
