@@ -1,5 +1,5 @@
 [build]
-publish = "docs/output"
+publish = "output"
 command = "npm install -g yarn && cd theme && yarn install && cd .. && combine build"
 
 
