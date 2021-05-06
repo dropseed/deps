@@ -85,7 +85,7 @@ Updating 436b311..49c2cc3
 Fast-forward
  package-lock.json  |  47 ++---
 
-[Run `deps install` to update poetry.lock]
+[Run `deps install` to sync with poetry.lock]
 
 $ deps install
 ```

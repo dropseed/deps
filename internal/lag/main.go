@@ -162,7 +162,7 @@ func Run(dir string) error {
 			}
 		}
 
-		output.Subtle("\n[Run `deps install` to update %s]", strings.Join(paths, ", "))
+		output.Subtle("\n[Run `deps install` to sync with %s]", strings.Join(paths, ", "))
 	}
 
 	return nil
