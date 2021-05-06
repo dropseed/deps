@@ -63,6 +63,10 @@ or you need a more advanced configuration,
 
 ## Shell hook
 
+<div class="mb-6 aspect-w-16 aspect-h-9">
+  <iframe src="https://www.youtube.com/embed/bNChNdpBroQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+
 The optional deps shell hook will help ensure your local installations are actually accurate.
 After you change git branches or run git pull, it's easy to miss dependency changes that you actually need to install.
 The deps shell hook will run (quickly!) before every bash/zsh prompt and let you know if you forget to install dependency updates.
