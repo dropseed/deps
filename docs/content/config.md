@@ -112,7 +112,13 @@ dependencies:
 
 ## Injecting commands (hooks)
 
-WIP
+```yaml
+version: 3
+dependencies:
+- type: js
+  settings:
+    before_commit: npm run compile  # Only runs in CI
+```
 
 ## Environment variables
 

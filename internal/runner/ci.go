@@ -9,6 +9,7 @@ import (
 	"github.com/dropseed/deps/internal/ci"
 	"github.com/dropseed/deps/internal/config"
 	"github.com/dropseed/deps/internal/git"
+	"github.com/dropseed/deps/internal/hooks"
 	"github.com/dropseed/deps/internal/output"
 	"github.com/dropseed/deps/internal/pullrequest"
 	"github.com/dropseed/deps/internal/schemaext"
@@ -227,14 +228,16 @@ func runUpdate(update *Update, base, head string, existingUpdate bool) error {
 		return errors.New("Update didn't generate any changes to commit")
 	}
 
+	if err := hooks.RunPullrequestHook(pr, "before_commit"); err != nil {
+		return err
+	}
+
 	git.Add()
 	git.Commit(schemaext.TitleForDeps(outputDeps))
 	// TODO try adding more lines for dependency breakdown,
 	// especially on lockfiles
 
 	git.PushBranch(head)
-
-	// TODO hooks or what do you do otherwise?
 
 	if pr != nil {
 		output.Debug("Waiting a second for the push to be processed by the host")
