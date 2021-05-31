@@ -24,16 +24,21 @@ name: deps
 
 on:
   schedule:
-  - cron: 0 0 * * *
+  - cron: 0 0 * * Mon  # Weekly
+  # - cron: 0 0 * * *  # Daily
+  workflow_dispatch: {}
 
 jobs:
   deps:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - uses: actions/setup-python@v1
-    - run: pip install pipenv
-    - run: ./scripts/install
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - run: |
+        pip install -U pip pipenv
+        ./scripts/install
     - run: curl https://deps.app/install.sh | bash -s -- -b $HOME/bin
     - run: $HOME/bin/deps ci
       env:
