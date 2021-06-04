@@ -31,7 +31,7 @@ The key features of deps are:
 $ curl https://deps.app/install.sh | bash -s -- -b $HOME/bin
 ```
 
-## Official Components
+## Official components
 
 - [dropseed/deps-python](https://github.com/dropseed/deps-python)
 - [dropseed/deps-js](https://github.com/dropseed/deps-js)
