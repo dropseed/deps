@@ -148,10 +148,6 @@ dependencies:
       Changelog: updated
 ```
 
-```yaml
-settings:
-```
-
 ## Environment variables
 
 For each dependency type,
