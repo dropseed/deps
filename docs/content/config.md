@@ -132,8 +132,24 @@ version: 3
 dependencies:
 - type: js
   settings:
-    # Default: "{{.Subject}}"
+    # Default
+    commit_message_template: "{{.Subject}}"
+
+    # Subject previx examplte
     commit_message_template: "deps: {{.Subject}}"
+
+    # Subject suffix example
+    commit_message_template: "{{.Subject}} (skip ci)"
+
+    # Trailer example
+    commit_message_template: |-
+      {{.Subject}}
+
+      Changelog: updated
+```
+
+```yaml
+settings:
 ```
 
 ## Environment variables
