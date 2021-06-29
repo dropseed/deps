@@ -4,30 +4,24 @@
       "current": {
         "dependencies": {
           "pullrequest": {
-            "available": [
-              {
-                "content": "Second release",
-                "name": "0.2.0"
-              },
-              {
-                "name": "0.3.0"
-              }
-            ],
-            "constraint": "0.1.0",
-            "source": "go"
+            "source": "go",
+            "constraint": "0.1.0"
           },
           "requests": {
-            "available": [
-              {
-                "content": "Second release",
-                "name": "2.0.0"
-              },
-              {
-                "name": "3.0.0"
-              }
-            ],
-            "constraint": "1.0.0",
-            "source": "pip"
+            "source": "pip",
+            "constraint": "0.1.0"
+          }
+        }
+      },
+      "updated": {
+        "dependencies": {
+          "pullrequest": {
+            "source": "go",
+            "constraint": "0.3.0"
+          },
+          "requests": {
+            "source": "pip",
+            "constraint": "0.3.0"
           }
         }
       }

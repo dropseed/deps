@@ -113,6 +113,18 @@ func TitleForDeps(s *schema.Dependencies) string {
 }
 
 func DescriptionForDeps(s *schema.Dependencies) string {
+	summaryHeader := "The following dependencies have been updated by [deps](https://www.dependencies.io/):"
+	summaryLines := DescriptionItemsForDeps(s)
+	final := summaryHeader + "\n\n" + summaryLines + "\n"
+
+	if len(final) > maxBodyLength {
+		final = final[:maxBodyLength]
+	}
+
+	return final
+}
+
+func DescriptionItemsForDeps(s *schema.Dependencies) string {
 	lockfiles := map[string]*schema.Lockfile{}
 	manifests := map[string]*schema.Manifest{}
 
@@ -152,19 +164,5 @@ func DescriptionForDeps(s *schema.Dependencies) string {
 		summaryLines = append(summaryLines, lines...)
 	}
 
-	summaryHeader := "The following dependencies have been updated by [dependencies.io](https://www.dependencies.io/):\n\n"
-
-	notes := "" // TODO use go template instead
-	// notes := env.GetSetting("pullrequest_notes", "")
-	// if notes != "" {
-	// 	notes = notes + "\n\n---\n\n"
-	// }
-
-	final := notes + summaryHeader + strings.Join(summaryLines, "\n") + "\n"
-
-	if len(final) > maxBodyLength {
-		final = final[:maxBodyLength]
-	}
-
-	return final
+	return strings.Join(summaryLines, "\n")
 }

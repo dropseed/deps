@@ -125,25 +125,31 @@ dependencies:
 Add commit message prefixes, suffixes, and trailers by providing your own template for the commit message.
 The template is rendered using [Go's text/template package](https://golang.org/pkg/text/template/).
 
-The `{{.Subject}}` is the only variable currently and provides the auto-generated PR title / commit message based on the dependencies updated in the commit (ex. "Update x from y to z").
-
 ```yaml
 version: 3
 dependencies:
 - type: js
   settings:
+    ## Variables
+    # Single line subject (ex. "Update x from 1.0 to 2.0")
+    # {{.Subject}}
+    # Expanded body description (if available)
+    # {{.Body}}
+    # Combined subject + \n\n + optional body
+    # {{.SubjectAndBody}}
+
     # Default
-    commit_message_template: "{{.Subject}}"
+    commit_message_template: "{{.SubjectAndBody}}"
 
-    # Subject previx examplte
-    commit_message_template: "deps: {{.Subject}}"
+    # Subject prefix example
+    commit_message_template: "deps: {{.SubjectAndBody}}"
 
-    # Subject suffix example
+    # Simplified subject w/ suffix example
     commit_message_template: "{{.Subject}} (skip ci)"
 
     # Trailer example
     commit_message_template: |-
-      {{.Subject}}
+      {{.SubjectAndBody}}
 
       Changelog: updated
 ```

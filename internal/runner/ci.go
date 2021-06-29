@@ -236,7 +236,7 @@ func runUpdate(update *Update, base, head string, existingUpdate bool) error {
 		return err
 	}
 
-	templateString := "{{.Subject}}"
+	templateString := "{{.SubjectAndBody}}"
 	if templateSetting := pr.GetSetting("commit_message_template"); templateSetting != nil {
 		templateString = templateSetting.(string)
 	}
@@ -267,12 +267,25 @@ func renderCommitMessage(deps *schema.Dependencies, templateString string) (stri
 		return "", err
 	}
 
-	// TODO try adding more lines for dependency breakdown, especially on lockfiles
+	subject := schemaext.TitleForDeps(deps)
+	subjectAndBody := subject
+
+	// Extra explanation not needed in single manifest scenario
+	body := ""
+	schemaBody := schemaext.DescriptionItemsForDeps(deps)
+	if len(deps.Lockfiles) > 0 || len(strings.Split(schemaBody, "\n")) > 1 {
+		body = schemaBody
+		subjectAndBody = subjectAndBody + "\n\n" + body
+	}
 
 	vars := struct {
-		Subject string
+		Subject        string
+		Body           string
+		SubjectAndBody string
 	}{
-		Subject: schemaext.TitleForDeps(deps),
+		Subject:        subject,
+		Body:           body,
+		SubjectAndBody: subjectAndBody,
 	}
 
 	buf := new(bytes.Buffer)

@@ -1,4 +1,4 @@
-The following dependencies have been updated by [dependencies.io](https://www.dependencies.io/):
+The following dependencies have been updated by [deps](https://www.dependencies.io/):
 
 - `yarn.lock` was updated (including 2 direct and 44 transitive dependencies)
   - `postcss-cli` was updated from 6.1.2 to 6.1.3
