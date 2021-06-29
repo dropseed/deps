@@ -32,9 +32,6 @@ func TestCommitMessageTemplates(t *testing.T) {
 	if err := checkRender("{{.Subject}} (skip ci)", "Update pullrequest from 0.1.0 to 0.3.0 (skip ci)"); err != nil {
 		t.Error(err)
 	}
-	if err := checkRender("{{.Subject}} (skip ci)", "Update pullrequest from 0.1.0 to 0.3.0 (skip ci)"); err != nil {
-		t.Error(err)
-	}
 	if err := checkRender("    {{.Subject}}   ", "Update pullrequest from 0.1.0 to 0.3.0"); err != nil {
 		t.Error(err)
 	}
