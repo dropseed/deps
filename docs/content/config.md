@@ -120,6 +120,40 @@ dependencies:
     before_commit: npm run compile  # Only runs in CI
 ```
 
+## Customizing commit messages
+
+Add commit message prefixes, suffixes, and trailers by providing your own template for the commit message.
+The template is rendered using [Go's text/template package](https://golang.org/pkg/text/template/).
+
+```yaml
+version: 3
+dependencies:
+- type: js
+  settings:
+    ## Variables
+    # Single line subject (ex. "Update x from 1.0 to 2.0")
+    # {{.Subject}}
+    # Expanded body description (if available)
+    # {{.Body}}
+    # Combined subject + \n\n + optional body
+    # {{.SubjectAndBody}}
+
+    # Default
+    commit_message_template: "{{.SubjectAndBody}}"
+
+    # Subject prefix example
+    commit_message_template: "deps: {{.SubjectAndBody}}"
+
+    # Simplified subject w/ suffix example
+    commit_message_template: "{{.Subject}} (skip ci)"
+
+    # Trailer example
+    commit_message_template: |-
+      {{.SubjectAndBody}}
+
+      Changelog: updated
+```
+
 ## Environment variables
 
 For each dependency type,

@@ -1,0 +1,22 @@
+{
+    "manifests": {
+        "/": {
+            "current": {
+                "dependencies": {
+                    "pullrequest": {
+                        "source": "go",
+                        "constraint": "0.1.0"
+                    }
+                }
+            },
+            "updated": {
+                "dependencies": {
+                    "pullrequest": {
+                        "source": "go",
+                        "constraint": "0.3.0"
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,4 +1,4 @@
-The following dependencies have been updated by [dependencies.io](https://www.dependencies.io/):
+The following dependencies have been updated by [deps](https://www.dependencies.io/):
 
-- `pullrequest` in `requirements.txt` from "0.1.0" to "0.3.0"
-- `requests` in `requirements.txt` from "0.1.0" to "0.3.0"
+- `pullrequest` in `requirements.txt` from 0.1.0 to 0.3.0
+- `requests` in `requirements.txt` from 0.1.0 to 0.3.0

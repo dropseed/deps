@@ -49,5 +49,5 @@ func getSummaryLineForDependencyName(manifest *schema.Manifest, name, manifestPa
 	if manifestPath != "" {
 		inManifest = fmt.Sprintf(" in `%s`", manifestPath)
 	}
-	return fmt.Sprintf("- `%s`%s from \"%s\" to \"%s\"", dependencyNameForDisplay(name), inManifest, currentDependency.Constraint, updatedDependency.Constraint), nil
+	return fmt.Sprintf("- `%s`%s from %s to %s", dependencyNameForDisplay(name), inManifest, currentDependency.Constraint, updatedDependency.Constraint), nil
 }

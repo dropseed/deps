@@ -1,8 +1,11 @@
 package runner
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
+	"strings"
+	"text/template"
 	"time"
 
 	"github.com/dropseed/deps/internal/billing"
@@ -13,6 +16,7 @@ import (
 	"github.com/dropseed/deps/internal/output"
 	"github.com/dropseed/deps/internal/pullrequest"
 	"github.com/dropseed/deps/internal/schemaext"
+	"github.com/dropseed/deps/pkg/schema"
 )
 
 type updateResult struct {
@@ -232,11 +236,17 @@ func runUpdate(update *Update, base, head string, existingUpdate bool) error {
 		return err
 	}
 
-	git.Add()
-	git.Commit(schemaext.TitleForDeps(outputDeps))
-	// TODO try adding more lines for dependency breakdown,
-	// especially on lockfiles
+	templateString := "{{.SubjectAndBody}}"
+	if templateSetting := pr.GetSetting("commit_message_template"); templateSetting != nil {
+		templateString = templateSetting.(string)
+	}
+	commitMessage, err := renderCommitMessage(outputDeps, templateString)
+	if err != nil {
+		return err
+	}
 
+	git.Add()
+	git.Commit(commitMessage)
 	git.PushBranch(head)
 
 	if pr != nil {
@@ -249,4 +259,45 @@ func runUpdate(update *Update, base, head string, existingUpdate bool) error {
 	}
 
 	return nil
+}
+
+func renderCommitMessage(deps *schema.Dependencies, templateString string) (string, error) {
+	tmpl, err := template.New("commitmessage").Parse(templateString)
+	if err != nil {
+		return "", err
+	}
+
+	subject := schemaext.TitleForDeps(deps)
+	subjectAndBody := subject
+
+	// Extra explanation not needed in single manifest scenario
+	body := ""
+	schemaBody := schemaext.DescriptionItemsForDeps(deps)
+	if len(deps.Lockfiles) > 0 || len(strings.Split(schemaBody, "\n")) > 1 {
+		body = schemaBody
+		subjectAndBody = subjectAndBody + "\n\n" + body
+	}
+
+	vars := struct {
+		Subject        string
+		Body           string
+		SubjectAndBody string
+	}{
+		Subject:        subject,
+		Body:           body,
+		SubjectAndBody: subjectAndBody,
+	}
+
+	buf := new(bytes.Buffer)
+	if err := tmpl.Execute(buf, vars); err != nil {
+		return "", err
+	}
+
+	message := strings.TrimSpace(buf.String())
+
+	if message == "" {
+		return "", errors.New("commit message can not be empty")
+	}
+
+	return message, nil
 }
