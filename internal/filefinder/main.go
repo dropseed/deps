@@ -35,7 +35,7 @@ func findInDir(dir string, patterns map[string]*regexp.Regexp, depth int) map[st
 
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
-		panic(err)
+		return nil
 	}
 
 	matches := map[string]string{}
@@ -46,7 +46,7 @@ func findInDir(dir string, patterns map[string]*regexp.Regexp, depth int) map[st
 
 		fileInfo, err := os.Stat(p)
 		if err != nil {
-			panic(err)
+			continue
 		}
 
 		if fileInfo.IsDir() {
