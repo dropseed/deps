@@ -24,7 +24,7 @@ type updateResult struct {
 	err    error
 }
 
-func CI(autoconfigure bool, types []string) error {
+func CI(autoconfigure bool, types []string, paths []string) error {
 
 	api, err := billing.NewAPI()
 	if err != nil {
@@ -79,7 +79,7 @@ func CI(autoconfigure bool, types []string) error {
 		return err
 	}
 
-	allUpdates, err := collectUpdates(cfg, types)
+	allUpdates, err := collectUpdates(cfg, types, paths)
 	if err != nil {
 		return err
 	}

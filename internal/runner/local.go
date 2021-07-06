@@ -27,7 +27,7 @@ func Local() error {
 		return err
 	}
 
-	allUpdates, err := collectUpdates(cfg, []string{})
+	allUpdates, err := collectUpdates(cfg, []string{}, []string{})
 	if err != nil {
 		return err
 	}

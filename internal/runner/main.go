@@ -46,20 +46,40 @@ func organizeUpdates(updates Updates) (Updates, Updates, Updates, error) {
 	return newUpdates, outdatedUpdates, existingUpdates, nil
 }
 
-func collectUpdates(cfg *config.Config, types []string) (Updates, error) {
+func collectUpdates(cfg *config.Config, types []string, paths []string) (Updates, error) {
 	if len(types) > 0 {
 		output.Event("Only collecting types: %s", strings.Join(types, ", "))
 	}
 	typesMap := map[string]bool{}
 	for _, t := range types {
-		typesMap[t] = true
+		if strings.HasPrefix(t, "!") {
+			typesMap[t[1:]] = false
+		} else {
+			typesMap[t] = true
+		}
+	}
+
+	if len(paths) > 0 {
+		output.Event("Only collecting paths: %s", strings.Join(paths, ", "))
+	}
+	pathsMap := map[string]bool{}
+	for _, p := range paths {
+		if strings.HasPrefix(p, "!") {
+			pathsMap[p[1:]] = false
+		} else {
+			pathsMap[p] = true
+		}
 	}
 
 	updates := Updates{}
 
 	for index, dependencyConfig := range cfg.Dependencies {
 
-		if _, ok := typesMap[dependencyConfig.Type]; len(typesMap) > 0 && !ok {
+		if enabled, ok := typesMap[dependencyConfig.Type]; len(typesMap) > 0 && (!ok || !enabled) {
+			continue
+		}
+
+		if enabled, ok := pathsMap[dependencyConfig.Path]; len(pathsMap) > 0 && (!ok || !enabled) {
 			continue
 		}
 

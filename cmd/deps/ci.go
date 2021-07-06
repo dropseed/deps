@@ -8,6 +8,7 @@ import (
 
 var ciManual bool
 var ciTypes []string
+var ciPaths []string
 var ciQuiet bool
 
 var ciCMD = &cobra.Command{
@@ -20,7 +21,7 @@ var ciCMD = &cobra.Command{
 		}
 
 		auto := !ciManual
-		if err := runner.CI(auto, ciTypes); err != nil {
+		if err := runner.CI(auto, ciTypes, ciPaths); err != nil {
 			printErrAndExitFailure(err)
 		}
 	},
@@ -29,6 +30,7 @@ var ciCMD = &cobra.Command{
 func init() {
 	ciCMD.Flags().BoolVarP(&ciManual, "manual", "m", false, "do not automatically configure repo")
 	ciCMD.Flags().BoolVarP(&ciQuiet, "quiet", "q", false, "disable verbose output")
-	ciCMD.Flags().StringArrayVarP(&ciTypes, "type", "t", []string{}, "only run on specified dependency types")
+	ciCMD.Flags().StringArrayVarP(&ciTypes, "type", "t", []string{}, "only run on specified dependency types (use ! to negate)")
+	ciCMD.Flags().StringArrayVarP(&ciPaths, "path", "p", []string{}, "only run on specified dependency paths (use ! to negate)")
 	rootCmd.AddCommand(ciCMD)
 }
