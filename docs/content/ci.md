@@ -34,9 +34,9 @@ To disable the automatic configuration (if you have other requirements or want t
 
 For specifics on what is configured and how, you can [read the code here](https://github.com/dropseed/deps/search?l=Go&q=autoconfigure).
 
-## Filtering by type
+## Filtering by type or path
 
 In some container-based CI systems,
 you'll only have certain languages and requirements installed in certain containers.
 
-You can use the `--type` option to run the appropriate updates based on the container you're in. For example, use `deps ci --type js` in your container with your JavaScript environment and `deps ci --type python` in your Python container.
+You can use the `--type` and `--path` options to run the appropriate updates based on the container you're in. For example, use `deps ci --type js` in your container with your JavaScript environment and `deps ci --type python` in your Python container. Likewise you can use `deps ci --path docs`. Both `--type` and `--path` also support negation, allowing you to do `--type js` in one container and `--type !js` in another.
