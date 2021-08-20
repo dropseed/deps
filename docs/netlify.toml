@@ -20,4 +20,4 @@ command = "npm install -g yarn && cd theme && yarn install && cd .. && combine b
 
 [[redirects]]
     from = "/apply/"
-    to = "https://www.dropseed.io/free/"
+    to = "https://www.dropseed.dev/free/"
