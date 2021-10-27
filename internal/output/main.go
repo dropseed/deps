@@ -13,6 +13,10 @@ var Verbosity = 0
 func shouldColorize() bool {
 	isTerm := terminal.IsTerminal(int(os.Stdout.Fd()))
 	isGitHubActions := os.Getenv("GITHUB_ACTIONS") == "true"
+	if isGitHubActions {
+		// https://github.com/fatih/color#github-actions
+		color.NoColor = false
+	}
 	return isTerm || isGitHubActions
 }
 
