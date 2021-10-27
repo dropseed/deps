@@ -202,19 +202,19 @@ func runUpdate(update *Update, base, head string, existingUpdate bool) error {
 		// go straight to it
 		git.Checkout(head)
 
-		if mergeBaseSetting := update.dependencyConfig.GetSettingForSchema("merge_base", update.dependencies); mergeBaseSetting != nil {
-			if mergeBaseSetting.(bool) {
-				if git.MergeWouldConflict(base) {
-					output.Event("Merge with %s has a conflict, so skipping automatic merge", base)
-				} else {
-					output.Event("Merging %s into existing update", base)
-					if git.Merge(base) {
-						// Ideally we'd only push once, at the end with or without the update?
-						git.PushBranch(head)
-					}
-				}
+		// if mergeBaseSetting := update.dependencyConfig.GetSettingForSchema("merge_base", update.dependencies); mergeBaseSetting != nil {
+		// if mergeBaseSetting.(bool) {
+		if git.MergeWouldConflict(base) {
+			output.Event("Merge with %s has a conflict, so skipping automatic merge", base)
+		} else {
+			output.Event("Merging %s into existing update", base)
+			if git.Merge(base) {
+				// Ideally we'd only push once, at the end with or without the update?
+				git.PushBranch(head)
 			}
 		}
+		// }
+		// }
 	} else {
 		// create a branch for it
 		git.Checkout(base)
