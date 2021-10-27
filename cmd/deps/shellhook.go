@@ -65,6 +65,10 @@ var shellhookCmd = &cobra.Command{
 	Hidden: true,
 	Long:   usage,
 	Run: func(cmd *cobra.Command, args []string) {
+		if os.Getenv("DEPS_DISABLED") == "1" || strings.ToLower(os.Getenv("DEPS_DISABLED")) == "true" {
+			return
+		}
+
 		shellType := args[0]
 
 		selfPath, err := os.Executable()
