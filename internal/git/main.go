@@ -63,6 +63,37 @@ func listBranches() []string {
 	return branches
 }
 
+func MergeWouldConflict(mergeBranch string) bool {
+	mergeCmd := exec.Command("git", "merge", mergeBranch, "--no-commit")
+	mergeOutput, mergeErr := mergeCmd.CombinedOutput()
+
+	abortMergeCmd := exec.Command("git", "merge", "--abort")
+	abortMergeCmd.CombinedOutput()
+
+	if mergeErr != nil {
+		println(mergeOutput)
+	}
+
+	return mergeErr == nil
+}
+
+func Merge(branch string) bool {
+	cmd := exec.Command("git", "merge", branch)
+	out, err := cmd.CombinedOutput()
+	outS := string(out)
+	output.Debug(outS)
+
+	if err != nil {
+		return false
+	}
+
+	if strings.Contains(outS, "Already up-to-date") {
+		return false
+	}
+
+	return true
+}
+
 func getBranchPrefix() string {
 	branchPrefix := ""
 	branchSeparator := "/"
