@@ -10,20 +10,25 @@ import (
 
 var Verbosity = 0
 
+func shouldColorize() bool {
+	isTerm := terminal.IsTerminal(int(os.Stdout.Fd()))
+	isGitHubActions := os.Getenv("GITHUB_ACTIONS") == "true"
+	return isTerm || isGitHubActions
+}
+
 func IsDebug() bool {
 	return Verbosity > 0
 }
 
 func Event(f string, args ...interface{}) {
-	isTerm := terminal.IsTerminal(int(os.Stdout.Fd()))
-	if isTerm && IsDebug() {
+	if shouldColorize() && IsDebug() {
 		color.Set(color.FgMagenta)
 		print("> ")
 		color.Unset()
 		color.Set(color.Bold)
 	}
 	fmt.Printf(f+"\n", args...)
-	if isTerm && IsDebug() {
+	if shouldColorize() && IsDebug() {
 		color.Unset()
 	}
 }
@@ -32,7 +37,7 @@ func Debug(f string, args ...interface{}) {
 	if !IsDebug() {
 		return
 	}
-	if terminal.IsTerminal(int(os.Stdout.Fd())) {
+	if shouldColorize() {
 		color.Set(color.FgCyan)
 		print("> ")
 		color.Unset()
