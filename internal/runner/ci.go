@@ -94,7 +94,7 @@ func CI(autoconfigure bool, types []string, paths []string) error {
 	// Find existing updates where merge_base enabled
 	// and a merge is available, and move them to outdated updates
 	for _, update := range existingUpdates {
-		if update.mergeBaseEnabled() {
+		if update.mergeUpdatesEnabled() {
 			git.Checkout(update.branch)
 			mergeAvailable := git.MergeAvailable(startingBranch)
 			git.Checkout("-")
@@ -214,12 +214,17 @@ func getCurrentBranch(ci ci.CIProvider) string {
 	return branch
 }
 
-func (update *Update) mergeBaseEnabled() bool {
-	mergeBaseSetting := update.dependencyConfig.GetSettingForSchema("merge_base", update.dependencies)
-	if mergeBaseSetting == nil {
+func (update *Update) mergeUpdatesEnabled() bool {
+	branchUpdatesSetting := update.dependencyConfig.GetSettingForSchema("branch_updates", update.dependencies)
+	if branchUpdatesSetting == nil {
 		return false
 	}
-	return mergeBaseSetting.(bool)
+	branchUpdates := branchUpdatesSetting.(string)
+	branchUpdates = strings.ToLower(branchUpdates)
+	// merge_if_failing would be a potential improvement here,
+	// but CI dependent because we'd need to know the current status for a PR
+	// rebase may be another option
+	return branchUpdates == "merge"
 }
 
 func runUpdate(update *Update, base, head string, existingUpdate bool) error {
@@ -227,8 +232,9 @@ func runUpdate(update *Update, base, head string, existingUpdate bool) error {
 		// go straight to it
 		git.Checkout(head)
 
-		if update.mergeBaseEnabled() {
+		if update.mergeUpdatesEnabled() {
 			if git.MergeWouldConflict(base) {
+				// Fine to be quiet on this because conflicts show up in host UI
 				output.Event("Merge with %s has a conflict, so skipping automatic merge", base)
 			} else {
 				output.Event("Merging %s into existing update", base)
