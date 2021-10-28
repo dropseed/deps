@@ -74,7 +74,7 @@ func MergeWouldConflict(branch string) bool {
 		output.Warning((string(mergeOutput)))
 	}
 
-	return mergeErr == nil
+	return mergeErr != nil
 }
 
 func Merge(branch string) bool {
