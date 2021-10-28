@@ -64,7 +64,7 @@ func listBranches() []string {
 }
 
 func MergeWouldConflict(branch string) bool {
-	mergeCmd := exec.Command("git", "merge", branch, "--no-commit", "--allow-unrelated-histories", "-X", "theirs")
+	mergeCmd := exec.Command("git", "merge", branch, "--no-commit")
 	mergeOutput, mergeErr := mergeCmd.CombinedOutput()
 
 	abortMergeCmd := exec.Command("git", "merge", "--abort")
@@ -78,7 +78,7 @@ func MergeWouldConflict(branch string) bool {
 }
 
 func Merge(branch string) bool {
-	cmd := exec.Command("git", "merge", branch, "--allow-unrelated-histories", "-X", "theirs")
+	cmd := exec.Command("git", "merge", branch)
 	out, err := cmd.CombinedOutput()
 	outS := string(out)
 
@@ -98,9 +98,21 @@ func Merge(branch string) bool {
 // MergeAvailable returns true if there are changes that can be merged
 // whether or not there would be a conflict
 func MergeAvailable(branch string) bool {
-	cmd := exec.Command("git", "merge", branch, "--no-commit", "--allow-unrelated-histories", "-X", "theirs")
+	cmd := exec.Command("git", "merge", branch, "--no-commit")
 	out, _ := cmd.CombinedOutput()
 	outS := string(out)
+
+	if strings.Contains(outS, "fatal: refusing to merge unrelated histories") {
+		output.Debug("Backfilling repo history to allow merging")
+		if err := run("pull", "--unshallow"); err != nil {
+			panic(err)
+		}
+
+		output.Debug("Retrying merge check")
+		cmd := exec.Command("git", "merge", branch, "--no-commit")
+		out, _ := cmd.CombinedOutput()
+		outS = string(out)
+	}
 
 	println(outS)
 
