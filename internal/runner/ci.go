@@ -129,7 +129,7 @@ func CI(autoconfigure bool, types []string, paths []string) error {
 	output.Event("Performing %d new updates on %s", len(newUpdates), startingBranch)
 
 	for _, update := range newUpdates {
-		output.Event("Running update: %s", update.title)
+		output.StartSection("New update: %s", update.title)
 		if err := runUpdate(update, startingBranch, update.branch, false); err != nil {
 			failedUpdates = append(failedUpdates, &updateResult{
 				update: update,
@@ -143,10 +143,11 @@ func CI(autoconfigure bool, types []string, paths []string) error {
 			})
 			output.Success("Update succeeded: %v", update.title)
 		}
+		output.EndSection()
 	}
 
 	for _, update := range outdatedUpdates {
-		output.Event("Updating outdated update: %s", update.title)
+		output.StartSection("Outdated update: %s", update.title)
 		// TODO if update.branch already exists, maybe base could be
 		// determined from what it originally branched off of?
 		if err := runUpdate(update, startingBranch, update.branch, true); err != nil {
@@ -162,6 +163,7 @@ func CI(autoconfigure bool, types []string, paths []string) error {
 			})
 			output.Success("Update succeeded: %v", update.title)
 		}
+		output.EndSection()
 	}
 
 	if len(successfulUpdates) > 0 {

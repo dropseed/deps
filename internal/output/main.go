@@ -10,14 +10,17 @@ import (
 
 var Verbosity = 0
 
+func isGitHubActions() bool {
+	return os.Getenv("GITHUB_ACTIONS") == "true"
+}
+
 func shouldColorize() bool {
 	isTerm := terminal.IsTerminal(int(os.Stdout.Fd()))
-	isGitHubActions := os.Getenv("GITHUB_ACTIONS") == "true"
-	if isGitHubActions {
+	if isGitHubActions() {
 		// https://github.com/fatih/color#github-actions
 		color.NoColor = false
 	}
-	return isTerm || isGitHubActions
+	return isTerm || isGitHubActions()
 }
 
 func IsDebug() bool {
@@ -76,4 +79,20 @@ func Subtle(f string, args ...interface{}) {
 func Unstyled(f string, args ...interface{}) {
 	color.Unset()
 	fmt.Printf(f+"\n", args...)
+}
+
+func StartSection(f string, args ...interface{}) {
+	if isGitHubActions() {
+		// https://docs.github.com/en/actions/learn-github-actions/workflow-commands-for-github-actions#grouping-log-lines
+		formatted := fmt.Sprintf(f, args...)
+		fmt.Printf("::group::%s\n", formatted)
+	} else {
+		Event(f, args...)
+	}
+}
+
+func EndSection() {
+	if isGitHubActions() {
+		println("::endgroup::")
+	}
 }
