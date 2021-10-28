@@ -167,7 +167,7 @@ func CI(autoconfigure bool, types []string, paths []string) error {
 	if len(successfulUpdates) > 0 {
 		output.Success("%d updates made successfully!", len(successfulUpdates))
 		for _, ue := range successfulUpdates {
-			output.Error("- [%s] %s", ue.update.id, ue.update.title)
+			output.Success("- [%s] %s", ue.update.id, ue.update.title)
 		}
 	}
 
