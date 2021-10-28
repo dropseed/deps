@@ -84,6 +84,7 @@ func Merge(branch string) bool {
 
 	if err != nil {
 		output.Error(outS)
+		exec.Command("git", "merge", "--abort").Run()
 		return false
 	}
 
