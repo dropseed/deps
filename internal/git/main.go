@@ -71,7 +71,7 @@ func MergeWouldConflict(branch string) bool {
 	abortMergeCmd.CombinedOutput()
 
 	if mergeErr != nil {
-		println(mergeOutput)
+		output.Warning((string(mergeOutput)))
 	}
 
 	return mergeErr == nil
@@ -81,9 +81,9 @@ func Merge(branch string) bool {
 	cmd := exec.Command("git", "merge", branch)
 	out, err := cmd.CombinedOutput()
 	outS := string(out)
-	output.Debug(outS)
 
 	if err != nil {
+		output.Error(outS)
 		return false
 	}
 
@@ -100,6 +100,8 @@ func MergeAvailable(branch string) bool {
 	cmd := exec.Command("git", "merge", branch, "--no-commit")
 	out, _ := cmd.CombinedOutput()
 	outS := string(out)
+
+	println(outS)
 
 	// Clean up the merge no matter what
 	exec.Command("git", "merge", "--abort").Run()
