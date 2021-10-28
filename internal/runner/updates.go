@@ -17,6 +17,10 @@ func (updates Updates) addUpdate(update *Update) {
 	updates[update.id] = update
 }
 
+func (updates Updates) removeUpdate(update *Update) {
+	delete(updates, update.id)
+}
+
 func (updates Updates) printOverview() {
 	if len(updates) < 1 {
 		output.Success("No updates found")

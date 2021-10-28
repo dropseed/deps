@@ -63,8 +63,8 @@ func listBranches() []string {
 	return branches
 }
 
-func MergeWouldConflict(mergeBranch string) bool {
-	mergeCmd := exec.Command("git", "merge", mergeBranch, "--no-commit")
+func MergeWouldConflict(branch string) bool {
+	mergeCmd := exec.Command("git", "merge", branch, "--no-commit")
 	mergeOutput, mergeErr := mergeCmd.CombinedOutput()
 
 	abortMergeCmd := exec.Command("git", "merge", "--abort")
@@ -92,6 +92,19 @@ func Merge(branch string) bool {
 	}
 
 	return true
+}
+
+// MergeAvailable returns true if there are changes that can be merged
+// whether or not there would be a conflict
+func MergeAvailable(branch string) bool {
+	cmd := exec.Command("git", "merge", branch, "--no-commit")
+	out, _ := cmd.CombinedOutput()
+	outS := string(out)
+
+	// Clean up the merge no matter what
+	exec.Command("git", "merge", "--abort").Run()
+
+	return !strings.Contains(outS, "Already up-to-date")
 }
 
 func getBranchPrefix() string {

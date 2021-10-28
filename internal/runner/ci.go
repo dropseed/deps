@@ -91,6 +91,21 @@ func CI(autoconfigure bool, types []string, paths []string) error {
 		return err
 	}
 
+	// Find existing updates where merge_base enabled
+	// and a merge is available, and move them to outdated updates
+	for _, update := range existingUpdates {
+		if update.mergeBaseEnabled() {
+			git.Checkout(update.branch)
+			mergeAvailable := git.MergeAvailable(startingBranch)
+			git.Checkout("-")
+
+			if mergeAvailable {
+				outdatedUpdates.addUpdate(update)
+				existingUpdates.removeUpdate(update)
+			}
+		}
+	}
+
 	output.Event("%d new updates", len(newUpdates))
 	output.Event("%d outdated updates", len(outdatedUpdates))
 	output.Event("%d existing updates", len(existingUpdates))
@@ -197,24 +212,30 @@ func getCurrentBranch(ci ci.CIProvider) string {
 	return branch
 }
 
+func (update *Update) mergeBaseEnabled() bool {
+	mergeBaseSetting := update.dependencyConfig.GetSettingForSchema("merge_base", update.dependencies)
+	if mergeBaseSetting == nil {
+		return false
+	}
+	return mergeBaseSetting.(bool)
+}
+
 func runUpdate(update *Update, base, head string, existingUpdate bool) error {
 	if existingUpdate {
 		// go straight to it
 		git.Checkout(head)
 
-		// if mergeBaseSetting := update.dependencyConfig.GetSettingForSchema("merge_base", update.dependencies); mergeBaseSetting != nil {
-		// if mergeBaseSetting.(bool) {
-		if git.MergeWouldConflict(base) {
-			output.Event("Merge with %s has a conflict, so skipping automatic merge", base)
-		} else {
-			output.Event("Merging %s into existing update", base)
-			if git.Merge(base) {
-				// Ideally we'd only push once, at the end with or without the update?
-				git.PushBranch(head)
+		if update.mergeBaseEnabled() {
+			if git.MergeWouldConflict(base) {
+				output.Event("Merge with %s has a conflict, so skipping automatic merge", base)
+			} else {
+				output.Event("Merging %s into existing update", base)
+				if git.Merge(base) {
+					// Ideally we'd only push once, at the end with or without the update?
+					git.PushBranch(head)
+				}
 			}
 		}
-		// }
-		// }
 	} else {
 		// create a branch for it
 		git.Checkout(base)
