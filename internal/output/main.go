@@ -30,7 +30,7 @@ func IsDebug() bool {
 func Event(f string, args ...interface{}) {
 	if shouldColorize() && IsDebug() {
 		color.Set(color.FgMagenta)
-		print("> ")
+		fmt.Print("> ")
 		color.Unset()
 		color.Set(color.Bold)
 	}
@@ -46,7 +46,7 @@ func Debug(f string, args ...interface{}) {
 	}
 	if shouldColorize() {
 		color.Set(color.FgCyan)
-		print("> ")
+		fmt.Print("> ")
 		color.Unset()
 	}
 	fmt.Printf(f+"\n", args...)

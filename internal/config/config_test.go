@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -10,7 +11,7 @@ func compareToYAML(t *testing.T, config *Config, expected string) {
 		t.Error(err)
 	}
 	if expected != dumped {
-		print(dumped)
+		fmt.Print(dumped)
 		t.FailNow()
 	}
 }

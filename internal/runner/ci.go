@@ -36,7 +36,7 @@ func CI(autoconfigure bool, types []string, paths []string) error {
 	}
 
 	if git.IsDirty() {
-		print(git.Status())
+		fmt.Println(git.Status())
 		return errors.New("git status must be clean to run deps ci")
 	}
 
