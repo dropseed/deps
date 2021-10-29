@@ -153,7 +153,7 @@ func runTest(runner *component.Runner, test *Test) error {
 
 		diff := getDiff(diffRepo, copyRepoPath, test.DiffArgs...)
 		if diff != "" {
-			println(diff)
+			fmt.Println(diff)
 			return errors.New("Diff does not match expected")
 		}
 	}

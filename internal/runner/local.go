@@ -76,7 +76,7 @@ func (updates Updates) prompt() error {
 			Items: items,
 		}
 
-		println()
+		fmt.Println()
 		i, _, err := prompt.Run()
 		if err != nil {
 			return err

@@ -78,7 +78,7 @@ func TestGitRemoteHostname(t *testing.T) {
 // func TestGetDepsBranches(t *testing.T) {
 // 	branches := GetDepsBranches()
 // 	for _, b := range branches {
-// 		println(b)
+// 		fmt.Println(b)
 // 	}
 // 	t.Fail()
 // }

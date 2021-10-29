@@ -1,6 +1,9 @@
 package config
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestInference(t *testing.T) {
 	config, err := InferredConfigFromDir("./testdata/repo")
@@ -28,7 +31,7 @@ dependencies:
 		t.Error(err)
 	}
 	if expected != dumped {
-		println(dumped)
+		fmt.Println(dumped)
 		t.FailNow()
 	}
 }

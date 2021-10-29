@@ -114,7 +114,7 @@ func MergeAvailable(branch string) bool {
 		outS = string(out)
 	}
 
-	println(outS)
+	fmt.Println(outS)
 
 	// Clean up the merge no matter what
 	exec.Command("git", "merge", "--abort").Run()
@@ -222,7 +222,7 @@ func Stash(message string) bool {
 	cmd := exec.Command("git", "stash", "save", "--include-untracked", message)
 	out, err := cmd.CombinedOutput()
 	outS := string(out)
-	println(outS)
+	fmt.Println(outS)
 	if err != nil {
 		panic(err)
 	}
@@ -310,8 +310,8 @@ func run(args ...string) error {
 
 		if !output.IsDebug() {
 			// Show more output if it wasn't showing already
-			println(cmdString)
-			println(out.String())
+			fmt.Println(cmdString)
+			fmt.Println(out.String())
 		}
 
 		return err

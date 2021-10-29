@@ -70,17 +70,17 @@ package runner
 // // 	}
 
 // // 	if len(updates) != 2 {
-// // 		println(len(updates))
+// // 		fmt.Println(len(updates))
 // // 		t.FailNow()
 // // 	}
 
 // // 	if updates[0].summary != "- `pullrequest` in `requirements.txt` from \"0.1.0\" to \"0.3.0\"" {
-// // 		println(updates[0].summary)
+// // 		fmt.Println(updates[0].summary)
 // // 		t.FailNow()
 // // 	}
 
 // // 	if updates[1].summary != "- `requests` in `requirements.txt` from \"1.0.0\" to \"3.0.0\"" {
-// // 		println(updates[1].summary)
+// // 		fmt.Println(updates[1].summary)
 // // 		t.FailNow()
 // // 	}
 // // }

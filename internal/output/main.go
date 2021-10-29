@@ -93,6 +93,6 @@ func StartSection(f string, args ...interface{}) {
 
 func EndSection() {
 	if isGitHubActions() {
-		println("::endgroup::")
+		fmt.Println("::endgroup::")
 	}
 }
