@@ -226,6 +226,8 @@ func (update *Update) mergeUpdatesEnabled() bool {
 }
 
 func runUpdate(update *Update, base, head string, existingUpdate bool) error {
+	branchUpdated := false
+
 	if existingUpdate {
 		// go straight to it
 		git.Checkout(head)
@@ -237,8 +239,7 @@ func runUpdate(update *Update, base, head string, existingUpdate bool) error {
 			} else {
 				output.Event("Merging %s into existing update", base)
 				if git.Merge(base) {
-					// Ideally we'd only push once, at the end with or without the update?
-					git.PushBranch(head)
+					branchUpdated = true
 				}
 			}
 		}
@@ -264,7 +265,7 @@ func runUpdate(update *Update, base, head string, existingUpdate bool) error {
 		return err
 	}
 
-	if !git.IsDirty() {
+	if !git.IsDirty() && !branchUpdated {
 		if existingUpdate {
 			output.Event("No new changes to commit")
 			return nil
@@ -273,21 +274,24 @@ func runUpdate(update *Update, base, head string, existingUpdate bool) error {
 		return errors.New("Update didn't generate any changes to commit")
 	}
 
-	if err := hooks.RunPullrequestHook(pr, "before_commit"); err != nil {
-		return err
+	if git.IsDirty() {
+		if err := hooks.RunPullrequestHook(pr, "before_commit"); err != nil {
+			return err
+		}
+
+		templateString := "{{.SubjectAndBody}}"
+		if templateSetting := pr.GetSetting("commit_message_template"); templateSetting != nil {
+			templateString = templateSetting.(string)
+		}
+		commitMessage, err := renderCommitMessage(outputDeps, templateString)
+		if err != nil {
+			return err
+		}
+
+		git.Add()
+		git.Commit(commitMessage)
 	}
 
-	templateString := "{{.SubjectAndBody}}"
-	if templateSetting := pr.GetSetting("commit_message_template"); templateSetting != nil {
-		templateString = templateSetting.(string)
-	}
-	commitMessage, err := renderCommitMessage(outputDeps, templateString)
-	if err != nil {
-		return err
-	}
-
-	git.Add()
-	git.Commit(commitMessage)
 	git.PushBranch(head)
 
 	if pr != nil {
