@@ -99,7 +99,7 @@ func Merge(branch string) bool {
 		return false
 	}
 
-	if strings.Contains(outS, "Already up-to-date") {
+	if strings.Contains(outS, "Already up to date") {
 		return false
 	}
 
@@ -130,7 +130,7 @@ func MergeAvailable(branch string) bool {
 	// Clean up the merge no matter what
 	exec.Command("git", "merge", "--abort").Run()
 
-	return !strings.Contains(outS, "Already up-to-date")
+	return !strings.Contains(outS, "Already up to date")
 }
 
 func getBranchPrefix() string {
