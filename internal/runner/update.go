@@ -50,5 +50,9 @@ func (update *Update) exists() bool {
 func (update *Update) outdatedBranch() string {
 	// Assumes exists() was already checked for an exact match,
 	// so this checks ANY branches that match the prefix ID
-	return git.BranchMatching(git.GetBranchName(update.id))
+	return git.BranchMatching(update.branchPrefix())
+}
+
+func (update *Update) branchPrefix() string {
+	return git.GetBranchName(update.id)
 }

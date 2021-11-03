@@ -40,6 +40,17 @@ func IsDepsBranch(branchName string) bool {
 	return strings.HasPrefix(branchName, prefix)
 }
 
+func GetDepsBranches() []string {
+	depsBranches := []string{}
+	branches := listBranches()
+	for _, branch := range branches {
+		if IsDepsBranch(branch) {
+			depsBranches = append(depsBranches, branch)
+		}
+	}
+	return depsBranches
+}
+
 func listBranches() []string {
 	cmd := exec.Command("git", "branch", "--list", "--all", "--no-column")
 	out, err := cmd.CombinedOutput()
@@ -244,6 +255,10 @@ func RenameBranch(old, new string) {
 	if err := run("branch", "-m", old, new); err != nil {
 		panic(err)
 	}
+}
+
+func DeleteRemoteBranch(branch string) error {
+	return run("push", "origin", "--delete", branch)
 }
 
 func Fetch() {

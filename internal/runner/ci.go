@@ -110,6 +110,24 @@ func CI(autoconfigure bool, types []string, paths []string) error {
 	output.Event("%d outdated updates", len(outdatedUpdates))
 	output.Event("%d existing updates", len(existingUpdates))
 
+	if len(types) == 0 && len(paths) == 0 {
+		inapplicableBranches := getInapplicableBranches(allUpdates)
+		output.Event("%d inapplicable branches", len(inapplicableBranches))
+
+		for _, branch := range inapplicableBranches {
+			// On GitHub at least, deleting these also closes the PR (so also works for no-PR scenario)
+			// at some point we could add a helpful comment but that would require
+			// implementing all steps for GitHub/GitLab/Bitbucket
+			if err := git.DeleteRemoteBranch(branch); err != nil {
+				output.Error("Failed to delete inapplicable branch %s\n%s", branch, err)
+			} else {
+				output.Event("Deleted inapplicable branch %s", branch)
+			}
+		}
+	} else {
+		output.Debug("Deleting inapplicable branches not enabled when filtering types or paths")
+	}
+
 	// TODO this is also because collectors may have done some crap and not cleaned up
 	if git.IsDirty() {
 		output.Event("Temporarily saving your uncommitted changes in a git stash")
@@ -345,4 +363,17 @@ func renderCommitMessage(deps *schema.Dependencies, templateString string) (stri
 	}
 
 	return message, nil
+}
+
+func getInapplicableBranches(updates Updates) []string {
+	inapplicableBranches := []string{}
+	for _, branch := range git.GetDepsBranches() {
+		for _, update := range updates {
+			if strings.HasPrefix(branch, update.branchPrefix()) {
+				continue
+			}
+		}
+		inapplicableBranches = append(inapplicableBranches, branch)
+	}
+	return inapplicableBranches
 }
