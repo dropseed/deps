@@ -126,8 +126,6 @@ func CI(autoconfigure bool, types []string, paths []string) error {
 		}()
 	}
 
-	output.Event("Performing %d new updates on %s", len(newUpdates), startingBranch)
-
 	for _, update := range newUpdates {
 		output.StartSection("(New) %s", update.title)
 		if err := runUpdate(update, startingBranch, update.branch, false); err != nil {
