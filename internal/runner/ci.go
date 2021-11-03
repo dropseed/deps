@@ -368,12 +368,16 @@ func renderCommitMessage(deps *schema.Dependencies, templateString string) (stri
 func getInapplicableBranches(updates Updates) []string {
 	inapplicableBranches := []string{}
 	for _, branch := range git.GetDepsBranches() {
+		branchFound := false
 		for _, update := range updates {
 			if strings.HasPrefix(branch, update.branchPrefix()) {
-				continue
+				branchFound = true
+				break
 			}
 		}
-		inapplicableBranches = append(inapplicableBranches, branch)
+		if !branchFound {
+			inapplicableBranches = append(inapplicableBranches, branch)
+		}
 	}
 	return inapplicableBranches
 }
