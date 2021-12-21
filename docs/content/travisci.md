@@ -23,6 +23,6 @@ jobs:
       depth: false  # required for existing deps branches to be available
     install:
     - ./scripts/install_requirements
-    - curl https://deps.app/install.sh | bash -s -- -b $HOME/bin
+    - curl -sSL https://deps.app/install.sh | bash -s -- -b $HOME/bin
     script: deps ci
 ```

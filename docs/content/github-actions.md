@@ -39,7 +39,7 @@ jobs:
     - run: |
         pip install -U pip pipenv
         ./scripts/install
-    - run: curl https://deps.app/install.sh | bash -s -- -b $HOME/bin
+    - run: curl -sSL https://deps.app/install.sh | bash -s -- -b $HOME/bin
     - run: $HOME/bin/deps ci
       env:
         DEPS_TOKEN: ${{ secrets.DEPS_TOKEN }}

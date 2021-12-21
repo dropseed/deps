@@ -32,7 +32,7 @@ jobs:
       - image: circleci/python:3.7
     steps:
       - checkout
-      - run: curl https://deps.app/install.sh | bash -s -- -b $HOME/bin
+      - run: curl -sSL https://deps.app/install.sh | bash -s -- -b $HOME/bin
       - run: pipenv sync --dev
       - run: $HOME/bin/deps ci --type python
   deps-node:
@@ -40,7 +40,7 @@ jobs:
       - image: circleci/node:12
     steps:
       - checkout
-      - run: curl https://deps.app/install.sh | bash -s -- -b $HOME/bin
+      - run: curl -sSL https://deps.app/install.sh | bash -s -- -b $HOME/bin
       - run: yarn install
       - run: $HOME/bin/deps ci --type js
 

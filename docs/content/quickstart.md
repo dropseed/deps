@@ -12,7 +12,7 @@ Follow these steps to see how deps works and get your first automated pull reque
 [Download a release manually](https://github.com/dropseed/deps/releases), or use the auto-install script:
 
 ```console
-$ curl https://deps.app/install.sh | bash -s -- -b $HOME/bin
+$ curl -sSL https://deps.app/install.sh | bash -s -- -b $HOME/bin
 ```
 
 ## 2. Try deps upgrade

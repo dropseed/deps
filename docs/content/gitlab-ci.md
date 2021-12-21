@@ -28,7 +28,7 @@ deps-js:
   image: "node:latest"
   only: [schedules]
   script:
-    - curl https://deps.app/install.sh | bash -s -- -b $HOME/bin
+    - curl -sSL https://deps.app/install.sh | bash -s -- -b $HOME/bin
     - yarn install
     - $HOME/bin/deps ci --type js
 
@@ -36,7 +36,7 @@ deps-python:
   image: "python:3"
   only: [schedules]
   script:
-    - curl https://deps.app/install.sh | bash -s -- -b $HOME/bin
+    - curl -sSL https://deps.app/install.sh | bash -s -- -b $HOME/bin
     - pipenv sync --dev
     - $HOME/bin/deps ci --type python
 ```

@@ -18,7 +18,7 @@ Locally `deps` can:
 To install `deps`,
 [manually download a release](https://github.com/dropseed/deps/releases) or use the auto-install script:
 ```console
-$ curl https://deps.app/install.sh | bash -s -- -b $HOME/bin
+$ curl -sSL https://deps.app/install.sh | bash -s -- -b $HOME/bin
 ```
 
 ## Checking for dependency updates

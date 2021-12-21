@@ -27,14 +27,14 @@ pipelines:
         - step:
             image: "python:3.7"
             script:
-            - curl https://deps.app/install.sh | bash -s -- -b $HOME/bin
+            - curl -sSL https://deps.app/install.sh | bash -s -- -b $HOME/bin
             - python3 -m venv .venv
             - .venv/bin/pip install -r requirements.txt
             - $HOME/bin/deps ci --type python
         - step:
             image: "node:latest"
             script:
-            - curl https://deps.app/install.sh | bash -s -- -b $HOME/bin
+            - curl -sSL https://deps.app/install.sh | bash -s -- -b $HOME/bin
             - yarn install
             - $HOME/bin/deps ci --type js
 ```

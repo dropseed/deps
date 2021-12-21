@@ -28,7 +28,7 @@ The key features of deps are:
 ## Quick install
 
 ```console
-$ curl https://deps.app/install.sh | bash -s -- -b $HOME/bin
+$ curl -sSL https://deps.app/install.sh | bash -s -- -b $HOME/bin
 ```
 
 ## Official components
