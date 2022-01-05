@@ -120,7 +120,7 @@ func getShortOverviewForLockfile(lockfile *schema.Lockfile) string {
 		}
 
 		if len(direct.Updated) == 2 {
-			return fmt.Sprintf("%s, %s", direct.Updated[0], direct.Updated[1])
+			return fmt.Sprintf("%s and %s", direct.Updated[0], direct.Updated[1])
 		}
 
 		return fmt.Sprintf("%s, %s, and %d more", direct.Updated[0], direct.Updated[1], numDirect-2)

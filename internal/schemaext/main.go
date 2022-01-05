@@ -87,26 +87,11 @@ func TitleForDeps(s *schema.Dependencies) string {
 				return fmt.Sprintf("Update %s%s from %s to %s", dependencyNameForDisplay(name), inManifest, installed, updated)
 			}
 
-			// more than 1 dependency
-			// create a "set" of sources
-			sources := make(map[string]bool)
-			for _, dep := range dependencies {
-				source := dep.Source
-				sources[source] = true
+			if shortOverview := getShortOverviewForManifest(manifest); shortOverview != "" {
+				return fmt.Sprintf("Update %s (%s)", manifestPath, shortOverview)
+			} else {
+				return fmt.Sprintf("Update %s", manifestPath)
 			}
-
-			// get the keys remaining
-			sourceNames := []string{}
-			for k := range sources {
-				sourceNames = append(sourceNames, k)
-			}
-
-			sort.Strings(sourceNames)
-
-			// TODO if > 2 items, put an "and " in front of the last one
-
-			return fmt.Sprintf("Update %v dependencies from %v", len(dependencies), strings.Join(sourceNames, ", "))
-
 		}
 
 		// More than 1 manifest
