@@ -5,6 +5,8 @@ import "errors"
 type Version struct {
 	Name string `json:"name"`
 	Link string `json:"link,omitempty"`
+	// License string `json:"license,omitempty"`
+	// or nested (name, url)
 }
 
 func (v *Version) Validate() error {
