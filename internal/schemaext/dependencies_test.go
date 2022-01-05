@@ -63,15 +63,15 @@ func TestGenerateTitleWithSingleDependencyNoManifestName(t *testing.T) {
 // 	}
 // }
 
-// func TestGenerateTitleWithOneLockfile(t *testing.T) {
-// 	title, err := generateTitleFromFilename("./testdata/single_lockfile.json")
-// 	if err != nil {
-// 		t.Error(err)
-// 	}
-// 	if title != "Update yarn.lock" {
-// 		t.Error("Title does not match expected: ", title)
-// 	}
-// }
+func TestGenerateTitleWithOneLockfile(t *testing.T) {
+	title, err := generateTitleFromFilename("./testdata/single_lockfile.json")
+	if err != nil {
+		t.Error(err)
+	}
+	if title != "Update yarn.lock (postcss-cli, tailwindcss)" {
+		t.Error("Title does not match expected: ", title)
+	}
+}
 
 // func TestGenerateTitleWithTwoLockfiles(t *testing.T) {
 // 	title, err := generateTitleFromFilename("./testdata/two_lockfiles.json")

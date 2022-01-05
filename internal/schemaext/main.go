@@ -49,7 +49,11 @@ func TitleForDeps(s *schema.Dependencies) string {
 		sort.Strings(lockfilePaths)
 
 		if len(lockfilePaths) == 1 {
-			return fmt.Sprintf("Update %v", lockfilePaths[0])
+			if shortOverview := getShortOverviewForLockfile(lockfiles[lockfilePaths[0]]); shortOverview != "" {
+				return fmt.Sprintf("Update %v (%s)", lockfilePaths[0], shortOverview)
+			} else {
+				return fmt.Sprintf("Update %v", lockfilePaths[0])
+			}
 		}
 		return fmt.Sprintf("Update lockfiles: %v", strings.Join(lockfilePaths, ", "))
 	}

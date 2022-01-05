@@ -106,3 +106,30 @@ func getSummaryLineForLockfile(lockfile *schema.Lockfile, lockfilePath string) (
 
 	return fmt.Sprintf("- `%s` was updated%s%s", lockfilePath, parens, subitems), nil
 }
+
+func getShortOverviewForLockfile(lockfile *schema.Lockfile) string {
+	changesByType := lockfileChangesByType(lockfile)
+
+	if direct, found := changesByType["direct"]; found && len(direct.Updated) > 0 {
+		numDirect := len(direct.Updated)
+
+		sort.Strings(direct.Updated) // sort first to get predictable order
+
+		if len(direct.Updated) == 1 {
+			return direct.Updated[0]
+		}
+
+		if len(direct.Updated) == 2 {
+			return fmt.Sprintf("%s, %s", direct.Updated[0], direct.Updated[1])
+		}
+
+		return fmt.Sprintf("%s, %s, and %d more", direct.Updated[0], direct.Updated[1], numDirect-2)
+	}
+
+	if transitive, found := changesByType["transitive"]; found && len(transitive.Updated) > 0 {
+		numTransitive := len(transitive.Updated)
+		return fmt.Sprintf("%d transitive dependencies", numTransitive)
+	}
+
+	return ""
+}
