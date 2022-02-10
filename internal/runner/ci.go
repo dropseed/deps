@@ -317,6 +317,10 @@ func runUpdate(update *Update, base, head string, existingUpdate bool) error {
 		time.Sleep(2 * time.Second)
 
 		if err := pr.CreateOrUpdate(); err != nil {
+			output.Error("Creating or updating pull request failed. Deleting branch.")
+			if deleteErr := git.DeleteRemoteBranch(head); deleteErr != nil {
+				return deleteErr
+			}
 			return err
 		}
 	}
