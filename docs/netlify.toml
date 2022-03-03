@@ -1,6 +1,6 @@
 [build]
 publish = "output"
-command = "npm install -g yarn && cd theme && yarn install && cd .. && combine build"
+command = "cd theme && ./scripts/install && cd .. && combine build"
 
 
 [[redirects]]

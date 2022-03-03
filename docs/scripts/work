@@ -1,2 +1,2 @@
 #!/bin/sh -ex
-pipenv run combine work --port 8070
+./.venv/bin/combine work --port 8070

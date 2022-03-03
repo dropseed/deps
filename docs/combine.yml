@@ -1,12 +1,12 @@
 steps:
-  - run: "./theme/node_modules/.bin/parcel build theme/content/assets/_main.js --out-dir output/assets --out-file main.js"
-    watch: ["./theme/content/assets/_main.js"]
-  # Note how we're using a modified copy of _main.css from the site itself, not the theme
+  - run: "./theme/node_modules/.bin/parcel build theme/content/assets/_app.js --out-dir output/assets --out-file app.js"
+    watch: ["./theme/content/assets/_app.js"]
+  # Note how we're using a modified copy of _tailwind.css from the site itself, not the theme
   # (this is also run after JS so that purge uses JS too)
-  - run: "./theme/node_modules/.bin/tailwind build ./content/assets/_main.css -o ./output/assets/main.css -c ./theme/tailwind.config.js"
+  - run: "./theme/node_modules/.bin/tailwind -i ./content/assets/_tailwind.css -o ./output/assets/tailwind.css"
     watch:
-      - "./theme/tailwind.config.js"
-      - "./content/assets/_main.css"
+      - "./tailwind.config.js"
+      - "./content/assets/_tailwind.css"
   - run: "./theme/node_modules/.bin/pitchfork index output -c .content"
 
 variables:
