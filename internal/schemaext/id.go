@@ -16,14 +16,14 @@ func UpdateIDForDeps(dependencies *schema.Dependencies) string {
 		Manifests: map[string]*schema.Manifest{},
 	}
 
-	if dependencies.Lockfiles != nil {
+	if dependencies.HasLockfiles() {
 		for name := range dependencies.Lockfiles {
 			// Only care about the filename
 			truncated.Lockfiles[name] = nil
 		}
 	}
 
-	if dependencies.Manifests != nil {
+	if dependencies.HasManifests() {
 		for name, manifest := range dependencies.Manifests {
 			if !manifest.HasUpdates() {
 				continue

@@ -13,9 +13,10 @@ type ManifestUpdates struct {
 }
 
 type Filter struct {
-	Name    string `mapstructure:"name" yaml:"name" json:"name"`
-	Enabled *bool  `mapstructure:"enabled,omitempty" yaml:"enabled,omitempty" json:"enabled,omitempty"`
-	Group   *bool  `mapstructure:"group,omitempty" yaml:"group,omitempty" json:"group,omitempty"`
+	Name     string   `mapstructure:"name" yaml:"name" json:"name"`
+	Enabled  *bool    `mapstructure:"enabled,omitempty" yaml:"enabled,omitempty" json:"enabled,omitempty"`
+	Group    *bool    `mapstructure:"group,omitempty" yaml:"group,omitempty" json:"group,omitempty"`
+	Settings Settings `mapstructure:"settings,omitempty" yaml:"settings,omitempty" json:"settings"`
 }
 
 func (manifestUpdates *ManifestUpdates) FilteredDependencyGroups(dependencies map[string]*schema.ManifestDependency) (map[string]map[string]*schema.ManifestDependency, error) {
@@ -64,4 +65,28 @@ func (manifestUpdates *ManifestUpdates) FilteredDependencyGroups(dependencies ma
 func (filter *Filter) MatchesName(name string) bool {
 	nameRegex := regexp.MustCompile(filter.Name)
 	return nameRegex.MatchString(name)
+}
+
+func (filter *Filter) MatchesEntireSchema(deps *schema.Dependencies) bool {
+	// Manifest filters can't match if there are any lockfiles involved (unusual)
+	if deps.HasLockfiles() {
+		return false
+	}
+
+	// The filter has to match *all* deps in the schema to be applied
+	if deps.HasManifests() {
+		for _, manifest := range deps.Manifests {
+			if manifest.HasUpdates() {
+				for depName := range manifest.Updated.Dependencies {
+					if !filter.MatchesName(depName) {
+						return false
+					}
+				}
+			}
+		}
+
+		return true
+	}
+
+	return false
 }

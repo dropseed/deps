@@ -25,5 +25,7 @@ dependencies:
       - name: "django-braces"
         enabled: false
       - name: "django-.*"
+        settings:
+          github_labels: ["django"]
       - name: "django"
       - name: ".*"

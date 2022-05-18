@@ -62,6 +62,9 @@ func (dependency *Dependency) Compile() {
 			t := false
 			filter.Group = &t
 		}
+		if filter.Settings == nil {
+			filter.Settings = Settings{}
+		}
 	}
 }
 
@@ -78,10 +81,12 @@ func (dependency *Dependency) Environ() ([]string, error) {
 }
 
 func (dependency *Dependency) GetSettingForSchema(name string, deps *schema.Dependencies) interface{} {
+	// In order of precedence:
 	// 1. Env
 	// 2. Settings
 	// 3. Lockfile settings (if lockfiles)
 	// 4. Manifest settings (if manifests)
+	// 5. Manifest filter settings
 
 	value := env.SettingFromEnviron(name)
 
@@ -91,12 +96,22 @@ func (dependency *Dependency) GetSettingForSchema(name string, deps *schema.Depe
 
 	// Lockfile- and Manifest-specific settings take priority over general settings
 
-	if v := dependency.LockfileUpdates.Settings.Get(name); v != nil && deps.Lockfiles != nil && len(deps.Lockfiles) > 0 {
+	if v := dependency.LockfileUpdates.Settings.Get(name); v != nil && deps.HasLockfiles() {
 		value = v
 	}
 
-	if v := dependency.ManifestUpdates.Settings.Get(name); v != nil && deps.Manifests != nil && len(deps.Manifests) > 0 {
+	if v := dependency.ManifestUpdates.Settings.Get(name); v != nil && deps.HasManifests() {
 		value = v
+	}
+
+	// Filters take top priority (and we take the first match)
+
+	for _, filter := range dependency.ManifestUpdates.Filters {
+		if filter.MatchesEntireSchema(deps) {
+			if v := filter.Settings.Get(name); v != nil {
+				return v
+			}
+		}
 	}
 
 	return value

@@ -50,3 +50,11 @@ func (s *Dependencies) Validate() error {
 
 	return nil
 }
+
+func (s *Dependencies) HasLockfiles() bool {
+	return s.Lockfiles != nil && len(s.Lockfiles) > 0
+}
+
+func (s *Dependencies) HasManifests() bool {
+	return s.Manifests != nil && len(s.Manifests) > 0
+}
