@@ -96,3 +96,14 @@ func getAPIToken() string {
 
 	return ""
 }
+
+func getAPIBaseURL() string {
+	if s := os.Getenv("DEPS_GITHUB_API_URL"); s != "" {
+		return s
+	}
+	if s := os.Getenv("GITHUB_API_URL"); s != "" {
+		// https://docs.github.com/en/actions/learn-github-actions/environment-variables
+		return s
+	}
+	return "https://api.github.com"
+}

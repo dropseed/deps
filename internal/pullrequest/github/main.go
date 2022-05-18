@@ -29,6 +29,9 @@ type PullRequest struct {
 	RepoName      string
 	RepoFullName  string
 	APIToken      string
+	nodeID        string
+	apiURL        string
+	apiBaseURL    string
 }
 
 func NewPullRequest(base string, head string, deps *schema.Dependencies, cfg *config.Dependency) (*PullRequest, error) {
@@ -51,6 +54,7 @@ func NewPullRequest(base string, head string, deps *schema.Dependencies, cfg *co
 		RepoName:      repo,
 		RepoFullName:  fullName,
 		APIToken:      getAPIToken(),
+		apiBaseURL:    getAPIBaseURL(),
 	}, nil
 }
 
@@ -81,8 +85,7 @@ func (pr *PullRequest) request(verb string, url string, input []byte) (*http.Res
 }
 
 func (pr *PullRequest) pullsURL() string {
-	apiBase := "https://api.github.com" // or from setting/env
-	return fmt.Sprintf("%s/repos/%s/pulls", apiBase, pr.RepoFullName)
+	return fmt.Sprintf("%s/repos/%s/pulls", pr.apiBaseURL, pr.RepoFullName)
 }
 
 func (pr *PullRequest) getCreateJSONData() ([]byte, error) {
@@ -183,6 +186,10 @@ func (pr *PullRequest) CreateOrUpdate() error {
 		}
 	}
 
+	// Store these for future API calls
+	pr.nodeID = data["node_id"].(string)
+	pr.apiURL = data["url"].(string)
+
 	// pr has been created at this point, now have to add meta fields in
 	// another request
 	issueURL, _ := data["issue_url"].(string)
@@ -220,6 +227,114 @@ func (pr *PullRequest) CreateOrUpdate() error {
 		}
 
 		output.Event("Successfully updated PR fields on %v\n", htmlURL)
+	}
+
+	if automerge := pr.GetSetting("github_automerge"); automerge != nil {
+
+		currentAutomerge := data["auto_merge"]
+
+		automergeMethod, ok := automerge.(string)
+		if !ok {
+			automergeBool, ok := automerge.(bool)
+			if !ok {
+				return fmt.Errorf("github_automerge must be a string (\"merge\", \"rebase\", or \"squash\") or a boolean")
+			}
+			if automergeBool {
+				automergeMethod = "squash"
+			} else {
+				automergeMethod = "none"
+			}
+		}
+
+		if currentAutomerge == nil && automergeMethod != "none" {
+			output.Event("Enabling \"%s\" automerge on %v\n", automergeMethod, htmlURL)
+			if err := pr.enableAutomerge(automergeMethod); err != nil {
+				return err
+			}
+		} else if currentAutomerge != nil && automergeMethod == "none" {
+			output.Event("Disabling automerge on %v\n", htmlURL)
+			if err := pr.disableAutomerge(); err != nil {
+				return err
+			}
+		} else {
+			output.Event("No automerge change to make on %v\nRequested: %s\nExisting: %+v", automergeMethod, currentAutomerge, htmlURL)
+		}
+	}
+
+	return nil
+}
+
+func (pr *PullRequest) graphqlRequest(body map[string]interface{}) error {
+	bodyData, _ := json.Marshal(body)
+	resp, respBody, err := pr.request("POST", pr.apiBaseURL+"/graphql", bodyData)
+
+	output.Debug("%+v", resp)
+
+	if resp.StatusCode >= 400 {
+		return fmt.Errorf("GraphQL API returned %d\n%s", resp.StatusCode, respBody)
+	}
+
+	var respData map[string]interface{}
+	if err := json.Unmarshal([]byte(respBody), &respData); err != nil {
+		return err
+	}
+
+	if respData["errors"] != nil {
+		return fmt.Errorf("GraphQL API returned errors:\n%s", respBody)
+	}
+
+	return err
+}
+
+func (pr *PullRequest) enableAutomerge(mergeMethod string) error {
+	err := pr.graphqlRequest(map[string]interface{}{
+		"query": `mutation($input: EnablePullRequestAutoMergeInput!) {
+			enablePullRequestAutoMerge(input: $input) {
+				clientMutationId
+			}
+		}`,
+		"variables": map[string]interface{}{
+			"input": map[string]interface{}{
+				"pullRequestId": pr.nodeID,
+				"mergeMethod":   strings.ToUpper(mergeMethod),
+			},
+		},
+	})
+
+	if err != nil && strings.Contains(err.Error(), "Pull request is in clean status") {
+		output.Event("Pull request is in clean status, automerge can't be enabled so we will merge manually")
+		return pr.merge(mergeMethod)
+	}
+
+	return nil
+}
+
+func (pr *PullRequest) disableAutomerge() error {
+	return pr.graphqlRequest(map[string]interface{}{
+		"query": `mutation {
+			disablePullRequestAutoMerge(input: {pullRequestId: "%s"}) {
+				clientMutationId
+			}
+		}`,
+		"variables": map[string]interface{}{
+			"pullRequestId": pr.nodeID,
+		},
+	})
+}
+
+func (pr *PullRequest) merge(mergeMethod string) error {
+	data := map[string]interface{}{
+		"merge_method": strings.ToLower(mergeMethod),
+	}
+	dataStr, _ := json.Marshal(data)
+	resp, body, err := pr.request("PUT", pr.apiURL+"/merge", dataStr)
+
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode >= 400 {
+		return fmt.Errorf("failed to merge PR:\n%s", body)
 	}
 
 	return nil
