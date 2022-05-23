@@ -56,9 +56,9 @@ You will need a `DEPS_TOKEN` in order to run `deps ci` ([see pricing](/pricing/)
 
 <!-- If your repo is on GitHub, `deps init` will automatically help set up a GitHub Actions workflow! -->
 
-Supported CI providers:
+Supported platforms:
 
-- [GitHub Actions](/github-actions/)
-- [GitLab CI](/gitlab-ci/)
-- [Bitbucket Pipelines](/bitbucket-pipelines/)
-- [Other](/other-ci/)
+- [GitHub](/github/)
+- [GitLab](/gitlab/)
+- [Bitbucket](/bitbucket/)
+- [Other CI providers](/other-ci/)

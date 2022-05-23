@@ -21,3 +21,23 @@ command = "cd theme && ./scripts/install && cd .. && combine build"
 [[redirects]]
     from = "/apply/"
     to = "https://www.dropseed.dev/free/"
+
+[[redirects]]
+    from = "/travisci/"
+    to = "/other-ci/"
+
+[[redirects]]
+    from = "/circleci/"
+    to = "/other-ci/"
+
+[[redirects]]
+    from = "/github-actions/"
+    to = "/github/"
+
+[[redirects]]
+    from = "/gitlab-ci/"
+    to = "/gitlab/"
+
+[[redirects]]
+    from = "/bitbucket-pipelines/"
+    to = "/bitbucket/"

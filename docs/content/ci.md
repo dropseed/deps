@@ -15,12 +15,12 @@ The basic steps for setting up `deps ci` are:
 - Add a scheduled job that installs and runs `deps ci`
 - Set any other required environment variables and secrets
 
-Supported CI providers:
+Supported platforms:
 
-- [GitHub Actions](/github-actions/)
-- [GitLab CI](/gitlab-ci/)
-- [Bitbucket Pipelines](/bitbucket-pipelines/)
-- [Other](/other-ci/)
+- [GitHub](/github/)
+- [GitLab](/gitlab/)
+- [Bitbucket](/bitbucket/)
+- [Other CI providers](/other-ci/)
 
 ## Autoconfigure
 
