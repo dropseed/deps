@@ -304,6 +304,8 @@ func (pr *PullRequest) enableAutomerge(mergeMethod string) error {
 	if err != nil && strings.Contains(err.Error(), "Pull request is in clean status") {
 		output.Event("Pull request is in clean status, automerge can't be enabled so we will merge manually")
 		return pr.merge(mergeMethod)
+	} else if err != nil {
+		return err
 	}
 
 	return nil
