@@ -61,5 +61,4 @@ Supported CI providers:
 - [GitHub Actions](/github-actions/)
 - [GitLab CI](/gitlab-ci/)
 - [Bitbucket Pipelines](/bitbucket-pipelines/)
-- [CircleCI](/circleci/)
 - [Other](/other-ci/)
