@@ -62,5 +62,4 @@ Supported CI providers:
 - [GitLab CI](/gitlab-ci/)
 - [Bitbucket Pipelines](/bitbucket-pipelines/)
 - [CircleCI](/circleci/)
-- [TravisCI](/travisci/)
 - [Other](/other-ci/)
