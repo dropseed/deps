@@ -189,7 +189,6 @@ dependencies:
   settings:
     github_labels:
     - dependencies
-    - automerge
 ```
 
 Settings can be more complex types and will be passed to the component as `DEPS_SETTING_{NAME}={JSON encoded value}`.
@@ -200,5 +199,25 @@ you can also pass settings manually
 by using an env variable in your CI.
 This is an easy way to apply the same GitHub PR labels to all updates, for example:
 ```console
-$ DEPS_SETTING_GITHUB_LABELS='["automerge"]' deps ci
+$ DEPS_SETTING_GITHUB_LABELS='["dependencies"]' deps ci
+```
+
+### Filter settings
+
+Settings can also be configured for specific dependencies via filters.
+
+```yaml
+# deps.yml
+version: 3
+dependencies:
+- type: python
+  manifest_updates:
+    filters:
+    - name: requests
+      enabled: false
+      settings:
+        github_labels:
+        - requests
+    - name: .*
+      enabled: true
 ```
