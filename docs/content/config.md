@@ -8,6 +8,7 @@ description: Advanced configuration of automated dependency updates using deps.y
 A `deps.yml` is only required if you need to make changes beyond what is configured automatically.
 
 ```yaml
+# deps.yml
 version: 3  # required!
 dependencies:
 - type: python
@@ -29,6 +30,7 @@ This single pull request will include in-range updates to all of your direct *an
 To disable lockfile updates, you can set `enabled: false` in your `deps.yml`.
 
 ```yaml
+# deps.yml
 version: 3
 dependencies:
 - type: js
@@ -57,6 +59,7 @@ In-range updates will be delivered as [lockfile updates](#lockfile-updates).
 You can disable manifest updates entirely:
 
 ```yaml
+# deps.yml
 version: 3
 dependencies:
 - type: python
@@ -77,6 +80,7 @@ dependencies:
 Use `manifest_updates.filters` to enable or disable updates on a per-dependency basis.
 
 ```yaml
+# deps.yml
 version: 3
 dependencies:
 - type: python
@@ -100,6 +104,7 @@ such as "react" and "react-dom". This way you'll get a *single* pull request tha
 For example:
 
 ```yaml
+# deps.yml
 version: 3
 dependencies:
 - type: python
@@ -113,6 +118,7 @@ dependencies:
 ## Injecting commands (hooks)
 
 ```yaml
+# deps.yml
 version: 3
 dependencies:
 - type: js
@@ -126,6 +132,7 @@ Add commit message prefixes, suffixes, and trailers by providing your own templa
 The template is rendered using [Go's text/template package](https://golang.org/pkg/text/template/).
 
 ```yaml
+# deps.yml
 version: 3
 dependencies:
 - type: js
@@ -162,6 +169,7 @@ you can set `env` variables that will be set when that component runs.
 *These must be strings!*
 
 ```yaml
+# deps.yml
 version: 3
 dependencies:
 - type: js
@@ -174,6 +182,7 @@ dependencies:
 Most components have `settings` to further specify how they work.
 
 ```yaml
+# deps.yml
 version: 3
 dependencies:
 - type: js
