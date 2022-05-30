@@ -128,7 +128,11 @@ func getShortOverviewForLockfile(lockfile *schema.Lockfile) string {
 
 	if transitive, found := changesByType["transitive"]; found && len(transitive.Updated) > 0 {
 		numTransitive := len(transitive.Updated)
-		return fmt.Sprintf("%d transitive dependencies", numTransitive)
+		if numTransitive == 1 {
+			return fmt.Sprintf("%d transitive dependency", numTransitive)
+		} else {
+			return fmt.Sprintf("%d transitive dependencies", numTransitive)
+		}
 	}
 
 	return ""
